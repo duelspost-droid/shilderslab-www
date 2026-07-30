@@ -56,7 +56,12 @@
     });
     modal.classList.add("on");
   }
-  function closeModal() { modal.classList.remove("on"); }
+  function closeModal() {
+    modal.classList.remove("on");
+    /* 임시 비밀번호 등 민감값이 DOM 에 남지 않게 비운다 */
+    document.getElementById("modal-body").innerHTML = "";
+    document.getElementById("modal-actions").innerHTML = "";
+  }
   modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
 
@@ -114,15 +119,30 @@
           });
         }
         return db.rpc("sl_my_role").then(function (rr) {
-          state.role = (rr && !rr.error && rr.data) || "editor";
+          if (rr && rr.error) {
+            /* 0004 미적용이거나 일시 장애 — 권한 없음으로 단정하지 않는다.
+               탭은 그대로 두고 경고만 띄운다(실제 차단은 서버측 RPC/정책이 한다). */
+            state.role = "unknown";
+          } else {
+            state.role = (rr && rr.data) || "editor";
+          }
           loginView.style.display = "none";
           appView.style.display = "";
           document.getElementById("who").innerHTML =
             "<b>" + esc(state.email) + "</b> · " +
             '<span class="badge ' + (state.role === "admin" ? "on" : "off") + '">' +
             esc(state.role) + "</span>";
-          /* editor 는 계정 관리·설정 탭을 볼 수 없다(서버측에서도 차단된다) */
-          if (state.role !== "admin") {
+          /* editor 는 계정 관리·설정·로그 탭을 볼 수 없다(서버측에서도 차단된다) */
+          if (state.role === "unknown") {
+            var warn = document.createElement("div");
+            warn.className = "alert on info";
+            warn.style.margin = "18px 0 0";
+            warn.textContent =
+              "역할 정보를 확인할 수 없습니다. 마이그레이션(0004)이 적용되지 않았거나 일시 장애일 수 있습니다. " +
+              "계정 관리·설정 기능은 서버에서 거부될 수 있습니다.";
+            var host = document.querySelector("#app-view .shell");
+            if (host) host.insertBefore(warn, host.firstChild);
+          } else if (state.role !== "admin") {
             Array.prototype.forEach.call(document.querySelectorAll("[data-owner]"), function (el) {
               el.style.display = "none";
             });
@@ -639,12 +659,16 @@
       state.cache.acct = {};
       rows.forEach(function (x) { state.cache.acct[x.email] = x; });
       if (!rows.length) { box.innerHTML = emptyBox("등록된 관리자가 없습니다."); return; }
-      var owners = rows.filter(function (x) { return x.role === "admin"; }).length;
-      box.innerHTML = '<table class="tbl"><thead><tr><th>이메일</th><th>역할</th><th>로그인 계정</th>' +
+      /* 락아웃 판정은 '로그인 연결된 admin' 수로 한다(서버와 같은 기준) */
+      var owners = rows.filter(function (x) { return x.role === "admin" && x.linked; }).length;
+      box.innerHTML = '<table class="tbl"><thead><tr><th>이메일</th><th>역할</th><th>권한 결속</th>' +
         "<th>최근 로그인</th><th>등록일</th><th>메모</th><th></th></tr></thead><tbody>" +
         rows.map(function (x) {
-          var lastAdmin = x.role === "admin" && owners <= 1;
+          var lastAdmin = x.role === "admin" && x.linked && owners <= 1;
           var acts = [];
+          if (!x.linked) {
+            acts.push('<button class="lnk" data-acct-link="' + escA(x.email) + '">연결</button>');
+          }
           if (!x.is_self && !lastAdmin) {
             acts.push('<button class="lnk" data-acct-role="' + escA(x.email) + '">' +
               (x.role === "admin" ? "editor 로 변경" : "admin 으로 변경") + "</button>");
@@ -656,9 +680,9 @@
           else if (lastAdmin) acts.push('<span class="tiny">마지막 admin</span>');
           return '<tr><td class="t-title">' + esc(x.email) + "</td>" +
             '<td><span class="badge ' + (x.role === "admin" ? "on" : "off") + '">' + esc(x.role) + "</span></td>" +
-            "<td>" + (x.has_login
-              ? '<span class="badge done">있음</span>'
-              : '<span class="badge doing">없음 · 로그인 불가</span>') + "</td>" +
+            "<td>" + (x.linked
+              ? '<span class="badge done">연결됨</span>'
+              : '<span class="badge doing">미연결 · 권한 없음</span>') + "</td>" +
             "<td>" + esc(x.last_sign_in_at ? SL.fmtDateTime(x.last_sign_in_at) : "-") + "</td>" +
             "<td>" + esc(SL.fmtDate(x.created_at)) + "</td>" +
             "<td>" + esc(x.note || "-") + "</td>" +
@@ -679,9 +703,9 @@
       '<option value="admin">admin — 계정 · 설정까지 전체</option></select></div>' +
       '<div class="field"><label for="ac-note">메모</label>' +
       '<input id="ac-note" type="text" maxlength="200" placeholder="담당 · 소속 등"></div>' +
-      '<label class="consent"><input type="checkbox" id="ac-login">' +
-      "<span><b>로그인 계정도 함께 생성</b>합니다. 체크하지 않으면 화이트리스트에만 등록되고, " +
-      "로그인 계정은 Supabase 대시보드에서 따로 만들어야 합니다.</span></label>" +
+      '<label class="consent"><input type="checkbox" id="ac-login" checked>' +
+      "<span><b>로그인 계정을 함께 생성</b>합니다(권장). 체크를 해제하면 <b>이미 존재하는 확인된 계정</b>에만 " +
+      "권한을 붙입니다 — 계정이 없으면 등록이 거부됩니다.</span></label>" +
       '<div class="field" id="ac-pw-wrap" style="display:none">' +
       '<label for="ac-pw">임시 비밀번호 (한 번만 표시됩니다)</label>' +
       '<input id="ac-pw" type="text" value="' + escA(pw) + '" readonly ' +
@@ -702,7 +726,11 @@
             if (!withLogin) {
               db.rpc("sl_admin_add", { p_email: email, p_role: role, p_note: note })
                 .then(function (r) {
-                  if (r.error) { show("md-alert", "bad", r.error.message); return; }
+                  if (r.error) {
+                    show("md-alert", "bad", r.error.message +
+                      " (계정이 없다면 체크를 켜서 함께 생성하거나, Supabase 대시보드에서 먼저 계정을 만드세요.)");
+                    return;
+                  }
                   closeModal(); loadAcct();
                 });
               return;
@@ -719,8 +747,8 @@
             }).catch(function (err) {
               var m = (err && err.message) || "";
               show("md-alert", "bad", /Function not found|404/i.test(m)
-                ? "로그인 계정 생성 함수(sl-admin-user)가 아직 배포되지 않았습니다. " +
-                  "체크를 해제해 화이트리스트만 등록하거나, 함수를 먼저 배포하세요."
+                ? "로그인 계정 생성 함수(sl-admin-user)가 배포되지 않았습니다. " +
+                  "Supabase 대시보드에서 계정을 먼저 만든 뒤, 체크를 해제해 등록하세요."
                 : "계정 생성 실패: " + m);
             });
           } },
@@ -732,6 +760,19 @@
   });
 
   document.addEventListener("click", function (e) {
+    var lk = e.target.closest("[data-acct-link]");
+    if (lk) {
+      var lem = lk.getAttribute("data-acct-link");
+      db.rpc("sl_admin_link", { p_email: lem }).then(function (r) {
+        if (r.error) {
+          show("acct-alert", "bad", lem + " 연결 실패: " + r.error.message);
+          return;
+        }
+        show("acct-alert", "ok", lem + " 의 로그인 계정을 연결했습니다. 이제 권한이 적용됩니다.");
+        loadAcct();
+      });
+      return;
+    }
     var rl = e.target.closest("[data-acct-role]");
     if (rl) {
       var email = rl.getAttribute("data-acct-role");

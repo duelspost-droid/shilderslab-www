@@ -68,7 +68,7 @@
       <button data-tab="app">채용 지원 <span id="badge-app"></span></button>
       <button data-tab="ins">인사이트</button>
       <button data-tab="job">채용 공고</button>
-      <button data-tab="log">로그 · 감사</button>
+      <button data-tab="log" data-owner>로그 · 감사</button>
       <button data-tab="acct" data-owner>계정 관리</button>
       <button data-tab="set" data-owner>설정</button>
     </div>
@@ -179,9 +179,10 @@
       </div>
       <div class="alert" id="acct-alert" role="status"></div>
       <p class="tiny" style="margin:0 0 18px">
-        이 목록에 있는 이메일만 관리자 콘솔에 들어올 수 있습니다.
-        <b>로그인 계정</b>은 Supabase Auth 계정을 뜻합니다 — 목록에 있어도 로그인 계정이 없으면 접속할 수 없습니다.
-        역할은 <b>admin</b>(계정·설정 포함 전체) / <b>editor</b>(콘텐츠·문의 처리)로 나뉩니다.
+        권한은 이메일 문자열이 아니라 <b>로그인 계정(Auth) 식별자</b>에 결속됩니다.
+        <b>미연결</b> 상태의 행은 목록에 있어도 <b>권한이 전혀 없습니다</b> — 다른 사람이 그 이메일로 가입해
+        관리자가 되는 일을 막기 위한 설계입니다. 계정을 만든 뒤 <b>연결</b>을 눌러 주세요.
+        역할은 <b>admin</b>(계정·설정·로그 포함 전체) / <b>editor</b>(콘텐츠·문의 처리)로 나뉩니다.
       </p>
       <div class="tbl-wrap" id="acct-table"></div>
     </section>

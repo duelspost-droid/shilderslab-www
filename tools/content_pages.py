@@ -444,6 +444,25 @@ BRAND_CSS = """
   .rules .no h4{color:var(--bad)}
   @media (max-width:900px){.assets{grid-template-columns:repeat(2,1fr)}.sw{grid-template-columns:repeat(2,1fr)}}
   @media (max-width:640px){.assets{grid-template-columns:1fr}.rules{grid-template-columns:1fr}}
+
+  /* ── 명함 ── */
+  .cards{display:grid;gap:0 var(--gut);grid-template-columns:repeat(3,1fr)}
+  .card-set{border-top:1px solid var(--ink);padding:20px 0 34px}
+  .card-set .n{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.12em;
+    color:var(--accent);display:block;margin-bottom:6px}
+  .card-set h3{font-size:1.04rem;margin-bottom:6px}
+  .card-set p{font-size:.86rem;color:var(--ink-2);line-height:1.68;margin-bottom:16px}
+  .card-shot{border:1px solid var(--rule);background:var(--white);margin-bottom:8px;
+    aspect-ratio:96/56;overflow:hidden}
+  .card-shot img{width:100%;height:100%;object-fit:cover;display:block}
+  .card-dl{display:flex;flex-wrap:wrap;gap:0 14px;padding-top:10px;border-top:1px solid var(--rule);
+    margin-top:12px}
+  .card-dl a{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.06em;
+    color:var(--ink-2);border-bottom:1px solid var(--rule-2);padding-bottom:1px;margin-bottom:6px}
+  .card-dl a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+  .card-dl .sep{font-size:.66rem;color:var(--ink-3);width:100%;margin:2px 0 4px;
+    font-family:'IBM Plex Sans KR',sans-serif}
+  @media (max-width:980px){.cards{grid-template-columns:1fr;gap:0}}
 """
 
 BRAND_BODY = """<section class="phead">
@@ -529,7 +548,149 @@ BRAND_BODY = """<section class="phead">
 <section class="sec">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">03 / Usage</span></div>
+      <div class="idx"><span class="lbl">03 / Business card</span></div>
+      <div class="body">
+        <h2 class="d3">명함</h2>
+        <p class="lead">세 가지 시안을 준비했습니다. 모두 <b>인쇄소에 그대로 넘길 수 있는 규격</b>으로 만들었습니다 —
+           재단 90 × 50 mm에 사방 3 mm 도련, 글자는 전부 아웃라인 처리되어 폰트를 함께 보낼 필요가 없습니다.</p>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card-set">
+        <span class="n">시안 A</span>
+        <h3>에디토리얼</h3>
+        <p>상단 액센트 바 + 좌측 정렬. 정보 위계가 가장 분명하고 어떤 직함에도 잘 맞습니다. 기본 권장안.</p>
+        <div class="card-shot"><img src="/assets/ci/card/card-A-front@300.jpg" alt="시안 A 앞면" loading="lazy"></div>
+        <div class="card-shot"><img src="/assets/ci/card/card-A-back@300.jpg" alt="시안 A 뒷면" loading="lazy"></div>
+        <div class="card-dl">
+          <span class="sep">앞면</span>
+          <a href="/assets/ci/card/card-A-front.pdf" download>PDF</a>
+          <a href="/assets/ci/card/card-A-front.svg" download>SVG</a>
+          <a href="/assets/ci/card/card-A-front@300.png" download>PNG</a>
+          <a href="/assets/ci/card/card-A-front@300.jpg" download>JPG</a>
+          <span class="sep">뒷면</span>
+          <a href="/assets/ci/card/card-A-back.pdf" download>PDF</a>
+          <a href="/assets/ci/card/card-A-back.svg" download>SVG</a>
+          <a href="/assets/ci/card/card-A-back@300.png" download>PNG</a>
+          <a href="/assets/ci/card/card-A-back@300.jpg" download>JPG</a>
+        </div>
+      </div>
+
+      <div class="card-set">
+        <span class="n">시안 B</span>
+        <h3>여백형</h3>
+        <p>심볼만 작게 두고 이름을 크게. 연락처는 우측 하단으로 몰아 여백을 최대한 남긴 안.</p>
+        <div class="card-shot"><img src="/assets/ci/card/card-B-front@300.jpg" alt="시안 B 앞면" loading="lazy"></div>
+        <div class="card-shot"><img src="/assets/ci/card/card-B-back@300.jpg" alt="시안 B 뒷면" loading="lazy"></div>
+        <div class="card-dl">
+          <span class="sep">앞면</span>
+          <a href="/assets/ci/card/card-B-front.pdf" download>PDF</a>
+          <a href="/assets/ci/card/card-B-front.svg" download>SVG</a>
+          <a href="/assets/ci/card/card-B-front@300.png" download>PNG</a>
+          <a href="/assets/ci/card/card-B-front@300.jpg" download>JPG</a>
+          <span class="sep">뒷면</span>
+          <a href="/assets/ci/card/card-B-back.pdf" download>PDF</a>
+          <a href="/assets/ci/card/card-B-back.svg" download>SVG</a>
+          <a href="/assets/ci/card/card-B-back@300.png" download>PNG</a>
+          <a href="/assets/ci/card/card-B-back@300.jpg" download>JPG</a>
+        </div>
+      </div>
+
+      <div class="card-set">
+        <span class="n">시안 C</span>
+        <h3>역상 · 딥 파인</h3>
+        <p>앞면 전체를 브랜드 컬러로. 인상은 가장 강하지만 잉크 사용량이 많아 단가가 올라갑니다.</p>
+        <div class="card-shot"><img src="/assets/ci/card/card-C-front@300.jpg" alt="시안 C 앞면" loading="lazy"></div>
+        <div class="card-shot"><img src="/assets/ci/card/card-C-back@300.jpg" alt="시안 C 뒷면" loading="lazy"></div>
+        <div class="card-dl">
+          <span class="sep">앞면</span>
+          <a href="/assets/ci/card/card-C-front.pdf" download>PDF</a>
+          <a href="/assets/ci/card/card-C-front.svg" download>SVG</a>
+          <a href="/assets/ci/card/card-C-front@300.png" download>PNG</a>
+          <a href="/assets/ci/card/card-C-front@300.jpg" download>JPG</a>
+          <span class="sep">뒷면</span>
+          <a href="/assets/ci/card/card-C-back.pdf" download>PDF</a>
+          <a href="/assets/ci/card/card-C-back.svg" download>SVG</a>
+          <a href="/assets/ci/card/card-C-back@300.png" download>PNG</a>
+          <a href="/assets/ci/card/card-C-back@300.jpg" download>JPG</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="tiny" style="margin-top:26px">
+      미리보기 이미지의 이름·연락처는 예시(홍길동 / 010-0000-0000)입니다. 실제 명함은 아래 방법으로 사람별로 생성합니다.
+      재단선·안전여백을 눈으로 확인하려면 <a href="/assets/ci/card/card-A-front-guide.svg" download>가이드 버전</a>을 보세요
+      (가이드는 검토용이며 인쇄소에는 보내지 않습니다).
+    </p>
+  </div>
+</section>
+
+<section class="sec band">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">04 / Print spec</span></div>
+      <div class="body">
+        <h2 class="d3">인쇄 규격</h2>
+        <p class="lead">인쇄소에 아래 표를 그대로 전달하시면 됩니다.</p>
+      </div>
+    </div>
+    <div class="g12">
+      <div class="c7">
+        <table class="spec">
+          <tbody>
+            <tr><td data-l="항목">재단 규격</td><td data-l="값">90 × 50 mm (국내 표준)</td></tr>
+            <tr><td data-l="항목">도련(재단여유)</td><td data-l="값">사방 3 mm → 작업 사이즈 96 × 56 mm</td></tr>
+            <tr><td data-l="항목">안전여백</td><td data-l="값">재단선에서 안쪽 5 mm — 글자·로고는 이 안에 있습니다</td></tr>
+            <tr><td data-l="항목">해상도</td><td data-l="값">PDF·SVG 벡터 / PNG·JPG 300 dpi (1134 × 661 px)</td></tr>
+            <tr><td data-l="항목">서체</td><td data-l="값">전부 아웃라인 변환 — 폰트 파일을 함께 보내지 않아도 됩니다</td></tr>
+            <tr><td data-l="항목">색상</td><td data-l="값">파일은 RGB. 아래 CMYK 근사값으로 맞춰 주세요</td></tr>
+            <tr><td data-l="항목">권장 용지</td><td data-l="값">랑데뷰 240 g 이상 또는 문켄 계열 — 무광 질감이 브랜드 톤에 맞습니다</td></tr>
+            <tr><td data-l="항목">후가공</td><td data-l="값">불필요. 코팅을 넣으면 종이 질감이 죽습니다</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="c4 start9">
+        <table class="spec">
+          <caption>CMYK 근사값</caption>
+          <tbody>
+            <tr><td data-l="색">딥 파인 #1A4B3A</td><td data-l="CMYK">C80 M42 Y72 K44</td></tr>
+            <tr><td data-l="색">잉크 #15181B</td><td data-l="CMYK">C72 M64 Y60 K71</td></tr>
+            <tr><td data-l="색">페이퍼 #F6F4EF</td><td data-l="CMYK">C2 M2 Y6 K0</td></tr>
+          </tbody>
+        </table>
+        <p class="tiny" style="margin-top:14px">
+          RGB→CMYK 변환값이므로 인쇄기·용지에 따라 차이가 납니다.
+          색이 중요하면 <b>교정 인쇄(감리)</b>를 한 번 요청하세요. 딥 파인은 어두운 녹색이라
+          잉크가 눌리면 검정에 가까워질 수 있습니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="g12" style="margin-top:52px">
+      <div class="c5">
+        <h3 class="d3" style="font-size:1.02rem;margin-bottom:14px">사람별 명함 만들기</h3>
+        <p class="small">이름·직함·연락처를 넣어 다시 생성합니다. 미리보기의 예시 정보를 그대로 인쇄하지 마세요.</p>
+      </div>
+      <div class="c6 start7">
+        <pre style="background:var(--paper-3);border:1px solid var(--rule);padding:16px;overflow-x:auto;
+                    font-family:'IBM Plex Mono',monospace;font-size:.78rem;line-height:1.7">python3 tools/build-card.py \
+  --name 김보안 --title 보안컨설턴트 \
+  --mobile 010-1234-5678 \
+  --email kim@shilderslab.com</pre>
+        <p class="tiny" style="margin-top:12px">
+          시안 3종 × 앞뒤 × 4포맷이 <code>assets/ci/card/</code> 에 생성됩니다.
+          <code>--phone</code>(대표번호) · <code>--dept</code>(부서) · <code>--addr</code>(주소) 도 넣을 수 있습니다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">05 / Usage</span></div>
       <div class="body"><h2 class="d3">사용 규칙</h2>
         <p class="lead">최소 여백은 심볼 높이의 0.4배, 최소 크기는 심볼 20px / 가로형 락업 높이 24px 이상을 권장합니다.</p></div>
     </div>
