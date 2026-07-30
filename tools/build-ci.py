@@ -20,10 +20,21 @@ MANROPE = os.path.join(SRC, "Manrope.ttf")
 NOTOKR = os.path.join(SRC, "NotoSansKR.ttf")
 
 # ─────────── 브랜드 컬러 (site.css 토큰과 동일) ───────────
-CY_200, CY_300, CY_400, CY_500, CY_600 = "#B4F6FF", "#7CEBFB", "#38D8EF", "#12B5CE", "#0A8CA3"
-VI_400 = "#8B93F8"
-INK_950, INK_900, INK_850 = "#03070E", "#050B16", "#08111F"
-WHITE, FG_DIM = "#FFFFFF", "#B8C8DC"
+# v2 에디토리얼 팔레트 — 그라데이션 없이 단색으로 간다.
+ACCENT   = "#1A4B3A"   # 딥 파인 (주색)
+ACCENT_2 = "#0F3227"
+ACCENT_3 = "#2E6B54"
+PAPER    = "#F6F4EF"
+PAPER_2  = "#EFECE4"
+INK      = "#15181B"
+INK_2    = "#4A5157"
+INK_3    = "#7C838A"
+WHITE    = "#FFFDFA"
+# 하위 호환 별칭
+CY_200, CY_300, CY_400, CY_500, CY_600 = ACCENT_3, ACCENT_3, ACCENT, ACCENT, ACCENT_2
+VI_400 = ACCENT_3
+INK_950, INK_900, INK_850 = INK, INK, INK_2
+FG_DIM = INK_2
 
 _cache = {}
 
@@ -105,13 +116,16 @@ def write(name, content):
 
 # ─────────── 1) 심볼 (컬러 / 모노) ───────────
 write("symbol.svg", svg(64, 64,
-      '<title>쉴더스랩 심볼</title>\n<defs>\n ' + grad("slSym", CY_300, CY_500) + '\n'
-      ' <linearGradient id="slSymEdge" x1="0" y1="0" x2="1" y2="1">'
-      f'<stop offset="0" stop-color="{CY_200}" stop-opacity=".9"/>'
-      f'<stop offset="1" stop-color="{VI_400}" stop-opacity=".55"/></linearGradient>\n</defs>\n'
-      f'<path d="{SYMBOL_COMPOUND}" fill="url(#slSym)" fill-rule="evenodd"/>\n'
-      f'<path d="{SHIELD_INNER}" fill="none" stroke="{INK_950}" stroke-opacity=".22" stroke-width="1.1"/>\n'
-      f'<path d="{SHIELD}" fill="none" stroke="url(#slSymEdge)" stroke-width="1.2"/>'))
+      '<title>쉴더스랩 심볼</title>\n'
+      f'<path d="{SYMBOL_COMPOUND}" fill="{ACCENT}" fill-rule="evenodd"/>'))
+
+write("symbol-ink.svg", svg(64, 64,
+      '<title>쉴더스랩 심볼 · 잉크</title>\n'
+      f'<path d="{SYMBOL_COMPOUND}" fill="{INK}" fill-rule="evenodd"/>'))
+
+write("symbol-paper.svg", svg(64, 64,
+      '<title>쉴더스랩 심볼 · 페이퍼(어두운 배경용)</title>\n'
+      f'<path d="{SYMBOL_COMPOUND}" fill="{PAPER}" fill-rule="evenodd"/>'))
 
 write("symbol-mono.svg", svg(64, 64,
       '<title>쉴더스랩 심볼 · 단색(currentColor)</title>\n'
@@ -153,12 +167,10 @@ def lockup(sym_fill, en_fill, ko_fill, defs="", title="쉴더스랩 로고"):
                + f'<path d="{ko_l_d}" fill="{ko_fill}"/>')
 
 
-write("lockup-horizontal-dark.svg", lockup("url(#slLockD)", WHITE, CY_300,
-      grad("slLockD", CY_300, CY_500), "쉴더스랩 로고 · 어두운 배경용"))
-write("lockup-horizontal-light.svg", lockup("url(#slLockL)", INK_950, CY_600,
-      grad("slLockL", CY_500, CY_600), "쉴더스랩 로고 · 밝은 배경용"))
-write("lockup-mono-white.svg", lockup(WHITE, WHITE, WHITE, "", "쉴더스랩 로고 · 단색 white"))
-write("lockup-mono-black.svg", lockup(INK_950, INK_950, INK_950, "", "쉴더스랩 로고 · 단색 black"))
+write("lockup-horizontal-light.svg", lockup(ACCENT, INK, INK_3, "", "쉴더스랩 로고 · 밝은 배경용"))
+write("lockup-horizontal-dark.svg", lockup(ACCENT_3, PAPER, INK_3, "", "쉴더스랩 로고 · 어두운 배경용"))
+write("lockup-mono-black.svg", lockup(INK, INK, INK, "", "쉴더스랩 로고 · 단색 black"))
+write("lockup-mono-white.svg", lockup(PAPER, PAPER, PAPER, "", "쉴더스랩 로고 · 단색 white"))
 
 # ─────────── 4) 세로 락업 ───────────
 st_en_d, st_en_w, _ = text_path("SHILDERS LAB", MANROPE, 800, 26, tracking=0.05, baseline=0)
@@ -169,65 +181,54 @@ st_en_d2, _, _ = text_path("SHILDERS LAB", MANROPE, 800, 26, tracking=0.05,
                            x0=(SW - st_en_w) / 2, baseline=64 + 30)
 st_ko_d2, _, _ = text_path("쉴더스랩", NOTOKR, 500, 15, tracking=0.06,
                            x0=(SW - st_ko_w) / 2, baseline=64 + 30 + 24)
-write("lockup-stacked-dark.svg", svg(SW, SH,
-      '<title>쉴더스랩 로고 · 세로형(어두운 배경)</title>\n<defs>\n ' + grad("slStk", CY_300, CY_500) + '\n</defs>\n'
-      f'<g transform="translate({round((SW-64)/2,2)} 0)"><path d="{SYMBOL_COMPOUND}" '
-      f'fill="url(#slStk)" fill-rule="evenodd"/></g>\n'
-      f'<path d="{st_en_d2}" fill="{WHITE}"/>\n<path d="{st_ko_d2}" fill="{CY_300}"/>'))
+def stacked(name, sym, en, ko, title):
+    write(name, svg(SW, SH,
+          f'<title>{title}</title>\n'
+          f'<g transform="translate({round((SW-64)/2,2)} 0)"><path d="{SYMBOL_COMPOUND}" '
+          f'fill="{sym}" fill-rule="evenodd"/></g>\n'
+          f'<path d="{st_en_d2}" fill="{en}"/>\n<path d="{st_ko_d2}" fill="{ko}"/>'))
+
+stacked("lockup-stacked-light.svg", ACCENT, INK, INK_3, "쉴더스랩 로고 · 세로형(밝은 배경)")
+stacked("lockup-stacked-dark.svg", ACCENT_3, PAPER, INK_3, "쉴더스랩 로고 · 세로형(어두운 배경)")
 
 # ─────────── 5) 파비콘 (16~32px 가독 최적화: 라운드 사각 + 실드 S) ───────────
 fav_s_d, _, fav_bb = text_path("S", MANROPE, 800, 19)
 fcx, fcy = (fav_bb[0] + fav_bb[2]) / 2, (fav_bb[1] + fav_bb[3]) / 2
 fav_s, _, _ = text_path("S", MANROPE, 800, 19, x0=16 - fcx, baseline=16 - fcy)
 write("favicon.svg", svg(32, 32,
-      '<title>쉴더스랩</title>\n<defs>\n ' + grad("slFav", CY_300, CY_500) + '\n</defs>\n'
-      '<rect width="32" height="32" rx="7.5" fill="url(#slFav)"/>\n'
-      f'<path d="{fav_s}" fill="{INK_950}"/>'))
+      '<title>쉴더스랩</title>\n'
+      f'<rect width="32" height="32" fill="{ACCENT}"/>\n'
+      f'<path d="{fav_s}" fill="{PAPER}"/>'))
 
 # 마스크 아이콘(사파리 pinned tab 등) — 단색 실루엣
 write("mask-icon.svg", svg(64, 64,
       '<title>쉴더스랩 마스크 아이콘</title>\n'
       f'<path d="{SYMBOL_COMPOUND}" fill="black" fill-rule="evenodd"/>'))
 
-# ─────────── 6) OG 커버 1200×630 ───────────
-og_en, og_en_w, _ = text_path("SHILDERS LAB", MANROPE, 800, 76, tracking=0.03, x0=96, baseline=340)
-og_ko, _, _ = text_path("정보보호 컨설팅 · 쉴더스랩", NOTOKR, 500, 26, tracking=0.03, x0=98, baseline=404)
-og_tag, _, _ = text_path("ISMS-P · 모의해킹 · 취약점진단 · 클라우드보안 · 개인정보 컴플라이언스",
-                         NOTOKR, 500, 19, tracking=0.02, x0=98, baseline=470)
-og_dom, _, _ = text_path("shilderslab.com", MANROPE, 700, 20, tracking=0.08, x0=98, baseline=552)
+# ─────────── 6) OG 커버 1200×630 (에디토리얼 라이트) ───────────
+og_en, og_en_w, _ = text_path("SHILDERS LAB", MANROPE, 800, 66, tracking=0.02, x0=96, baseline=330)
+og_ko, _, _ = text_path("정보보호 컨설팅", NOTOKR, 500, 25, tracking=0.03, x0=98, baseline=392)
+og_tag, _, _ = text_path("ISMS-P 인증 · 모의해킹 · 취약점 진단 · 개인정보 컴플라이언스 · 클라우드 보안",
+                         NOTOKR, 400, 18, tracking=0.01, x0=98, baseline=470)
+og_dom, _, _ = text_path("SHILDERSLAB.COM", MANROPE, 600, 15, tracking=0.16, x0=98, baseline=548)
 write("og-cover.svg", svg(1200, 630,
-      '<title>쉴더스랩 · 정보보호 컨설팅</title>\n<defs>\n'
-      f' <linearGradient id="ogBg" x1="0" y1="0" x2="1" y2="1">'
-      f'<stop offset="0" stop-color="#071426"/><stop offset=".55" stop-color="{INK_900}"/>'
-      f'<stop offset="1" stop-color="{INK_950}"/></linearGradient>\n'
-      f' <radialGradient id="ogGlow" cx=".82" cy=".12" r=".6">'
-      f'<stop offset="0" stop-color="{CY_400}" stop-opacity=".3"/>'
-      f'<stop offset="1" stop-color="{CY_400}" stop-opacity="0"/></radialGradient>\n'
-      f' <radialGradient id="ogGlow2" cx=".08" cy=".95" r=".55">'
-      f'<stop offset="0" stop-color="{VI_400}" stop-opacity=".26"/>'
-      f'<stop offset="1" stop-color="{VI_400}" stop-opacity="0"/></radialGradient>\n'
-      ' <pattern id="ogGrid" width="48" height="48" patternUnits="userSpaceOnUse">'
-      '<path d="M48 0 H0 V48" fill="none" stroke="#FFFFFF" stroke-opacity=".045" stroke-width="1"/></pattern>\n'
-      ' ' + grad("ogSym", CY_300, CY_500) + '\n</defs>\n'
-      '<rect width="1200" height="630" fill="url(#ogBg)"/>\n'
-      '<rect width="1200" height="630" fill="url(#ogGrid)"/>\n'
-      '<rect width="1200" height="630" fill="url(#ogGlow)"/>\n'
-      '<rect width="1200" height="630" fill="url(#ogGlow2)"/>\n'
-      f'<rect x="0" y="0" width="1200" height="4" fill="url(#ogSym)"/>\n'
-      f'<g transform="translate(96 108) scale(1.86)"><path d="{SYMBOL_COMPOUND}" '
-      f'fill="url(#ogSym)" fill-rule="evenodd"/></g>\n'
-      f'<path d="{og_en}" fill="{WHITE}"/>\n'
-      f'<path d="{og_ko}" fill="{CY_300}"/>\n'
-      f'<path d="{og_tag}" fill="{FG_DIM}"/>\n'
-      f'<path d="{og_dom}" fill="{CY_500}"/>\n'
-      f'<g transform="translate(1104 96)"><path d="{SYMBOL_COMPOUND}" fill="{WHITE}" '
-      f'fill-opacity=".07" fill-rule="evenodd" transform="scale(4.6) translate(-32 -14)"/></g>'))
+      '<title>쉴더스랩 · 정보보호 컨설팅</title>\n'
+      f'<rect width="1200" height="630" fill="{PAPER}"/>\n'
+      f'<rect x="0" y="0" width="1200" height="6" fill="{ACCENT}"/>\n'
+      f'<rect x="96" y="500" width="1008" height="1" fill="#DDD8CE"/>\n'
+      f'<rect x="96" y="120" width="1008" height="1" fill="#DDD8CE"/>\n'
+      f'<g transform="translate(96 156) scale(1.5)"><path d="{SYMBOL_COMPOUND}" '
+      f'fill="{ACCENT}" fill-rule="evenodd"/></g>\n'
+      f'<path d="{og_en}" fill="{INK}"/>\n'
+      f'<path d="{og_ko}" fill="{ACCENT}"/>\n'
+      f'<path d="{og_tag}" fill="{INK_2}"/>\n'
+      f'<path d="{og_dom}" fill="{INK_3}"/>'))
 
 meta = {
     "symbol_grid": 64, "shield": SHIELD, "s_cap": S_CAP,
     "lockup_width": LOCK_W, "wordmark_en_width": round(en_w, 2),
-    "colors": {"cy200": CY_200, "cy300": CY_300, "cy400": CY_400, "cy500": CY_500,
-               "cy600": CY_600, "vi400": VI_400, "ink950": INK_950, "ink900": INK_900},
+    "colors": {"accent": ACCENT, "accent2": ACCENT_2, "accent3": ACCENT_3,
+               "paper": PAPER, "paper2": PAPER_2, "ink": INK, "ink2": INK_2, "ink3": INK_3},
     "fonts": {"latin": "Manrope ExtraBold (SIL OFL 1.1) — 아웃라인 변환",
               "hangul": "Noto Sans KR (SIL OFL 1.1) — 아웃라인 변환"},
 }

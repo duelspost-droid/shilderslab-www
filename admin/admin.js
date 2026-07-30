@@ -49,7 +49,7 @@
     wrap.innerHTML = "";
     (actions || []).forEach(function (a) {
       var b = document.createElement("button");
-      b.className = "btn " + (a.cls || "btn-ghost") + " btn-sm";
+      b.className = "btn " + (a.cls || "btn-line") + " btn-sm";
       b.textContent = a.label;
       b.addEventListener("click", a.on);
       wrap.appendChild(b);
@@ -280,12 +280,12 @@
 
     openModal(d.label + " 상세", html, [
       { label: "닫기", on: closeModal },
-      { label: "삭제", cls: "btn-ghost", on: function () {
+      { label: "삭제", cls: "btn-line", on: function () {
           openModal(d.label + " 삭제", "<p style='color:var(--fg-dim)'>이 " + esc(d.label) +
             "를 완전히 삭제합니다. 복구할 수 없습니다.</p><p style='color:var(--fg-dim);margin-top:10px'><b>" +
             esc((x.company || x.name) + " · " + SL.fmtDateTime(x.created_at)) + "</b></p>", [
             { label: "취소", on: function () { openSubmit(key, id); } },
-            { label: "삭제 확인", cls: "btn-primary", on: function () {
+            { label: "삭제 확인", cls: "", on: function () {
                 db.from(d.table).delete().eq("id", id).then(function (r) {
                   if (r.error) { show("md-alert", "bad", r.error.message); return; }
                   audit("delete", d.table, id, { label: d.label });
@@ -294,7 +294,7 @@
               } },
           ]);
         } },
-      { label: "저장", cls: "btn-primary", on: function () {
+      { label: "저장", cls: "", on: function () {
           var st = val("md-status"), note = val("md-note");
           db.from(d.table).update({ status: st, admin_note: note }).eq("id", id).then(function (r) {
             if (r.error) { show("md-alert", "bad", r.error.message); return; }
@@ -400,7 +400,7 @@
   document.getElementById("ins-new").addEventListener("click", function () {
     openModal("새 인사이트", insForm(null), [
       { label: "취소", on: closeModal },
-      { label: "저장", cls: "btn-primary", on: function () { saveIns(null); } },
+      { label: "저장", cls: "", on: function () { saveIns(null); } },
     ]);
   });
 
@@ -410,7 +410,7 @@
       var x = state.cache.ins[ed.getAttribute("data-ins-edit")];
       openModal("인사이트 수정", insForm(x), [
         { label: "취소", on: closeModal },
-        { label: "저장", cls: "btn-primary", on: function () { saveIns(x.id); } },
+        { label: "저장", cls: "", on: function () { saveIns(x.id); } },
       ]);
       return;
     }
@@ -428,7 +428,7 @@
       openModal("인사이트 삭제", "<p style='color:var(--fg-dim)'>‘" + esc(item.title) +
         "’ 글을 삭제합니다. 복구할 수 없습니다.</p>", [
         { label: "취소", on: closeModal },
-        { label: "삭제 확인", cls: "btn-primary", on: function () {
+        { label: "삭제 확인", cls: "", on: function () {
             db.from("sl_insights").delete().eq("id", did).then(function (r) {
               if (!r.error) { audit("delete", "sl_insights", did, { title: item.title }); closeModal(); loadIns(); loadDash(); }
             });
@@ -507,7 +507,7 @@
   document.getElementById("job-new").addEventListener("click", function () {
     openModal("새 채용 공고", jobForm(null), [
       { label: "취소", on: closeModal },
-      { label: "저장", cls: "btn-primary", on: function () { saveJob(null); } },
+      { label: "저장", cls: "", on: function () { saveJob(null); } },
     ]);
   });
 
@@ -517,7 +517,7 @@
       var x = state.cache.job[ed.getAttribute("data-job-edit")];
       openModal("채용 공고 수정", jobForm(x), [
         { label: "취소", on: closeModal },
-        { label: "저장", cls: "btn-primary", on: function () { saveJob(x.id); } },
+        { label: "저장", cls: "", on: function () { saveJob(x.id); } },
       ]);
       return;
     }
@@ -534,7 +534,7 @@
       var did = dl.getAttribute("data-job-del"), item = state.cache.job[did];
       openModal("공고 삭제", "<p style='color:var(--fg-dim)'>‘" + esc(item.title) + "’ 공고를 삭제합니다.</p>", [
         { label: "취소", on: closeModal },
-        { label: "삭제 확인", cls: "btn-primary", on: function () {
+        { label: "삭제 확인", cls: "", on: function () {
             db.from("sl_jobs").delete().eq("id", did).then(function (r) {
               if (!r.error) { audit("delete", "sl_jobs", did, { title: item.title }); closeModal(); loadJob(); loadDash(); }
             });

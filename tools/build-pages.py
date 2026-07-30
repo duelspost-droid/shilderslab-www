@@ -1,129 +1,35 @@
 #!/usr/bin/env python3
 """
-쉴더스랩 정적 페이지 빌더
-  · 공용 셸(head/nav/footer)을 한 곳에서 관리하고, 페이지별 body만 정의해 정적 HTML을 생성한다.
-  · 출력은 100% 정적 HTML(런타임 조립 없음) → SEO·GitHub Pages 그대로 호환.
-  · sync_shell(): 손으로 쓴 페이지(index.html, services/index.html)의 <header>/<footer> 블록도
-    이 템플릿 기준으로 덮어써 드리프트를 방지한다.
-사용: python3 tools/build-pages.py            # 전체 생성 + 셸 동기화
+쉴더스랩 정적 사이트 빌더 v2
+  · 모든 페이지를 이 빌더로 생성한다(홈·서비스 포함) — 손으로 쓴 예외 페이지 없음.
+  · 셸(head/masthead/footer)은 tools/shell.py 한 곳에서 관리한다.
+  · sitemap.xml 은 정적 페이지 + CMS 공개 인사이트로 빌드 시 생성한다.
+사용: python3 tools/build-pages.py
 """
-import os, re, sys
+import os, sys, json, re, datetime, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SUPA_HOST = "https://nrdapzgtibbusvoaceuh.supabase.co"
-SUPA_WS = "wss://nrdapzgtibbusvoaceuh.supabase.co"
-
-CSP = ("default-src 'self'; script-src 'self' 'unsafe-inline'; "
-       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-       "font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; "
-       f"connect-src 'self' {SUPA_HOST} {SUPA_WS}; "
-       "base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'")
-
-NAV = """<header class="nav" id="nav">
-  <div class="wrap bar">
-    <a class="brand" href="/" aria-label="쉴더스랩 홈">
-      <img class="mark" src="/assets/ci/symbol.svg" alt="" width="38" height="38">
-      <span class="txt"><b>쉴더스랩</b><span>SHILDERS LAB</span></span>
-    </a>
-    <nav class="menu" id="menu" aria-label="주요 메뉴">
-      <a href="/services/">서비스</a>
-      <a href="/about/">회사소개</a>
-      <a href="/insights/">인사이트</a>
-      <a href="/careers/">채용</a>
-      <a class="nav-cta" href="/contact/">상담 · 견적 요청</a>
-    </nav>
-    <button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
-  </div>
-</header>"""
-
-FOOTER = """<footer class="site">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <img src="/assets/ci/lockup-horizontal-dark.svg" alt="쉴더스랩 SHILDERS LAB" height="42" style="height:42px;width:auto">
-        <p>정보보호 컨설팅 전문기업. 규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행합니다.</p>
-      </div>
-      <div class="foot-col">
-        <h5>Services</h5>
-        <a href="/services/#isms">ISMS-P 인증 컨설팅</a>
-        <a href="/services/#pentest">모의해킹 · 침투테스트</a>
-        <a href="/services/#vuln">취약점 진단</a>
-        <a href="/services/#privacy">개인정보 컴플라이언스</a>
-        <a href="/services/#cloud">클라우드 보안</a>
-      </div>
-      <div class="foot-col">
-        <h5>Company</h5>
-        <a href="/about/">회사소개</a>
-        <a href="/insights/">인사이트</a>
-        <a href="/careers/">채용</a>
-        <a href="/brand/">브랜드 · CI</a>
-        <a href="/contact/">문의</a>
-      </div>
-      <div class="foot-col">
-        <h5>Contact</h5>
-        <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
-        <span data-setting="business_hours">평일 09:00 – 18:00</span>
-        <a href="/contact/">상담 · 견적 요청 →</a>
-      </div>
-    </div>
-    <div class="legal">
-      <div>
-        <div class="biz" id="bizline"></div>
-        <div class="copy">© <span data-year>2026</span> SHILDERS LAB. All rights reserved.</div>
-      </div>
-      <div class="legal-links">
-        <a href="/legal/privacy.html">개인정보처리방침</a>
-        <a href="/legal/terms.html">이용약관</a>
-      </div>
-    </div>
-  </div>
-</footer>"""
-
-SCRIPTS = """<script src="/config.js"></script>
-<script src="/assets/vendor/supabase.min.js"></script>
-<script src="/assets/js/supa.js"></script>
-<script src="/assets/js/site.js"></script>"""
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import shell  # noqa: E402
 
 
-def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld=""):
-    head_extra = f"\n<style>\n{extra_css}\n</style>" if extra_css else ""
-    ld_block = f'\n<script type="application/ld+json">\n{ld}\n</script>' if ld else ""
+def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld="", body_attr=""):
     html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="{CSP}">
-<meta name="referrer" content="strict-origin-when-cross-origin">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{title}</title>
-<meta name="description" content="{desc}">
-<link rel="canonical" href="https://shilderslab.com{canonical}">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="쉴더스랩">
-<meta property="og:title" content="{title}">
-<meta property="og:description" content="{desc}">
-<meta property="og:url" content="https://shilderslab.com{canonical}">
-<meta property="og:image" content="https://shilderslab.com/assets/ci/og-cover.png">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/assets/ci/favicon.svg" type="image/svg+xml">
-<link rel="mask-icon" href="/assets/ci/mask-icon.svg" color="#12B5CE">
-<link rel="apple-touch-icon" href="/assets/ci/apple-touch-icon.png">
-<meta name="theme-color" content="#050B16">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/site.css">{head_extra}{ld_block}
+{shell.head(title, desc, canonical, extra_css, ld)}
 </head>
-<body>
-<div class="progress" id="progress"></div>
+<body{(' ' + body_attr) if body_attr else ''}>
 
-{NAV}
+{shell.masthead()}
 
+<main>
 {body}
+</main>
 
-{FOOTER}
+{shell.FOOTER}
 
-{SCRIPTS}
+{shell.SCRIPTS}
 {extra_js}
 </body>
 </html>
@@ -132,150 +38,222 @@ def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld=""):
     os.makedirs(os.path.dirname(full), exist_ok=True)
     with open(full, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"  ✓ {path}  ({len(html):,}B)")
+    print(f"  ✓ {path:<36} {len(html):>7,}B")
+    return path
 
 
-NOT_FOUND_BODY = """<section class="page-head" style="padding-bottom:40px">
-  <div class="wrap">
-    <div class="crumb"><a href="/">홈</a> / 404</div>
-    <span class="eyebrow"><span class="dot"></span>404 NOT FOUND</span>
-    <h1 class="display">요청하신 페이지가 <span class="grad">없습니다</span></h1>
-    <p>주소가 변경되었거나 삭제된 페이지입니다. 아래에서 필요한 곳으로 이동해 주세요.</p>
+def fetch_insights():
+    """공개 인사이트 전문(빌드 시점) — 정적 페이지 생성용. 실패해도 빌드는 계속한다."""
+    try:
+        cfg = open(os.path.join(ROOT, "config.js"), encoding="utf-8").read()
+        url = re.search(r'SUPABASE_URL:\s*"([^"]+)"', cfg).group(1)
+        key = re.search(r'SUPABASE_ANON_KEY:\s*"([^"]+)"', cfg).group(1)
+        req = urllib.request.Request(
+            f"{url}/rest/v1/sl_insights?select=slug,category,title,summary,body,author,published_at"
+            "&published=eq.true&order=sort_order.desc,published_at.desc&limit=500",
+            headers={"apikey": key, "Authorization": f"Bearer {key}", "Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return json.loads(r.read().decode())
+    except Exception as e:
+        print(f"  ! 인사이트 조회 실패({e.__class__.__name__}) — 정적 글 페이지 생략")
+        return []
+
+
+def esc(v):
+    return (str(v if v is not None else "").replace("&", "&amp;").replace("<", "&lt;")
+            .replace(">", "&gt;").replace('"', "&quot;"))
+
+
+def md(src):
+    """assets/js/supa.js 의 클라이언트 렌더러와 동일한 최소 마크다운 → HTML.
+       이스케이프를 먼저 하므로 원문 HTML은 절대 출력되지 않는다."""
+    import re as _re
+    safe = esc(src)
+    out, lst = [], None
+
+    def close():
+        nonlocal lst
+        if lst:
+            out.append(f"<{lst[0]}>" + "".join(lst[1]) + f"</{lst[0]}>")
+            lst = None
+
+    for raw in safe.split("\n"):
+        line = raw.strip()
+        if not line:
+            close(); continue
+        m = _re.match(r"^(#{2,3})\s+(.*)$", line)
+        if m:
+            close(); n = len(m.group(1)); out.append(f"<h{n}>{m.group(2)}</h{n}>"); continue
+        m = _re.match(r"^[-*]\s+(.*)$", line)
+        if m:
+            if not lst or lst[0] != "ul":
+                close(); lst = ("ul", [])
+            lst[1].append(f"<li>{m.group(1)}</li>"); continue
+        m = _re.match(r"^\d+\.\s+(.*)$", line)
+        if m:
+            if not lst or lst[0] != "ol":
+                close(); lst = ("ol", [])
+            lst[1].append(f"<li>{m.group(1)}</li>"); continue
+        if line.startswith("&gt;"):
+            close(); out.append("<blockquote>" + _re.sub(r"^&gt;\s?", "", line) + "</blockquote>"); continue
+        close(); out.append(f"<p>{line}</p>")
+    close()
+    html = "\n".join(out)
+    html = _re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", html)
+    html = _re.sub(r"`([^`]+)`", r"<code>\1</code>", html)
+
+    def link(m2):
+        txt, url = m2.group(1), m2.group(2).replace("&amp;", "&")
+        if url.startswith("http://") or url.startswith("https://"):
+            return f'<a href="{esc(url)}" target="_blank" rel="noopener noreferrer">{txt}</a>'
+        if url.startswith("/") and not url.startswith("//"):
+            return f'<a href="{esc(url)}">{txt}</a>'
+        return txt
+
+    return _re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", link, html)
+
+
+def fmt_date(v):
+    s2 = str(v or "")[:10]
+    return s2.replace("-", ".") if len(s2) == 10 else s2
+
+
+def build_insight_pages(posts):
+    """공개 글마다 정적 페이지를 만든다 — 크롤러·SNS가 본문과 메타를 바로 읽을 수 있게."""
+    made = []
+    for p in posts:
+        slug = p.get("slug") or ""
+        if not re.match(r"^[a-z0-9][a-z0-9-]*$", slug):
+            continue
+        title = p.get("title") or slug
+        summary = (p.get("summary") or "").strip()
+        cat = p.get("category") or "인사이트"
+        author = p.get("author") or "쉴더스랩"
+        date = p.get("published_at") or ""
+        ld = json.dumps({
+            "@context": "https://schema.org", "@type": "Article",
+            "headline": title, "description": summary[:160],
+            "datePublished": str(date)[:10],
+            "author": {"@type": "Organization", "name": author},
+            "publisher": {"@type": "Organization", "name": "쉴더스랩",
+                          "logo": {"@type": "ImageObject",
+                                   "url": "https://shilderslab.com/assets/ci/symbol.svg"}},
+            "mainEntityOfPage": f"https://shilderslab.com/insights/{slug}/",
+        }, ensure_ascii=False)
+        body = f"""<section class="phead">
+  <div class="shell">
+    <div class="crumb"><a href="/">홈</a> · <a href="/insights/">인사이트</a></div>
+    <div class="lbl" style="margin-bottom:18px">{esc(cat)} &nbsp;·&nbsp; {esc(fmt_date(date))} &nbsp;·&nbsp; {esc(author)}</div>
+    <h1 class="d2">{esc(title)}</h1>
+    {f'<p class="lead" style="margin-top:20px;max-width:58ch">{esc(summary)}</p>' if summary else ""}
   </div>
 </section>
 
-<section class="sec tight">
-  <div class="wrap">
-    <div class="grid g3">
-      <a class="card" href="/services/"><h3>서비스</h3><p>ISMS-P 인증, 모의해킹, 취약점 진단 등 6개 영역</p><span class="more">이동</span></a>
-      <a class="card" href="/insights/"><h3>인사이트</h3><p>규제 변화와 진단 현장에서 반복되는 문제들</p><span class="more">이동</span></a>
-      <a class="card" href="/contact/"><h3>상담 · 견적</h3><p>범위 검토와 견적 산정은 비용이 발생하지 않습니다</p><span class="more">이동</span></a>
-    </div>
-    <div style="margin-top:30px"><a class="btn btn-ghost" href="/">← 홈으로</a></div>
+<section class="sec">
+  <div class="shell">
+    <article class="article">
+      <div class="body">
+{md(p.get("body") or "")}
+      </div>
+      <div style="margin-top:56px;padding-top:24px;border-top:1px solid var(--ink);display:flex;
+                  gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center">
+        <a class="alink" href="/insights/">인사이트 목록</a>
+        <a class="btn btn-sm" href="/contact/">이 주제로 상담 요청</a>
+      </div>
+    </article>
   </div>
 </section>"""
+        page(f"insights/{slug}/index.html", f"{title} | 쉴더스랩 인사이트",
+             (summary or title)[:150], body, f"/insights/{slug}/", ld=ld)
+        made.append((f"/insights/{slug}/", str(date)[:10] or None))
+    return made
 
 
-def build_all():
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    import content_static as S, content_legal as L, content_dynamic as D
-
-    page("404.html",
-         "페이지를 찾을 수 없습니다 | 쉴더스랩",
-         "요청하신 페이지를 찾을 수 없습니다.",
-         NOT_FOUND_BODY, "/404.html")
-
-    page("about/index.html",
-         "회사소개 | 쉴더스랩 — 정보보호 컨설팅",
-         "쉴더스랩(SHILDERS LAB)은 2026년 설립된 정보보호 컨설팅 기업입니다. 관리체계 인증 컨설팅과 실제 공격 관점의 기술 진단을 한 팀에서 수행합니다.",
-         S.ABOUT_BODY, "/about/", extra_css=S.ABOUT_CSS,
-         ld='{"@context":"https://schema.org","@type":"AboutPage","name":"회사소개 | 쉴더스랩",'
-            '"url":"https://shilderslab.com/about/"}')
-
-    page("brand/index.html",
-         "브랜드 · CI | 쉴더스랩",
-         "쉴더스랩 CI 벡터 원본(SVG) 다운로드와 사용 규칙. 워드마크까지 아웃라인 패스로 변환되어 폰트 설치 없이 동일하게 렌더됩니다.",
-         S.BRAND_BODY, "/brand/", extra_css=S.BRAND_CSS)
-
-    page("legal/privacy.html",
-         "개인정보처리방침 | 쉴더스랩",
-         "쉴더스랩 웹사이트의 개인정보 수집 항목, 처리 목적, 보유 기간, 위탁·국외이전, 정보주체의 권리 안내.",
-         L.PRIVACY_BODY, "/legal/privacy.html", extra_css=L.LEGAL_CSS)
-
-    page("legal/terms.html",
-         "이용약관 | 쉴더스랩",
-         "쉴더스랩 웹사이트 이용약관 — 서비스 내용, 이용자의 의무, 지식재산권, 면책 및 관할.",
-         L.TERMS_BODY, "/legal/terms.html", extra_css=L.LEGAL_CSS)
-
-    page("insights/index.html",
-         "인사이트 | 쉴더스랩 — 보안 규제와 진단 현장 이야기",
-         "규제 변화와 진단 현장에서 반복적으로 발견되는 문제, 실제로 통했던 조치 방법을 정리한 쉴더스랩의 보안 인사이트.",
-         D.INSIGHTS_BODY, "/insights/", extra_css=D.INSIGHTS_CSS, extra_js=D.INSIGHTS_JS,
-         ld='{"@context":"https://schema.org","@type":"Blog","name":"쉴더스랩 인사이트",'
-            '"url":"https://shilderslab.com/insights/"}')
-
-    page("insights/view.html",
-         "인사이트 | 쉴더스랩",
-         "규제 변화와 진단 현장에서 반복되는 문제, 실제로 통했던 조치 방법을 정리한 쉴더스랩의 보안 인사이트.",
-         D.VIEW_BODY, "/insights/view.html", extra_js=D.VIEW_JS)
-
-    page("careers/index.html",
-         "채용 | 쉴더스랩 — 정보보호 컨설턴트 채용",
-         "쉴더스랩 채용 공고와 지원 접수. 근거로 검증하는 정보보호 컨설턴트·모의해킹·클라우드 보안 인재를 찾습니다.",
-         D.CAREERS_BODY, "/careers/", extra_css=D.CAREERS_CSS, extra_js=D.CAREERS_JS)
-
-    page("contact/index.html",
-         "상담 · 견적 요청 | 쉴더스랩",
-         "정보보호 컨설팅 상담·견적 요청. 범위 검토와 견적 산정까지는 비용이 발생하지 않으며, 영업일 기준 24시간 내 초기 회신합니다.",
-         D.CONTACT_BODY, "/contact/", extra_css=D.CONTACT_CSS, extra_js=D.CONTACT_JS,
-         ld='{"@context":"https://schema.org","@type":"ContactPage","name":"상담 · 견적 요청 | 쉴더스랩",'
-            '"url":"https://shilderslab.com/contact/"}')
-
-
-def build_sitemap():
-    """정적 페이지 + 공개된 인사이트 글로 sitemap.xml 을 생성한다.
-    인사이트는 CMS(Supabase)에 있으므로 빌드 시점에 공개분을 읽어 넣는다.
-    네트워크가 없거나 실패하면 정적 페이지만으로 생성한다(빌드는 계속된다)."""
-    import json, re as _re, urllib.request, datetime
-
-    static = [("/", "1.0"), ("/services/", "0.9"), ("/contact/", "0.9"), ("/about/", "0.8"),
-              ("/insights/", "0.8"), ("/careers/", "0.6"), ("/brand/", "0.4"),
-              ("/legal/privacy.html", "0.3"), ("/legal/terms.html", "0.3")]
+def build_sitemap(rows_static, rows_posts):
     today = datetime.date.today().isoformat()
-    rows = [(loc, today, pr) for loc, pr in static]
+    rows = [(p, today, pr) for p, pr in rows_static]
+    rows += [(u, d or today, "0.7") for u, d in rows_posts]
 
-    try:
-        cfg = open(os.path.join(ROOT, "config.js"), encoding="utf-8").read()
-        url = _re.search(r'SUPABASE_URL:\s*"([^"]+)"', cfg).group(1)
-        key = _re.search(r'SUPABASE_ANON_KEY:\s*"([^"]+)"', cfg).group(1)
-        req = urllib.request.Request(
-            f"{url}/rest/v1/sl_insights?select=slug,published_at&published=eq.true"
-            "&order=published_at.desc&limit=500",
-            headers={"apikey": key, "Authorization": f"Bearer {key}", "Accept": "application/json"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            posts = json.loads(r.read().decode())
-        for post in posts:
-            rows.append((f"/insights/view.html?slug={post['slug']}",
-                         post.get("published_at") or today, "0.7"))
-        print(f"  · sitemap: 인사이트 {len(posts)}건 포함")
-    except Exception as e:
-        print(f"  ! sitemap: 인사이트 조회 실패({e.__class__.__name__}) — 정적 페이지만 생성")
-
-    def esc(v):
+    def x(v):
         return v.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     body = "\n".join(
-        f"  <url><loc>https://shilderslab.com{esc(loc)}</loc>"
-        f"<lastmod>{lm}</lastmod><priority>{pr}</priority></url>"
-        for loc, lm, pr in rows)
+        f"  <url><loc>https://shilderslab.com{x(loc)}</loc>"
+        f"<lastmod>{lm}</lastmod><priority>{pr}</priority></url>" for loc, lm, pr in rows)
     out = ('<?xml version="1.0" encoding="UTF-8"?>\n'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "\n</urlset>\n")
     with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write(out)
-    print(f"  ✓ sitemap.xml  ({len(rows)} URL)")
+    print(f"  ✓ sitemap.xml                        {len(rows)} URL")
 
 
-def sync_shell(paths):
-    """손으로 작성한 페이지의 nav/footer 블록을 템플릿과 동기화."""
-    for p in paths:
-        full = os.path.join(ROOT, p)
-        if not os.path.exists(full):
-            continue
-        src = open(full, encoding="utf-8").read()
-        new = re.sub(r'<header class="nav" id="nav">.*?</header>', lambda m: NAV, src, flags=re.S)
-        new = re.sub(r'<footer class="site">.*?</footer>', lambda m: FOOTER, new, flags=re.S)
-        if new != src:
-            open(full, "w", encoding="utf-8").write(new)
-            print(f"  ↻ {p} 셸 동기화")
-        else:
-            print(f"  = {p} 변경 없음")
+def url_of(path):
+    u = "/" + path
+    return u[:-len("index.html")] if u.endswith("/index.html") else u
+
+
+def main():
+    import content_home as H
+    import content_services as S
+    import content_pages as P
+    import content_resources as R
+    import content_trust as T
+    import content_legal as L
+    import content_dynamic as D
+
+    print("페이지 생성:")
+    static = []
+
+    def add(path, prio, *a, **kw):
+        static.append((url_of(page(path, *a, **kw)), prio))
+
+    add("index.html", "1.0", H.TITLE, H.DESC, H.BODY, "/", H.CSS, H.JS, H.LD)
+
+    add("services/index.html", "0.9", S.TITLE, S.DESC, S.BODY, "/services/", S.CSS)
+    for svc in S.DETAILS:
+        add(f"services/{svc['slug']}/index.html", "0.8", svc["title"], svc["desc"], svc["body"],
+            f"/services/{svc['slug']}/", S.DETAIL_CSS)
+
+    add("method/index.html", "0.8", P.METHOD_TITLE, P.METHOD_DESC, P.METHOD_BODY, "/method/", P.METHOD_CSS)
+
+    add("resources/index.html", "0.8", R.RES_TITLE, R.RES_DESC, R.RES_BODY, "/resources/", R.RES_CSS)
+    for doc in R.RES_DOCS:
+        add(f"resources/{doc['slug']}/index.html", "0.7", doc["title"], doc["desc"], doc["body"],
+            f"/resources/{doc['slug']}/", R.DOC_CSS)
+
+    add("regulations/index.html", "0.8", T.REG_TITLE, T.REG_DESC, T.REG_BODY, "/regulations/", T.REG_CSS)
+    add("trust/index.html", "0.7", T.TRUST_TITLE, T.TRUST_DESC, T.TRUST_BODY, "/trust/", T.TRUST_CSS)
+
+    add("about/index.html", "0.7", P.ABOUT_TITLE, P.ABOUT_DESC, P.ABOUT_BODY, "/about/", P.ABOUT_CSS,
+        ld=P.ABOUT_LD)
+    add("brand/index.html", "0.4", P.BRAND_TITLE, P.BRAND_DESC, P.BRAND_BODY, "/brand/", P.BRAND_CSS)
+
+    add("insights/index.html", "0.8", D.INS_TITLE, D.INS_DESC, D.INS_BODY, "/insights/",
+        D.INS_CSS, D.INS_JS, D.INS_LD)
+    add("careers/index.html", "0.6", D.CAR_TITLE, D.CAR_DESC, D.CAR_BODY, "/careers/", D.CAR_CSS, D.CAR_JS)
+    add("contact/index.html", "0.9", D.CON_TITLE, D.CON_DESC, D.CON_BODY, "/contact/",
+        D.CON_CSS, D.CON_JS, D.CON_LD)
+
+    add("legal/privacy.html", "0.3", L.PRIVACY_TITLE, L.PRIVACY_DESC, L.PRIVACY_BODY,
+        "/legal/privacy.html", L.CSS)
+    add("legal/terms.html", "0.3", L.TERMS_TITLE, L.TERMS_DESC, L.TERMS_BODY,
+        "/legal/terms.html", L.CSS)
+
+    # 인사이트: CMS 공개분을 정적 페이지로 생성(크롤러·SNS 대응) + 동적 폴백 유지
+    print("인사이트 정적 생성:")
+    posts = fetch_insights()
+    made = build_insight_pages(posts)
+    if not made:
+        print("  · 생성된 글 없음")
+    page("insights/view.html", D.VIEW_TITLE, D.VIEW_DESC, D.VIEW_BODY, "/insights/view.html",
+         extra_js=D.VIEW_JS)
+
+    page("404.html", P.NF_TITLE, P.NF_DESC, P.NF_BODY, "/404.html", extra_js=P.NF_JS)
+
+    print("사이트맵:")
+    build_sitemap(static, made)
+    print("완료.")
 
 
 if __name__ == "__main__":
-    print("페이지 생성:")
-    build_all()
-    print("사이트맵 생성:")
-    build_sitemap()
-    print("공용 셸 동기화:")
-    sync_shell(["index.html", "services/index.html"])
-    print("완료.")
+    main()

@@ -4,40 +4,54 @@
       회사 법인 정보(상호·대표자·주소·보호책임자)는 config.js COMPANY 값이 채워지면 푸터에 함께 노출된다.
 """
 
-LEGAL_CSS = """
-  .doc{max-width:860px;margin:0 auto}
-  .doc h2{font-size:1.22rem;margin:38px 0 14px;color:#fff;padding-top:14px;border-top:1px solid var(--line)}
-  .doc h2:first-of-type{border-top:0;padding-top:0;margin-top:0}
-  .doc h3{font-size:1rem;margin:22px 0 10px;color:var(--cy-200)}
-  .doc p{color:var(--fg-dim);font-size:.95rem;margin-bottom:14px}
-  .doc ul,.doc ol{color:var(--fg-dim);font-size:.95rem;margin:0 0 16px 22px}
-  .doc li{margin-bottom:8px}
-  .doc .note{border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;
-    background:rgba(56,216,239,.05);font-size:.9rem;color:var(--fg-dim);margin-bottom:20px}
-  .doc table{width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:18px;
-    border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
-  .doc th{background:rgba(3,7,14,.5);color:var(--cy-300);text-align:left;padding:11px 14px;
-    font-size:.78rem;letter-spacing:.6px;border-bottom:1px solid var(--line)}
-  .doc td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--fg-dim);vertical-align:top}
-  .doc tr:last-child td{border-bottom:0}
-  .doc .rev{font-size:.82rem;color:var(--muted);margin-top:36px;padding-top:18px;border-top:1px solid var(--line)}
-  @media (max-width:640px){.doc table,.doc thead,.doc tbody,.doc th,.doc td,.doc tr{display:block}
-    .doc th{display:none}.doc td{border-bottom:0;padding:4px 14px}
-    .doc tr{border-bottom:1px solid var(--line);padding:10px 0}
-    .doc td::before{content:attr(data-l) " · ";color:var(--cy-400);font-weight:700}}
+CSS = """
+  .doc{max-width:74ch}
+  .doc h2{font-size:1.16rem;margin:44px 0 14px;padding-top:22px;border-top:1px solid var(--ink);
+    letter-spacing:-.018em}
+  .doc h2:first-of-type{margin-top:0}
+  .doc h3{font-size:1rem;margin:26px 0 10px;color:var(--ink)}
+  .doc p{color:var(--ink-2);font-size:.96rem;line-height:1.82;margin-bottom:15px}
+  .doc ul,.doc ol{color:var(--ink-2);font-size:.96rem;line-height:1.82;margin:0 0 18px 20px}
+  .doc li{margin-bottom:9px}
+  .doc a{color:var(--accent);border-bottom:1px solid var(--rule-2)}
+  .doc a:hover{border-bottom-color:var(--accent)}
+  .doc .note{border-left:2px solid var(--accent);background:var(--wash);padding:16px 20px;
+    font-size:.92rem;color:var(--ink-2);margin-bottom:26px;line-height:1.78}
+  .doc table{width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:22px}
+  .doc th{text-align:left;font-weight:500;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink-3);padding:0 14px 10px 0;border-bottom:1px solid var(--ink);vertical-align:bottom}
+  .doc td{padding:14px 14px 14px 0;border-bottom:1px solid var(--rule);color:var(--ink-2);
+    vertical-align:top;line-height:1.7}
+  .doc td:first-child{color:var(--ink);font-weight:500}
+  .doc td span{color:var(--ink-3)!important;font-size:.86em}
+  .doc .rev{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.06em;color:var(--ink-3);
+    margin-top:44px;padding-top:20px;border-top:1px solid var(--ink);line-height:1.9}
+  @media (max-width:720px){
+    .doc table,.doc thead,.doc tbody,.doc th,.doc td,.doc tr{display:block}
+    .doc th{display:none}
+    .doc td{border-bottom:0;padding:3px 0}
+    .doc td:first-child{padding-top:14px}
+    .doc tr{border-bottom:1px solid var(--rule);padding:10px 0}
+    .doc td::before{content:attr(data-l) " — ";font-family:'IBM Plex Mono',monospace;font-size:.62rem;
+      letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+    .doc td:first-child::before{content:none}
+  }
 """
 
-PRIVACY_BODY = """<section class="page-head">
-  <div class="wrap">
-    <div class="crumb"><a href="/">홈</a> / 개인정보처리방침</div>
-    <h1 class="display">개인정보처리방침</h1>
-    <p>쉴더스랩은 「개인정보 보호법」에 따라 정보주체의 개인정보를 보호하고
+PRIVACY_TITLE = "개인정보처리방침 | 쉴더스랩"
+PRIVACY_DESC = "쉴더스랩 웹사이트의 개인정보 수집 항목, 처리 목적, 보유 기간, 위탁·국외이전, 정보주체의 권리 안내."
+
+PRIVACY_BODY = """<section class="phead">
+  <div class="shell">
+    <div class="crumb"><a href="/">홈</a> · 개인정보처리방침</div>
+    <h1 class="d2">개인정보처리방침</h1>
+    <p class="lead">쉴더스랩은 「개인정보 보호법」에 따라 정보주체의 개인정보를 보호하고
        이와 관련한 고충을 신속히 처리하기 위하여 다음과 같이 개인정보처리방침을 수립·공개합니다.</p>
   </div>
 </section>
 
-<section class="sec tight">
-  <div class="wrap doc">
+<section class="sec">
+  <div class="shell doc">
     <div class="note">
       이 웹사이트는 <b>상담·견적 문의</b>, <b>채용 지원</b>, <b>웹사이트 운영 로그</b> 목적으로만 개인정보를 처리합니다.
       마케팅·광고 목적의 활용, 제3자 판매, 자동화된 프로파일링은 수행하지 않습니다.
@@ -50,17 +64,17 @@ PRIVACY_BODY = """<section class="page-head">
         <tr>
           <td data-l="구분">상담 · 견적 문의</td>
           <td data-l="항목">회사명, 담당자 성명, 이메일, (선택) 연락처, 문의 유형, 문의 내용<br>
-              <span style="color:var(--muted)">(자동 수집) 접속 IP 주소, 브라우저 정보(User-Agent)</span></td>
+              <span>(자동 수집) 접속 IP 주소, 브라우저 정보(User-Agent)</span></td>
           <td data-l="목적">문의 접수·확인, 상담 및 견적 회신, 과업 범위 협의<br>
-              <span style="color:var(--muted)">자동 수집 항목은 중복·스팸 접수 방지 목적으로만 이용</span></td>
+              <span>자동 수집 항목은 중복·스팸 접수 방지 목적으로만 이용</span></td>
           <td data-l="기간">문의 처리 완료 후 1년 (이후 지체 없이 파기)</td>
         </tr>
         <tr>
           <td data-l="구분">채용 지원</td>
           <td data-l="항목">성명, 이메일, (선택) 연락처, 지원 직무, 경력 요약, (선택) 포트폴리오·이력서 링크<br>
-              <span style="color:var(--muted)">(자동 수집) 접속 IP 주소, 브라우저 정보(User-Agent)</span></td>
+              <span>(자동 수집) 접속 IP 주소, 브라우저 정보(User-Agent)</span></td>
           <td data-l="목적">채용 전형 진행, 전형 결과 안내<br>
-              <span style="color:var(--muted)">자동 수집 항목은 중복·스팸 접수 방지 목적으로만 이용</span></td>
+              <span>자동 수집 항목은 중복·스팸 접수 방지 목적으로만 이용</span></td>
           <td data-l="기간">해당 채용 전형 종료 후 6개월<br>(진행 중인 전형이 없는 상시 지원은 접수일로부터 6개월)<br>동의 철회 시 즉시 파기</td>
         </tr>
         <tr>
@@ -98,7 +112,7 @@ PRIVACY_BODY = """<section class="page-head">
       <thead><tr><th>수탁자 · 연락처</th><th>위탁 업무</th><th>이전 항목</th><th>이전 국가</th><th>이전 시기 · 방법</th><th>보유기간</th></tr></thead>
       <tbody>
         <tr>
-          <td data-l="수탁자">GitHub, Inc.<br><span style="color:var(--muted)">support.github.com/contact/privacy</span></td>
+          <td data-l="수탁자">GitHub, Inc.<br><span>support.github.com/contact/privacy</span></td>
           <td data-l="업무">웹사이트 호스팅(GitHub Pages) 및 전송 구간 운영</td>
           <td data-l="항목">접속 IP, 접속 일시, 요청 정보</td>
           <td data-l="국가">미국</td>
@@ -106,7 +120,7 @@ PRIVACY_BODY = """<section class="page-head">
           <td data-l="기간">위탁 계약 종료 시까지</td>
         </tr>
         <tr>
-          <td data-l="수탁자">Supabase, Inc.<br><span style="color:var(--muted)">privacy@supabase.io</span></td>
+          <td data-l="수탁자">Supabase, Inc.<br><span>privacy@supabase.io</span></td>
           <td data-l="업무">데이터베이스·인증 서비스 호스팅(문의·지원·로그 저장)</td>
           <td data-l="항목">위 1항의 수집 항목</td>
           <td data-l="국가">미국</td>
@@ -114,7 +128,7 @@ PRIVACY_BODY = """<section class="page-head">
           <td data-l="기간">위탁 계약 종료 시까지</td>
         </tr>
         <tr>
-          <td data-l="수탁자">Google LLC<br><span style="color:var(--muted)">policies.google.com/privacy</span></td>
+          <td data-l="수탁자">Google LLC<br><span>policies.google.com/privacy</span></td>
           <td data-l="업무">웹폰트(Google Fonts) 제공</td>
           <td data-l="항목">접속 IP, 브라우저 정보(User-Agent)</td>
           <td data-l="국가">미국</td>
@@ -142,7 +156,7 @@ PRIVACY_BODY = """<section class="page-head">
       <li>처리 정지 요구</li>
       <li>동의 철회</li>
     </ol>
-    <p>권리 행사는 <a href="mailto:contact@shilderslab.com" style="color:var(--cy-300)">contact@shilderslab.com</a>
+    <p>권리 행사는 <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
        으로 서면·전자우편 등을 통해 요청하실 수 있으며, 쉴더스랩은 지체 없이 조치합니다.
        정보주체의 열람·정정·삭제 요구는 법령에서 정한 사유가 없는 한 제한하지 않습니다.</p>
 
@@ -165,7 +179,7 @@ PRIVACY_BODY = """<section class="page-head">
     <h2>8. 개인정보 보호책임자 및 문의처</h2>
     <p>개인정보 처리에 관한 문의, 불만처리, 피해구제 등에 관한 사항은 아래로 연락해 주시기 바랍니다.</p>
     <ul>
-      <li>이메일: <a href="mailto:contact@shilderslab.com" style="color:var(--cy-300)">contact@shilderslab.com</a></li>
+      <li>이메일: <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a></li>
       <li>개인정보 보호책임자: 문의·열람 청구는 위 이메일로 접수하며, 접수 즉시 담당자가 처리합니다.
           (보호책임자 성명·직책은 조직 확정 후 본 항목에 게시합니다.)</li>
       <li>상호 및 대표자, 사업장 주소는 사업자 등록 정보 확정 후 본 페이지 하단(사업자 정보)에 게시합니다.</li>
@@ -188,16 +202,19 @@ PRIVACY_BODY = """<section class="page-head">
   </div>
 </section>"""
 
-TERMS_BODY = """<section class="page-head">
-  <div class="wrap">
-    <div class="crumb"><a href="/">홈</a> / 이용약관</div>
-    <h1 class="display">이용약관</h1>
-    <p>본 약관은 쉴더스랩이 운영하는 웹사이트(shilderslab.com, 이하 “본 사이트”)의 이용 조건과 절차에 관한 사항을 정합니다.</p>
+TERMS_TITLE = "이용약관 | 쉴더스랩"
+TERMS_DESC = "쉴더스랩 웹사이트 이용약관 — 서비스 내용, 이용자의 의무, 지식재산권, 면책 및 관할."
+
+TERMS_BODY = """<section class="phead">
+  <div class="shell">
+    <div class="crumb"><a href="/">홈</a> · 이용약관</div>
+    <h1 class="d2">이용약관</h1>
+    <p class="lead">본 약관은 쉴더스랩이 운영하는 웹사이트(shilderslab.com, 이하 “본 사이트”)의 이용 조건과 절차에 관한 사항을 정합니다.</p>
   </div>
 </section>
 
-<section class="sec tight">
-  <div class="wrap doc">
+<section class="sec">
+  <div class="shell doc">
     <h2>제1조 (목적 및 적용)</h2>
     <p>본 약관은 본 사이트가 제공하는 정보 및 문의·지원 접수 기능(이하 “서비스”)의 이용에 관하여
        쉴더스랩(이하 “회사”)과 이용자 간의 권리·의무 및 책임 사항을 규정함을 목적으로 합니다.
@@ -222,7 +239,7 @@ TERMS_BODY = """<section class="page-head">
     </ol>
     <div class="note">
       보안 취약점을 발견하신 경우 악용하지 마시고
-      <a href="mailto:contact@shilderslab.com" style="color:var(--cy-300)">contact@shilderslab.com</a>
+      <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
       으로 알려주시기 바랍니다. 신고 내용은 비공개로 검토하며, 선의의 신고자에게 법적 조치를 취하지 않습니다.
     </div>
 

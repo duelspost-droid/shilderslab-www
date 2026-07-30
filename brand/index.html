@@ -16,165 +16,163 @@
 <meta property="og:image" content="https://shilderslab.com/assets/ci/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/ci/favicon.svg" type="image/svg+xml">
-<link rel="mask-icon" href="/assets/ci/mask-icon.svg" color="#12B5CE">
+<link rel="mask-icon" href="/assets/ci/mask-icon.svg" color="#1A4B3A">
 <link rel="apple-touch-icon" href="/assets/ci/apple-touch-icon.png">
-<meta name="theme-color" content="#050B16">
+<meta name="theme-color" content="#F6F4EF">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/site.css">
 <style>
 
-  .swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px}
-  .sw{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
-  .sw .chipc{height:82px}
-  .sw .info{padding:12px 14px;background:rgba(255,255,255,.02)}
-  .sw b{display:block;font-size:.84rem;color:#fff}
-  .sw code{font-size:.74rem;color:var(--muted);font-family:ui-monospace,Menlo,monospace}
-  .assets{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
-  .asset{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
-    background:linear-gradient(168deg,rgba(255,255,255,.04),rgba(255,255,255,.012))}
-  .asset .stage{display:flex;align-items:center;justify-content:center;padding:30px 22px;min-height:130px}
-  .asset .stage.light{background:#F4F7FB}
-  .asset .stage.dark{background:var(--ink-950)}
-  .asset .stage img{max-height:56px;width:auto}
-  .asset .meta{padding:16px 18px;border-top:1px solid var(--line)}
-  .asset .meta b{display:block;font-size:.9rem;color:#fff;margin-bottom:4px}
-  .asset .meta span{font-size:.76rem;color:var(--muted);display:block;margin-bottom:10px}
-  .rules{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-  .rule{border:1px solid var(--line);border-radius:var(--r-lg);padding:24px}
-  .rule.ok{border-color:rgba(52,211,153,.28);background:rgba(52,211,153,.05)}
-  .rule.no{border-color:rgba(248,113,113,.26);background:rgba(248,113,113,.05)}
-  .rule h4{font-size:.94rem;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-  .rule.ok h4{color:#8ff0c8}.rule.no h4{color:#ffb4b4}
-  .rule ul{list-style:none;display:grid;gap:9px}
-  .rule li{font-size:.88rem;color:var(--fg-dim);display:flex;gap:9px}
-  .rule li::before{content:"·";color:var(--muted)}
-  @media (max-width:820px){.rules{grid-template-columns:1fr}}
+  .assets{display:grid;grid-template-columns:repeat(3,1fr);gap:0 var(--gut)}
+  .asset{border-top:1px solid var(--ink);padding-top:0}
+  .asset .stage{display:flex;align-items:center;justify-content:center;padding:38px 24px;min-height:150px;
+    border-bottom:1px solid var(--rule)}
+  .asset .stage.light{background:var(--white)}
+  .asset .stage.dark{background:var(--dark)}
+  .asset .stage img{max-height:52px;width:auto}
+  .asset .meta{padding:16px 0 30px}
+  .asset .meta b{display:block;font-size:.94rem;font-weight:600;margin-bottom:5px}
+  .asset .meta span{display:block;font-size:.8rem;color:var(--ink-3);margin-bottom:14px}
+  .sw{display:grid;grid-template-columns:repeat(4,1fr);gap:0 var(--gut)}
+  .sw .s{border-top:1px solid var(--ink)}
+  .sw .chip{height:88px}
+  .sw .i{padding:12px 0 22px}
+  .sw .i b{display:block;font-size:.86rem;font-weight:500}
+  .sw .i code{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--ink-3)}
+  .rules{display:grid;grid-template-columns:1fr 1fr;gap:var(--gut)}
+  .rules h4{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+    text-transform:uppercase;margin-bottom:16px;padding-top:18px;border-top:1px solid var(--ink)}
+  .rules .yes h4{color:var(--accent)}
+  .rules .no h4{color:var(--bad)}
+  @media (max-width:900px){.assets{grid-template-columns:repeat(2,1fr)}.sw{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:640px){.assets{grid-template-columns:1fr}.rules{grid-template-columns:1fr}}
 
 </style>
 </head>
 <body>
-<div class="progress" id="progress"></div>
 
-<header class="nav" id="nav">
-  <div class="wrap bar">
+<header class="masthead" id="masthead">
+  <div class="shell bar">
     <a class="brand" href="/" aria-label="쉴더스랩 홈">
-      <img class="mark" src="/assets/ci/symbol.svg" alt="" width="38" height="38">
-      <span class="txt"><b>쉴더스랩</b><span>SHILDERS LAB</span></span>
+      <img src="/assets/ci/symbol.svg" alt="" width="30" height="30">
+      <span class="wm"><b>쉴더스랩</b><span>SHILDERS LAB</span></span>
     </a>
-    <nav class="menu" id="menu" aria-label="주요 메뉴">
+    <nav class="nav" id="nav" aria-label="주요 메뉴">
       <a href="/services/">서비스</a>
-      <a href="/about/">회사소개</a>
+      <a href="/method/">진단 방법론</a>
+      <a href="/resources/">자료실</a>
       <a href="/insights/">인사이트</a>
-      <a href="/careers/">채용</a>
-      <a class="nav-cta" href="/contact/">상담 · 견적 요청</a>
+      <a href="/about/">회사소개</a>
+      <a class="cta" href="/contact/">상담 요청</a>
     </nav>
-    <button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+    <button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false"><i></i><i></i></button>
   </div>
 </header>
 
-<section class="page-head">
-  <div class="wrap">
-    <div class="crumb"><a href="/">홈</a> / 브랜드 · CI</div>
-    <span class="eyebrow"><span class="dot"></span>BRAND IDENTITY</span>
-    <h1 class="display">쉴더스랩 CI</h1>
-    <p>모든 로고 파일은 <b>벡터(SVG) 원본</b>이며, 워드마크까지 실제 아웃라인 패스로 변환되어 있습니다.
-       폰트가 설치되지 않은 환경에서도 동일하게 렌더되고, 인쇄·간판·커팅 등 로우데이터가 필요한 작업에 그대로 사용할 수 있습니다.</p>
+<main>
+<section class="phead">
+  <div class="shell">
+    <div class="crumb"><a href="/">홈</a> · 브랜드 · CI</div>
+    <h1 class="d2">쉴더스랩 CI</h1>
+    <p class="lead">모든 로고 파일은 <b>벡터(SVG) 원본</b>이며, 워드마크까지 실제 아웃라인 패스로 변환되어 있습니다.
+       폰트가 설치되지 않은 환경에서도 동일하게 렌더되고, 인쇄·간판·커팅 등 로우데이터가 필요한 작업에
+       그대로 사용할 수 있습니다.</p>
   </div>
 </section>
 
-<section class="sec tight">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="kicker">LOGO ASSETS</span>
-      <h2>로고 원본 (SVG)</h2>
-      <p>용도에 맞는 파일을 사용하세요. 각 파일은 우클릭 저장 또는 아래 링크로 내려받을 수 있습니다.</p>
+<section class="sec">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">01 / Logo</span></div>
+      <div class="body"><h2 class="d3">로고 원본</h2>
+        <p class="lead">용도에 맞는 파일을 사용하세요.</p></div>
     </div>
-    <div class="assets reveal d1">
-      <div class="asset">
-        <div class="stage dark"><img src="/assets/ci/lockup-horizontal-dark.svg" alt="가로형 로고(어두운 배경용)"></div>
-        <div class="meta"><b>가로형 · 어두운 배경</b><span>기본 로고. 웹·프레젠테이션 표준</span>
-          <a class="btn btn-ghost btn-sm" href="/assets/ci/lockup-horizontal-dark.svg" download>SVG 다운로드</a></div>
-      </div>
+    <div class="assets">
       <div class="asset">
         <div class="stage light"><img src="/assets/ci/lockup-horizontal-light.svg" alt="가로형 로고(밝은 배경용)"></div>
-        <div class="meta"><b>가로형 · 밝은 배경</b><span>흰 배경 문서·인쇄물</span>
-          <a class="btn btn-ghost btn-sm" href="/assets/ci/lockup-horizontal-light.svg" download>SVG 다운로드</a></div>
+        <div class="meta"><b>가로형 · 밝은 배경</b><span>기본 로고. 웹·문서 표준</span>
+          <a class="alink" href="/assets/ci/lockup-horizontal-light.svg" download>SVG</a></div>
       </div>
       <div class="asset">
-        <div class="stage dark"><img src="/assets/ci/lockup-stacked-dark.svg" alt="세로형 로고" style="max-height:96px"></div>
+        <div class="stage dark"><img src="/assets/ci/lockup-horizontal-dark.svg" alt="가로형 로고(어두운 배경용)"></div>
+        <div class="meta"><b>가로형 · 어두운 배경</b><span>다크 배경·영상</span>
+          <a class="alink" href="/assets/ci/lockup-horizontal-dark.svg" download>SVG</a></div>
+      </div>
+      <div class="asset">
+        <div class="stage light"><img src="/assets/ci/lockup-stacked-light.svg" alt="세로형 로고" style="max-height:96px"></div>
         <div class="meta"><b>세로형</b><span>정방형 공간·배너·굿즈</span>
-          <a class="btn btn-ghost btn-sm" href="/assets/ci/lockup-stacked-dark.svg" download>SVG 다운로드</a></div>
+          <a class="alink" href="/assets/ci/lockup-stacked-light.svg" download>SVG</a></div>
       </div>
       <div class="asset">
-        <div class="stage dark"><img src="/assets/ci/symbol.svg" alt="심볼" style="max-height:74px"></div>
+        <div class="stage light"><img src="/assets/ci/symbol.svg" alt="심볼" style="max-height:64px"></div>
         <div class="meta"><b>심볼</b><span>앱 아이콘·프로필·워터마크</span>
-          <a class="btn btn-ghost btn-sm" href="/assets/ci/symbol.svg" download>SVG 다운로드</a></div>
+          <a class="alink" href="/assets/ci/symbol.svg" download>SVG</a></div>
       </div>
       <div class="asset">
         <div class="stage light"><img src="/assets/ci/lockup-mono-black.svg" alt="단색 로고(검정)"></div>
         <div class="meta"><b>단색 · 검정</b><span>흑백 인쇄·팩스·각인</span>
-          <a class="btn btn-ghost btn-sm" href="/assets/ci/lockup-mono-black.svg" download>SVG 다운로드</a></div>
+          <a class="alink" href="/assets/ci/lockup-mono-black.svg" download>SVG</a></div>
       </div>
       <div class="asset">
         <div class="stage dark"><img src="/assets/ci/lockup-mono-white.svg" alt="단색 로고(흰색)"></div>
         <div class="meta"><b>단색 · 흰색</b><span>사진 위·단색 배경</span>
-          <a class="btn btn-ghost btn-sm" href="/assets/ci/lockup-mono-white.svg" download>SVG 다운로드</a></div>
+          <a class="alink" href="/assets/ci/lockup-mono-white.svg" download>SVG</a></div>
       </div>
     </div>
-    <p class="form-note reveal" style="margin-top:18px">
-      그 외 파일: <a href="/assets/ci/wordmark-en.svg" download style="color:var(--cy-300)">영문 워드마크</a> ·
-      <a href="/assets/ci/wordmark-ko.svg" download style="color:var(--cy-300)">국문 워드마크</a> ·
-      <a href="/assets/ci/symbol-mono.svg" download style="color:var(--cy-300)">심볼 단색(currentColor)</a> ·
-      <a href="/assets/ci/favicon.svg" download style="color:var(--cy-300)">파비콘</a> ·
-      <a href="/assets/ci/og-cover.svg" download style="color:var(--cy-300)">OG 커버</a>
+    <p class="tiny" style="margin-top:26px">
+      그 외: <a href="/assets/ci/wordmark-en.svg" download>영문 워드마크</a> ·
+      <a href="/assets/ci/wordmark-ko.svg" download>국문 워드마크</a> ·
+      <a href="/assets/ci/symbol-mono.svg" download>심볼 단색(currentColor)</a> ·
+      <a href="/assets/ci/favicon.svg" download>파비콘</a> ·
+      <a href="/assets/ci/og-cover.svg" download>OG 커버</a>
       &nbsp;— 워드마크는 Manrope / Noto Sans KR(SIL Open Font License 1.1) 글리프를 아웃라인 변환해 제작했습니다.
     </p>
   </div>
 </section>
 
-<section class="sec tight">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="kicker">COLOR</span>
-      <h2>브랜드 컬러</h2>
-      <p>프라이머리는 사이버 시안 계열입니다. 배경은 딥 잉크 네이비를 기본으로 사용합니다.</p>
+<section class="sec band">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">02 / Color</span></div>
+      <div class="body"><h2 class="d3">브랜드 컬러</h2>
+        <p class="lead">딥 파인 그린 하나를 액센트로 씁니다. 배경은 웜 오프화이트, 텍스트는 잉크입니다.</p></div>
     </div>
-    <div class="swatches reveal d1">
-      <div class="sw"><div class="chipc" style="background:#7CEBFB"></div><div class="info"><b>Cyan 300</b><code>#7CEBFB</code></div></div>
-      <div class="sw"><div class="chipc" style="background:#38D8EF"></div><div class="info"><b>Cyan 400</b><code>#38D8EF</code></div></div>
-      <div class="sw"><div class="chipc" style="background:#12B5CE"></div><div class="info"><b>Cyan 500 · 주색</b><code>#12B5CE</code></div></div>
-      <div class="sw"><div class="chipc" style="background:#0A8CA3"></div><div class="info"><b>Cyan 600</b><code>#0A8CA3</code></div></div>
-      <div class="sw"><div class="chipc" style="background:#8B93F8"></div><div class="info"><b>Indigo 400 · 보조</b><code>#8B93F8</code></div></div>
-      <div class="sw"><div class="chipc" style="background:#050B16"></div><div class="info"><b>Ink 900 · 배경</b><code>#050B16</code></div></div>
-      <div class="sw"><div class="chipc" style="background:#03070E"></div><div class="info"><b>Ink 950</b><code>#03070E</code></div></div>
-      <div class="sw"><div class="chipc" style="background:#E9F1FB"></div><div class="info"><b>Text</b><code>#E9F1FB</code></div></div>
+    <div class="sw">
+      <div class="s"><div class="chip" style="background:#1A4B3A"></div><div class="i"><b>Accent · 딥 파인</b><code>#1A4B3A</code></div></div>
+      <div class="s"><div class="chip" style="background:#0F3227"></div><div class="i"><b>Accent Deep</b><code>#0F3227</code></div></div>
+      <div class="s"><div class="chip" style="background:#2E6B54"></div><div class="i"><b>Accent Light</b><code>#2E6B54</code></div></div>
+      <div class="s"><div class="chip" style="background:#15181B"></div><div class="i"><b>Ink</b><code>#15181B</code></div></div>
+      <div class="s"><div class="chip" style="background:#F6F4EF;border:1px solid var(--rule)"></div><div class="i"><b>Paper</b><code>#F6F4EF</code></div></div>
+      <div class="s"><div class="chip" style="background:#EFECE4"></div><div class="i"><b>Paper 2</b><code>#EFECE4</code></div></div>
+      <div class="s"><div class="chip" style="background:#4A5157"></div><div class="i"><b>Ink 2</b><code>#4A5157</code></div></div>
+      <div class="s"><div class="chip" style="background:#8A6224"></div><div class="i"><b>Ochre · 강조</b><code>#8A6224</code></div></div>
     </div>
   </div>
 </section>
 
-<section class="sec tight">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="kicker">USAGE</span>
-      <h2>사용 규칙</h2>
-      <p>최소 여백은 심볼 높이의 0.4배, 최소 크기는 심볼 20px / 가로형 락업 높이 24px 이상을 권장합니다.</p>
+<section class="sec">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">03 / Usage</span></div>
+      <div class="body"><h2 class="d3">사용 규칙</h2>
+        <p class="lead">최소 여백은 심볼 높이의 0.4배, 최소 크기는 심볼 20px / 가로형 락업 높이 24px 이상을 권장합니다.</p></div>
     </div>
-    <div class="rules reveal d1">
-      <div class="rule ok">
+    <div class="rules">
+      <div class="yes">
         <h4>권장</h4>
-        <ul>
-          <li>배경 밝기에 맞는 파일(어두운/밝은/단색) 사용</li>
+        <ul class="bullets">
+          <li>배경 밝기에 맞는 파일(밝은/어두운/단색) 사용</li>
           <li>가로·세로 비율 유지하며 크기만 조정</li>
-          <li>단색 사용이 필요한 경우 mono 파일 사용</li>
-          <li>충분한 여백 확보 — 다른 요소와 겹치지 않게</li>
+          <li>단색 사용이 필요하면 mono 파일 사용</li>
+          <li>다른 요소와 겹치지 않도록 여백 확보</li>
         </ul>
       </div>
-      <div class="rule no">
+      <div class="no">
         <h4>금지</h4>
-        <ul>
-          <li>임의 색상 변경, 그라데이션 교체</li>
+        <ul class="bullets">
+          <li>임의 색상 변경, 그라데이션 적용</li>
           <li>비율 왜곡, 회전, 기울임, 그림자·외곽선 추가</li>
           <li>심볼 일부만 잘라내 별도 도형처럼 사용</li>
           <li>복잡한 사진 위에 저대비로 배치</li>
@@ -184,31 +182,36 @@
     </div>
   </div>
 </section>
+</main>
 
 <footer class="site">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-brand">
-        <img src="/assets/ci/lockup-horizontal-dark.svg" alt="쉴더스랩 SHILDERS LAB" height="42" style="height:42px;width:auto">
-        <p>정보보호 컨설팅 전문기업. 규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행합니다.</p>
+  <div class="shell">
+    <div class="top">
+      <div class="fbrand">
+        <img src="/assets/ci/lockup-horizontal-dark.svg" alt="쉴더스랩 SHILDERS LAB">
+        <p>규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행하는 정보보호 컨설팅 조직입니다.
+           발견에는 재현 절차를, 종료에는 재점검을 붙입니다.</p>
       </div>
-      <div class="foot-col">
+      <div class="fcol">
         <h5>Services</h5>
-        <a href="/services/#isms">ISMS-P 인증 컨설팅</a>
-        <a href="/services/#pentest">모의해킹 · 침투테스트</a>
-        <a href="/services/#vuln">취약점 진단</a>
-        <a href="/services/#privacy">개인정보 컴플라이언스</a>
-        <a href="/services/#cloud">클라우드 보안</a>
+        <a href="/services/isms-p/">ISMS-P 인증 컨설팅</a>
+        <a href="/services/pentest/">모의해킹 · 침투테스트</a>
+        <a href="/services/assessment/">취약점 진단</a>
+        <a href="/services/privacy/">개인정보 컴플라이언스</a>
+        <a href="/services/cloud/">클라우드 보안</a>
+        <a href="/services/governance/">거버넌스 · 교육</a>
       </div>
-      <div class="foot-col">
+      <div class="fcol">
         <h5>Company</h5>
         <a href="/about/">회사소개</a>
-        <a href="/insights/">인사이트</a>
+        <a href="/method/">진단 방법론</a>
+        <a href="/regulations/">규제 가이드</a>
+        <a href="/trust/">신뢰 센터</a>
+        <a href="/resources/">자료실</a>
         <a href="/careers/">채용</a>
         <a href="/brand/">브랜드 · CI</a>
-        <a href="/contact/">문의</a>
       </div>
-      <div class="foot-col">
+      <div class="fcol">
         <h5>Contact</h5>
         <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
         <span data-setting="business_hours">평일 09:00 – 18:00</span>
@@ -220,7 +223,7 @@
         <div class="biz" id="bizline"></div>
         <div class="copy">© <span data-year>2026</span> SHILDERS LAB. All rights reserved.</div>
       </div>
-      <div class="legal-links">
+      <div class="flinks">
         <a href="/legal/privacy.html">개인정보처리방침</a>
         <a href="/legal/terms.html">이용약관</a>
       </div>

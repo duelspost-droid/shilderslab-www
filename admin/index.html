@@ -8,30 +8,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>관리자 | 쉴더스랩</title>
 <link rel="icon" href="/assets/ci/favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#050B16">
+<meta name="theme-color" content="#F6F4EF">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/site.css">
 <style>
-  .bars{display:flex;align-items:flex-end;gap:6px;height:120px;padding:14px 0}
-  .bars .b{flex:1;background:linear-gradient(180deg,var(--cy-400),rgba(18,181,206,.25));
-    border-radius:4px 4px 0 0;min-height:3px;position:relative}
-  .bars .b span{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);
-    font-size:.62rem;color:var(--muted);white-space:nowrap}
-  .bars-wrap{border:1px solid var(--line);border-radius:var(--r-lg);padding:20px 20px 34px;
-    background:rgba(255,255,255,.022)}
-  .toppages{list-style:none;display:grid;gap:9px}
-  .toppages li{display:flex;justify-content:space-between;gap:12px;font-size:.85rem;color:var(--fg-dim);
-    padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.05)}
-  .toppages li:last-child{border-bottom:0}
-  .toppages code{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;color:var(--cy-200)}
-  .two{display:grid;grid-template-columns:1.25fr .75fr;gap:20px}
+  /* 관리자 전용 보정 — 공용 디자인 시스템 토큰을 그대로 쓴다 */
+  .two{display:grid;grid-template-columns:1.3fr .7fr;gap:var(--gut)}
   @media (max-width:900px){.two{grid-template-columns:1fr}}
-  .row-actions{display:flex;gap:6px;flex-wrap:wrap}
-  .lnk{background:none;border:0;color:var(--cy-300);font-size:.8rem;font-weight:700;cursor:pointer;padding:0}
-  .lnk:hover{text-decoration:underline}
-  .lnk.danger{color:var(--rd-400)}
 </style>
 </head>
 <body data-no-log>
@@ -40,10 +25,10 @@
 <div id="login-view" style="display:none">
   <div class="login-box">
     <div style="text-align:center;margin-bottom:26px">
-      <img src="/assets/ci/lockup-stacked-dark.svg" alt="쉴더스랩" style="height:96px;width:auto;margin:0 auto 8px">
-      <div style="font-size:.74rem;letter-spacing:2.4px;color:var(--cy-400);font-weight:800">ADMIN CONSOLE</div>
+      <img src="/assets/ci/lockup-stacked-light.svg" alt="쉴더스랩" style="height:88px;width:auto;margin:0 auto 10px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.16em;color:var(--accent);font-weight:500">ADMIN CONSOLE</div>
     </div>
-    <form class="form-card" id="login-form" novalidate>
+    <form class="form" id="login-form" novalidate>
       <div class="alert" id="login-alert" role="status"></div>
       <div class="field">
         <label for="lg-email">이메일</label>
@@ -53,9 +38,9 @@
         <label for="lg-pw">비밀번호</label>
         <input id="lg-pw" type="password" autocomplete="current-password" required placeholder="••••••••">
       </div>
-      <button class="btn btn-primary" type="submit" id="lg-submit" style="width:100%">로그인</button>
-      <p class="form-note">등록된 관리자 계정만 접근할 수 있습니다. 모든 관리자 행위는 감사 로그에 기록됩니다.</p>
-      <p class="form-note"><a href="/" style="color:var(--cy-300)">← 사이트로 돌아가기</a></p>
+      <button class="btn" type="submit" id="lg-submit" style="width:100%">로그인</button>
+      <p class="tiny">등록된 관리자 계정만 접근할 수 있습니다. 모든 관리자 행위는 감사 로그에 기록됩니다.</p>
+      <p class="tiny"><a href="/" style="color:var(--accent);border-bottom:1px solid var(--rule-2)">← 사이트로 돌아가기</a></p>
     </form>
   </div>
 </div>
@@ -63,20 +48,20 @@
 <!-- ═══════════ 콘솔 ═══════════ -->
 <div id="app-view" class="admin-shell" style="display:none">
   <div class="admin-top">
-    <div class="wrap bar">
+    <div class="shell bar">
       <a class="brand" href="/admin/" style="text-decoration:none">
-        <img class="mark" src="/assets/ci/symbol.svg" alt="" width="34" height="34">
-        <span class="txt"><b>쉴더스랩 관리자</b><span>ADMIN CONSOLE</span></span>
+        <img src="/assets/ci/symbol.svg" alt="" width="28" height="28">
+        <span class="wm"><b>쉴더스랩 관리자</b><span>ADMIN CONSOLE</span></span>
       </a>
       <div class="admin-who">
         <span id="who"></span>
         <a class="lnk" href="/" target="_blank" rel="noopener">사이트 열기 ↗</a>
-        <button class="btn btn-ghost btn-sm" id="logout">로그아웃</button>
+        <button class="btn btn-line btn-sm" id="logout">로그아웃</button>
       </div>
     </div>
   </div>
 
-  <div class="wrap" style="padding-bottom:70px">
+  <div class="shell" style="padding-bottom:70px">
     <div class="tabs" id="tabs">
       <button data-tab="dash" class="active">대시보드</button>
       <button data-tab="inq">문의 <span id="badge-inq"></span></button>
@@ -93,7 +78,7 @@
       <div class="two">
         <div class="bars-wrap">
           <div class="panel-head" style="margin-bottom:0"><h2 style="font-size:1rem">최근 14일 방문</h2>
-            <span class="form-note" style="margin:0">동일 IP·경로 10분 중복 제외</span></div>
+            <span class="tiny" style="margin:0">동일 IP·경로 10분 중복 제외</span></div>
           <div class="bars" id="bars"></div>
         </div>
         <div class="bars-wrap" style="padding-bottom:20px">
@@ -103,7 +88,7 @@
       </div>
       <div style="margin-top:20px">
         <div class="panel-head"><h2>최근 문의</h2>
-          <button class="btn btn-ghost btn-sm" data-goto="inq">전체 보기</button></div>
+          <button class="btn btn-line btn-sm" data-goto="inq">전체 보기</button></div>
         <div class="tbl-wrap" id="recent-inq"></div>
       </div>
     </section>
@@ -120,7 +105,7 @@
             <option value="done">완료</option>
             <option value="drop">보류 · 종료</option>
           </select>
-          <button class="btn btn-ghost btn-sm" id="inq-reload">새로고침</button>
+          <button class="btn btn-line btn-sm" id="inq-reload">새로고침</button>
         </div>
       </div>
       <div class="tbl-wrap" id="inq-table"></div>
@@ -138,7 +123,7 @@
             <option value="done">완료</option>
             <option value="drop">보류 · 종료</option>
           </select>
-          <button class="btn btn-ghost btn-sm" id="app-reload">새로고침</button>
+          <button class="btn btn-line btn-sm" id="app-reload">새로고침</button>
         </div>
       </div>
       <div class="tbl-wrap" id="app-table"></div>
@@ -148,7 +133,7 @@
     <section class="panel" id="panel-ins">
       <div class="panel-head">
         <h2>인사이트</h2>
-        <div class="tools"><button class="btn btn-primary btn-sm" id="ins-new">새 글 작성</button></div>
+        <div class="tools"><button class="btn btn-sm" id="ins-new">새 글 작성</button></div>
       </div>
       <div class="tbl-wrap" id="ins-table"></div>
     </section>
@@ -157,7 +142,7 @@
     <section class="panel" id="panel-job">
       <div class="panel-head">
         <h2>채용 공고</h2>
-        <div class="tools"><button class="btn btn-primary btn-sm" id="job-new">새 공고 등록</button></div>
+        <div class="tools"><button class="btn btn-sm" id="job-new">새 공고 등록</button></div>
       </div>
       <div class="tbl-wrap" id="job-table"></div>
     </section>
@@ -173,10 +158,10 @@
             <option value="submit">제출 이벤트</option>
             <option value="visit">방문</option>
           </select>
-          <button class="btn btn-ghost btn-sm" id="log-reload">새로고침</button>
+          <button class="btn btn-line btn-sm" id="log-reload">새로고침</button>
         </div>
       </div>
-      <p class="form-note" style="margin:0 0 14px">
+      <p class="tiny" style="margin:0 0 14px">
         방문 로그는 90일, 관리자·제출 로그는 365일 후 자동 삭제됩니다. IP는 위조 가능성이 있어 단독 근거로 사용하지 않습니다.
       </p>
       <div class="tbl-wrap" id="log-table"></div>
@@ -186,7 +171,7 @@
     <section class="panel" id="panel-set">
       <div class="panel-head"><h2>사이트 설정</h2></div>
       <div class="alert" id="set-alert" role="status"></div>
-      <div class="form-card" style="max-width:720px">
+      <div class="form" style="max-width:640px">
         <div class="field">
           <label>상단 공지 배너</label>
           <label class="consent" style="margin-bottom:12px">
@@ -214,10 +199,10 @@
           <label for="set-sla">회신 안내 문구</label>
           <input id="set-sla" type="text" maxlength="120">
         </div>
-        <button class="btn btn-primary" id="set-save">설정 저장</button>
-        <p class="form-note">
+        <button class="btn" id="set-save">설정 저장</button>
+        <p class="tiny">
           법인 정보(상호·대표자·사업자등록번호·주소·개인정보 보호책임자)는 저장소의
-          <code style="color:var(--cy-200)">config.js</code> 의 COMPANY 값으로 관리합니다. 값을 채우면 전 페이지 푸터에 자동 표시됩니다.
+          <code>config.js</code> 의 COMPANY 값으로 관리합니다. 값을 채우면 전 페이지 푸터에 자동 표시됩니다.
         </p>
       </div>
     </section>

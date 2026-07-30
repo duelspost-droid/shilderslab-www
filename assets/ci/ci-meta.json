@@ -5,14 +5,14 @@
   "lockup_width": 388.9,
   "wordmark_en_width": 1002.94,
   "colors": {
-    "cy200": "#B4F6FF",
-    "cy300": "#7CEBFB",
-    "cy400": "#38D8EF",
-    "cy500": "#12B5CE",
-    "cy600": "#0A8CA3",
-    "vi400": "#8B93F8",
-    "ink950": "#03070E",
-    "ink900": "#050B16"
+    "accent": "#1A4B3A",
+    "accent2": "#0F3227",
+    "accent3": "#2E6B54",
+    "paper": "#F6F4EF",
+    "paper2": "#EFECE4",
+    "ink": "#15181B",
+    "ink2": "#4A5157",
+    "ink3": "#7C838A"
   },
   "fonts": {
     "latin": "Manrope ExtraBold (SIL OFL 1.1) — 아웃라인 변환",

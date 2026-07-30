@@ -1,0 +1,295 @@
+# -*- coding: utf-8 -*-
+"""홈 v2 — 에디토리얼 구성
+   신생 조직이라 실적을 주장할 수 없으므로, 신뢰 장치를 '공개'로 만든다:
+   방법론 공개 · 산출물 공개 · 못 하는 일 공개 · 바로 쓸 수 있는 자료 공개.
+"""
+
+TITLE = "쉴더스랩 | 정보보호 컨설팅 — ISMS-P · 모의해킹 · 취약점 진단"
+DESC = ("쉴더스랩은 규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행하는 정보보호 컨설팅 조직입니다. "
+        "진단 절차와 산출물 규격을 계약 전에 공개합니다.")
+LD = ('{"@context":"https://schema.org","@type":"Organization","name":"쉴더스랩",'
+      '"alternateName":"SHILDERS LAB","url":"https://shilderslab.com/",'
+      '"logo":"https://shilderslab.com/assets/ci/symbol.svg","foundingDate":"2026",'
+      '"description":"정보보호 컨설팅 — ISMS-P 인증 컨설팅, 모의해킹, 취약점 진단, 개인정보 컴플라이언스, 클라우드 보안",'
+      '"email":"contact@shilderslab.com","areaServed":"KR",'
+      '"knowsAbout":["ISMS-P","모의해킹","취약점진단","개인정보보호","클라우드 보안","침해사고 대응"]}')
+
+CSS = """
+  .home-hero{padding:96px 0 0}
+  .home-hero h1{font-size:clamp(2.6rem,6.4vw,5.4rem);line-height:1.02;letter-spacing:-.042em;
+    font-weight:600;margin:30px 0 0}
+  .home-hero .sub{margin-top:30px;max-width:48ch}
+  .home-hero .acts{display:flex;gap:14px;flex-wrap:wrap;margin-top:40px}
+  .hero-meta{border-left:1px solid var(--rule);padding-left:26px}
+  .hero-meta .r{padding:15px 0;border-bottom:1px solid var(--rule)}
+  .hero-meta .r:first-child{padding-top:0}
+  .hero-meta .r:last-child{border-bottom:0}
+  .hero-meta .k{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px}
+  .hero-meta .v{font-size:.94rem;color:var(--ink);line-height:1.55}
+  .hero-rule{margin-top:76px;border-top:1px solid var(--ink);padding-top:16px;
+    display:flex;flex-wrap:wrap;gap:0}
+  .hero-rule span{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;
+    color:var(--ink-2);padding:6px 20px 6px 0;margin-right:20px;border-right:1px solid var(--rule);
+    white-space:nowrap}
+  .hero-rule span:last-child{border-right:0;margin-right:0;padding-right:0}
+  .open-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0 var(--gut)}
+  .open-grid .o{border-top:1px solid var(--ink);padding:20px 0 30px}
+  .open-grid .o .n{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.12em;
+    color:var(--accent);display:block;margin-bottom:14px}
+  .open-grid .o h3{font-size:1.06rem;margin-bottom:10px}
+  .open-grid .o p{font-size:.9rem;color:var(--ink-2);line-height:1.7}
+  .open-grid .o a{margin-top:14px;display:inline-block}
+  @media (max-width:980px){
+    .home-hero{padding:56px 0 0}
+    .hero-meta{border-left:0;padding-left:0;border-top:1px solid var(--rule);margin-top:44px}
+    .open-grid{grid-template-columns:1fr}
+  }
+"""
+
+BODY = """<section class="home-hero">
+  <div class="shell g12">
+    <div class="c7">
+      <span class="lbl lbl-a">Information security consulting</span>
+      <h1>지키는 일을,<br>증명 가능한<br>방식으로.</h1>
+      <p class="lead sub">규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행합니다.
+         발견에는 재현 절차를 붙이고, 조치가 실제로 적용됐는지 재점검으로 확인한 뒤 과업을 종료합니다.</p>
+      <div class="acts">
+        <a class="btn" href="/contact/">상담 요청</a>
+        <a class="btn btn-line" href="/method/">진단 방법론 보기</a>
+      </div>
+    </div>
+    <div class="c4 start9">
+      <div class="hero-meta">
+        <div class="r"><span class="k">설립</span><span class="v">2026년 · 정보보호 컨설팅</span></div>
+        <div class="r"><span class="k">수행 영역</span><span class="v">관리체계 · 기술진단 · 개인정보 · 클라우드</span></div>
+        <div class="r"><span class="k">초기 회신</span><span class="v" data-setting="sla_note">영업일 기준 24시간 내 초기 회신</span></div>
+        <div class="r"><span class="k">과업 종료 기준</span><span class="v">조치 확인(재점검) 완료 시점</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="shell">
+    <div class="hero-rule">
+      <span>ISMS-P 인증</span>
+      <span>모의해킹 · 침투테스트</span>
+      <span>취약점 진단</span>
+      <span>개인정보 컴플라이언스</span>
+      <span>클라우드 보안</span>
+      <span>거버넌스 · 교육</span>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">01 / Services</span></div>
+      <div class="body">
+        <h2 class="d2">규제와 공격,<br>양쪽에서 봅니다</h2>
+        <p class="lead">심사 기준을 충족시키는 관리체계 컨설팅과 실제 공격자 관점의 기술 진단을 함께 설계합니다.
+           두 축이 분리되면 문서는 통과하고 시스템은 뚫리는 상태가 남습니다.</p>
+      </div>
+    </div>
+    <div class="cols cols-3 divided">
+      <a class="col-item rv" href="/services/isms-p/">
+        <span class="n">01</span><h3>ISMS-P 인증 컨설팅</h3>
+        <p>범위 설정, GAP 분석, 정책 정비, 위험평가, 심사 대응, 결함 조치까지 인증 전 주기.</p>
+        <div class="tags"><i>최초 인증</i><i>사후 · 갱신</i><i>결함 조치</i></div>
+        <span class="go alink">자세히</span>
+      </a>
+      <a class="col-item rv d1" href="/services/pentest/">
+        <span class="n">02</span><h3>모의해킹 · 침투테스트</h3>
+        <p>웹·API·모바일·내부망 대상. 재현 가능한 침해 경로와 영향 범위를 보고합니다.</p>
+        <div class="tags"><i>웹 · API</i><i>모바일</i><i>시나리오</i></div>
+        <span class="go alink">자세히</span>
+      </a>
+      <a class="col-item rv d2" href="/services/assessment/">
+        <span class="n">03</span><h3>취약점 진단</h3>
+        <p>서버·네트워크·DB·보안장비 설정과 소스코드를 항목 단위로 점검하고 판정 근거를 남깁니다.</p>
+        <div class="tags"><i>인프라</i><i>소스코드</i><i>재점검</i></div>
+        <span class="go alink">자세히</span>
+      </a>
+      <a class="col-item rv" href="/services/privacy/">
+        <span class="n">04</span><h3>개인정보 컴플라이언스</h3>
+        <p>처리 흐름 진단, 안전성 확보조치 이행 점검, 수탁사·국외이전 관리 체계 정비.</p>
+        <div class="tags"><i>흐름도</i><i>이행 점검</i><i>수탁사</i></div>
+        <span class="go alink">자세히</span>
+      </a>
+      <a class="col-item rv d1" href="/services/cloud/">
+        <span class="n">05</span><h3>클라우드 보안</h3>
+        <p>AWS·Azure·GCP 계정 구성 진단. IAM 권한, 공개 범위, 로깅을 계정 단위로 확인합니다.</p>
+        <div class="tags"><i>IAM</i><i>구성 진단</i><i>기준선</i></div>
+        <span class="go alink">자세히</span>
+      </a>
+      <a class="col-item rv d2" href="/services/governance/">
+        <span class="n">06</span><h3>거버넌스 · 교육</h3>
+        <p>정책 체계와 침해사고 대응 절차를 만들고, 모의훈련으로 한 번 돌려봅니다.</p>
+        <div class="tags"><i>정책 체계</i><i>모의훈련</i><i>교육</i></div>
+        <span class="go alink">자세히</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="sec band">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">02 / Method</span></div>
+      <div class="body">
+        <h2 class="d2">모든 과업은<br>같은 다섯 단계를 거칩니다</h2>
+        <p class="lead">마지막 재점검이 끝나야 종료로 봅니다. 단계별 산출물은 계약서에 그대로 명시됩니다.</p>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="step"><span class="n">01</span><h4>범위 정의</h4>
+        <p>대상·규제 요건·제약 조건 확정. 제외 대상까지 문서로 못 박습니다.</p></div>
+      <div class="step"><span class="n">02</span><h4>진단 수행</h4>
+        <p>관리·기술·개인정보 병행. 사람이 재현한 항목만 남깁니다.</p></div>
+      <div class="step"><span class="n">03</span><h4>분석 · 보고</h4>
+        <p>재현 절차와 위험도 산정 근거를 붙여 보고합니다.</p></div>
+      <div class="step"><span class="n">04</span><h4>이행 지원</h4>
+        <p>조치 방향 협의와 적용안 검토. 못 고치는 건 잔여위험으로 남깁니다.</p></div>
+      <div class="step"><span class="n">05</span><h4>재점검</h4>
+        <p>조치 확인 1회 포함. 확인 안 된 항목은 완료로 적지 않습니다.</p></div>
+    </div>
+    <div style="margin-top:36px"><a class="alink" href="/method/">위험도 산정 기준과 수행 규칙까지 전부 보기</a></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">03 / Why us</span></div>
+      <div class="body">
+        <h2 class="d2">신생 조직입니다.<br>그래서 공개합니다</h2>
+        <p class="lead">수행 실적이 쌓이기 전에 신뢰를 요구할 수는 없다고 봅니다.
+           대신 판단 기준과 작업 방식을 계약 전에 전부 공개합니다. 비교해 보시고 결정하세요.</p>
+      </div>
+    </div>
+    <div class="open-grid">
+      <div class="o rv">
+        <span class="n">공개 01</span>
+        <h3>진단 방법론</h3>
+        <p>5단계 절차, 위험도 등급 정의, 수행 규칙(Rules of Engagement), 그리고 하지 않는 일까지
+           그대로 공개합니다. 다른 제안서를 검토하실 때 기준으로 쓰셔도 됩니다.</p>
+        <a class="alink" href="/method/">방법론 보기</a>
+      </div>
+      <div class="o rv d1">
+        <span class="n">공개 02</span>
+        <h3>산출물 목록</h3>
+        <p>서비스마다 어떤 문서를 받게 되는지 미리 적어 두었습니다. 계약서에는 이 목록이 그대로 들어갑니다.
+           “보고서 1식”으로 뭉뚱그리지 않습니다.</p>
+        <a class="alink" href="/services/">서비스별 산출물</a>
+      </div>
+      <div class="o rv d2">
+        <span class="n">공개 03</span>
+        <h3>수행할 수 없는 과업</h3>
+        <p>정보보호 전문서비스기업 지정이 필요한 과업, 지정 평가기관만 수행하는 영향평가 등은
+           할 수 있다고 쓰지 않습니다. 경계를 먼저 밝히는 편이 서로에게 낫습니다.</p>
+        <a class="alink" href="/services/">범위 확인</a>
+      </div>
+    </div>
+
+    <div class="g12" style="margin-top:72px">
+      <div class="c6">
+        <div class="pull">
+          <p>취약점을 찾는 일은 절반입니다.<br>나머지 절반은 그것이 닫혔다는 걸 증명하는 일입니다.</p>
+          <cite>쉴더스랩 과업 원칙</cite>
+        </div>
+      </div>
+      <div class="c5 start8">
+        <ul class="ticks">
+          <li><span><b>재현 가능한 근거</b> — 발견마다 재현 절차·영향 범위·조치 방향을 함께 제시합니다.</span></li>
+          <li><span><b>조치 후 재점검 포함</b> — 확인 없이 종료하지 않습니다. 남은 항목은 잔여위험으로 명시합니다.</span></li>
+          <li><span><b>규제 매핑</b> — 발견을 인증기준·법령 항목에 연결해 대응 우선순위를 정리합니다.</span></li>
+          <li><span><b>기밀 유지</b> — 착수 전 NDA, 종료 후 파기 확인서까지가 기본 절차입니다.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec band-3">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">04 / Resources</span></div>
+      <div class="body">
+        <h2 class="d2">계약 없이도<br>바로 쓰실 수 있게</h2>
+        <p class="lead">담당자가 당장 필요한 것은 회사 소개가 아니라 점검할 목록입니다.
+           저희가 실제로 쓰는 자료를 그대로 공개합니다.</p>
+      </div>
+    </div>
+    <div class="cols cols-3 divided">
+      <a class="col-item rv" href="/resources/pentest-rfp/">
+        <span class="n">01</span><h3>모의해킹 제안서 비교 체크리스트</h3>
+        <p>견적이 몇 배씩 차이 나는 이유를 항목으로 정리했습니다. 어느 업체를 고르든 쓸 수 있습니다.</p>
+        <span class="go alink">열기</span>
+      </a>
+      <a class="col-item rv d1" href="/resources/isms-p-readiness/">
+        <span class="n">02</span><h3>ISMS-P 착수 전 자가점검</h3>
+        <p>컨설팅을 부르기 전에 스스로 확인할 수 있는 항목. 준비 기간을 좌우하는 것들입니다.</p>
+        <span class="go alink">열기</span>
+      </a>
+      <a class="col-item rv d2" href="/resources/report-anatomy/">
+        <span class="n">03</span><h3>진단 보고서 구성 샘플</h3>
+        <p>저희 보고서가 어떻게 생겼는지 목차와 각 장의 작성 기준을 공개합니다.</p>
+        <span class="go alink">열기</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">05 / Insights</span></div>
+      <div class="body">
+        <h2 class="d2">현장에서 반복되는 것들</h2>
+        <p class="lead">규제 해석이 갈리는 지점, 조치가 자주 미끄러지는 지점을 기록합니다.</p>
+      </div>
+    </div>
+    <div class="posts" id="home-insights"><div class="empty">불러오는 중…</div></div>
+    <div style="margin-top:30px"><a class="alink" href="/insights/">전체 인사이트</a></div>
+  </div>
+</section>
+
+<section class="sec band-dark cta">
+  <div class="shell g12">
+    <div class="c7">
+      <span class="lbl">Contact</span>
+      <h2 class="d2" style="margin:18px 0 18px">지금 상태를<br>확인하는 것부터</h2>
+      <p class="lead">진단 범위와 목표 일정만 알려주시면 적용 가능한 항목과 예상 기간을 정리해 회신드립니다.
+         범위 검토와 견적 산정에는 비용이 발생하지 않습니다.</p>
+    </div>
+    <div class="c4 start9" style="display:flex;align-items:flex-end">
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a class="btn" href="/contact/">상담 요청</a>
+        <a class="btn btn-line" href="/about/">회사소개</a>
+      </div>
+    </div>
+  </div>
+</section>"""
+
+JS = """<script>
+(function () {
+  var box = document.getElementById("home-insights");
+  if (!box || !window.SL) return;
+  function fallback() {
+    box.innerHTML = '<div class="empty">첫 글을 준비하고 있습니다. 곧 공개됩니다.</div>';
+  }
+  SL.listPublished("sl_insights", {
+    columns: "slug,category,title,summary,published_at",
+    order: [{ col: "sort_order", asc: false }, { col: "published_at", asc: false }], limit: 3
+  }).then(function (r) {
+    var rows = (r && r.data) || [];
+    if (!rows.length) return fallback();
+    box.innerHTML = rows.map(function (p) {
+      return '<a class="post" href="/insights/' + encodeURIComponent(p.slug) + '/">' +
+        '<div class="meta">' + SL.esc(SL.fmtDate(p.published_at)) + '<br>' +
+        SL.esc(p.category || "인사이트") + '</div>' +
+        '<div><h3>' + SL.esc(p.title) + '</h3><p>' + SL.esc(p.summary || "") + '</p></div>' +
+        '<div class="go">읽기 →</div></a>';
+    }).join("");
+  }).catch(fallback);
+})();
+</script>"""
