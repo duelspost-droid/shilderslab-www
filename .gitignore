@@ -2,3 +2,5 @@
 tools/__pycache__/
 *.pyc
 *.local
+.venv/
+node_modules/

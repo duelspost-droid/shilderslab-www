@@ -55,7 +55,7 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
 | 초기 콘텐츠 시드 (`0002`) | ✅ 라이브 적용 완료 — 인사이트 3건 공개, 채용 2건 초안 |
 | 백엔드 보안 경계 | ✅ anon 경로 E2E 검증 통과 (아래 6항) |
 | 관리자 콘솔 | ✅ 구현 완료(계정 관리 탭 포함) · 오너 계정 `admin` 결속 완료 — **로그인 동작 자체는 아직 미검증**(비밀번호 입력은 오너만) |
-| 영문 사명 표기 | ⚠️ `SHIELDUS LAB` 로 변경 중 — 페이지·CI 완료 / **명함 30종 미반영**(10항) |
+| 영문 사명 표기 | ✅ `SHIELDUS LAB` **반영 완료** (2026-07-30) — 페이지·CI·명함 30종 전부. 발주 보류 해제 |
 | 모바일 | ✅ 390px 검증 — 가로 스크롤 없음, 표 카드형 접힘, 드로어 정상 |
 | GitHub 저장소 · Pages | ✅ [duelspost-droid/shilderslab-www](https://github.com/duelspost-droid/shilderslab-www) · Pages 빌드 성공 |
 | 도메인 (가비아 DNS) | ✅ **등록 완료·전파 확인** (2026-07-30) |
@@ -63,7 +63,8 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
 | 라이브 감사 (5관점 병렬 + 적대적 검증) | ✅ 실시 — 확정 29건 중 high 2건 해소, 다수 반영(아래 7항) |
 | 접수 알림 메일 (선택) | ⏳ `notify-inquiry` 미배포 |
 
-로컬 경로: `/Users/hk/shilderslab-www` · 원격: `github.com/duelspost-droid/shilderslab-www` (public, main)
+로컬 경로: macOS `/Users/hk/shilderslab-www` · Windows `C:\Users\duels\Projects\shilderslab-www`
+원격: `github.com/duelspost-droid/shilderslab-www` (public, main)
 
 ---
 
@@ -364,6 +365,7 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-07-30 | 관리자 계정 관리(0004 + Edge + UI) · CI 로고 적용 · 그리드 버그 수정 · 모바일 정비 | — |
 | 2026-07-30 | 명함 시안 3종(인쇄 납품 규격 SVG/PDF/PNG/JPG) · 권한 결속 강화(적대적 검토 critical 반영) · 0004 라이브 적용 | **최초 관리자 부트스트랩(3항 ②)**, Edge 배포(선택) |
 | 2026-07-30 | 최초 관리자 부트스트랩 완료(오너 기존 계정 결속) · **사명 표기 변경 착수**(SHILDERS LAB → SHIELDUS LAB) · CI 재생성 · 빌드 폰트 레포 포함 | **§10 진행 중 작업** — 명함 30종 재생성 · 대표이사 인사말 · CI 심볼 재검토 · 도메인 판단 |
+| 2026-07-30 | **명함 30종 재생성 완료**(사명 표기 변경 마무리) · `/brand/` 발주 보류 경고 제거 · Windows PC 빌드 환경 구축(§10) | 오너 판단 3건 — 대표이사 성명 · CI 심볼(A/B/C) · 도메인 |
 
 ---
 
@@ -388,15 +390,20 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 
 ### 이어서 할 일 (우선순위 순)
 
-**1) 명함 30종 재생성 — 가장 급하다**
-명함은 워드마크가 **아웃라인 패스**로 박혀 있어 `grep` 으로 검출되지 않고 편집으로도 교체되지 않는다.
-현재 `assets/ci/card/` 의 30개 파일은 **전부 구 사명**이다.
-그래서 `/brand/` 명함 섹션에 **발주 보류 경고**(`.note-warn`)를 넣어 두었다 — 재생성 후 이 문단을 제거할 것.
+**1) ~~명함 30종 재생성~~ — ✅ 완료 (2026-07-30)**
+`tools/build-card.py` 를 전 포맷 한 번에 실행해 재생성했고, `/brand/` 의 발주 보류 경고(`.note-warn`)도 제거했다.
+**이제 인쇄 발주가 가능하다.**
 ```bash
 # 필요 패키지: fonttools svglib reportlab pypdf  (+ 래스터용 node/sharp)
-python3 tools/build-card.py            # 3 시안 × 앞뒤 × SVG/PDF/PNG/JPG
+SL_SHARP_DIR=<sharp 설치 디렉터리> python3 tools/build-card.py   # 3 시안 × 앞뒤 × SVG/PDF/PNG/JPG
 ```
 ⚠ SVG/PDF 만 갱신하고 PNG/JPG 를 남겨두면 **같은 시안의 포맷별 사명이 달라진다**. 반드시 한 번에 전부 재생성한다.
+⚠ `SL_SHARP_DIR` 를 지정하지 않으면 래스터(PNG/JPG)가 **조용히 건너뛰어진다**. 위 경고가 그대로 현실이 되므로 반드시 지정한다.
+
+실측 메모 — 재생성 후 30개 중 **22개만 변경**되는 것이 정상이다.
+`card-B-front` · `card-C-back` 은 영문 워드마크가 없는 면(심볼 + 도메인 `shilderslab.com` 뿐)이라
+SVG·PNG·JPG 가 바이트 동일하다. PDF 는 생성 타임스탬프 때문에 항상 변경된다.
+검증은 grep 이 아니라 **`@300.jpg` 를 눈으로 확인**해야 한다(아웃라인 패스라 문자열 검색이 통하지 않는다).
 
 **2) 대표이사 인사말** — `/about/` 에 섹션 추가. 서명에 쓸 **대표이사 성명이 없다**(`config.js` COMPANY.ceo 비어 있음).
 오너가 성명을 주면 넣는다. 이름을 임의로 만들지 않는다.
@@ -417,10 +424,33 @@ python3 tools/build-card.py            # 3 시안 × 앞뒤 × SVG/PDF/PNG/JPG
   모두 바꿔야 한다. **`DOMAIN` 상수와 `.com` 문자열 19개 파일**이 대상이다.
 현재 코드는 **유지**를 전제로 되어 있다.
 
-### 이 PC 특이사항 (빌드 환경)
-시스템 `python3` 에 `fontTools` 가 없어 CI 빌드가 실패한다. 스크래치패드 venv 를 만들어 썼다.
+### 빌드 환경 (PC별)
+
+**macOS** — 시스템 `python3` 에 `fontTools` 가 없어 CI 빌드가 실패한다. venv 를 만들어 썼다.
 ```bash
 /usr/bin/python3 -m venv ~/.venvs/sl && ~/.venvs/sl/bin/pip install fonttools svglib reportlab pypdf
 ~/.venvs/sl/bin/python tools/build-ci.py
 python3 tools/build-pages.py      # 페이지 빌더는 표준 라이브러리만 쓴다 — 시스템 python3 로 충분
 ```
+
+**Windows (`C:\Users\duels\Projects\shilderslab-www`)** — 구축 완료(2026-07-30).
+`python`/`python3` 는 MS Store 스텁이라 실행하면 exit 9009 로 죽는다. Python 3.12 를 따로 깔았다.
+```powershell
+winget install --id Python.Python.3.12 -e --scope user
+& "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe" -m venv .venv
+.\.venv\Scripts\python.exe -m pip install fonttools svglib reportlab pypdf
+.\.venv\Scripts\python.exe tools\build-pages.py
+```
+래스터용 `sharp` 는 레포 밖 별도 디렉터리에 설치하고 `SL_SHARP_DIR` 로 넘긴다(레포에 `node_modules` 를 만들지 않기 위함).
+```powershell
+npm install --prefix <sharp 디렉터리> sharp
+$env:SL_SHARP_DIR = "<sharp 디렉터리>"
+.\.venv\Scripts\python.exe tools\build-card.py
+```
+`.venv/` · `node_modules/` 는 `.gitignore` 에 넣어 두었다.
+
+⚠ **PDF 손상 함정 (Windows 에서 발견, `.gitattributes` 로 봉인함)**
+Windows git 기본값 `core.autocrlf=true` 인데, PDF 는 앞부분에 NUL 바이트가 없어 git 이 **텍스트로 오판**한다.
+그대로 두면 체크아웃마다 LF→CRLF 치환이 일어나 **인쇄 납품용 벡터 PDF 6개가 소리 없이 깨진다**.
+`.gitattributes` 에 `*.pdf binary` 를 포함해 전 플랫폼에서 바이트를 보존하도록 했다(PNG/JPG/TTF 도 함께).
+텍스트는 `eol=lf` 로 못박아 macOS↔Windows 간 전체 파일 재작성 diff 가 생기지 않게 했다.

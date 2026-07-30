@@ -1,0 +1,28 @@
+# 줄바꿈 변환 사고 방지 — macOS/Windows 양쪽에서 작업하므로 저장 형태를 여기서 못박는다.
+#
+# 핵심: PDF 는 앞부분에 NUL 바이트가 없어 git 이 '텍스트'로 오판한다.
+# core.autocrlf=true 인 Windows 에서 그대로 두면 체크아웃 때 LF→CRLF 치환이 일어나
+# 인쇄 납품용 벡터 PDF 가 손상된다. 아래 선언으로 전 플랫폼에서 바이트를 보존한다.
+
+*.pdf  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.ico  binary
+*.ttf  binary
+*.woff binary
+*.woff2 binary
+
+# 텍스트는 저장소에 LF 로만 저장한다(작업 트리 형태는 각 PC 설정에 맡긴다).
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.ts   text eol=lf
+*.json text eol=lf
+*.svg  text eol=lf
+*.py   text eol=lf
+*.sql  text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+*.xml  text eol=lf
