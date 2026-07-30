@@ -1,12 +1,9 @@
 -- ════════════════════════════════════════════════════════════════════════════
 -- 0001_shilderslab_core.sql — 쉴더스랩(shilderslab.com) 백엔드 코어
---   대상 프로젝트: nrdapzgtibbusvoaceuh  (secuday / VulnScan / jbax-www 와 공유)
---
 --   ⚠ 공유 프로젝트 전제 조건
---     이 Supabase 프로젝트에는 다른 서비스(VulnScan 등)의 사용자가 함께 존재한다.
---     따라서 "authenticated = 관리자"가 아니다.  기존 ax_* 테이블이 쓰던
---     `for all to authenticated using (true)` 패턴은 이 프로젝트에서 권한 결함이므로
---     여기서는 전부 sl_admins 화이트리스트(is_sl_admin())로 게이트한다.
+--     이 Supabase 프로젝트는 다른 서비스와 공유한다. 즉 로그인 사용자가 곧 이 사이트의 관리자는 아니다.
+--     따라서 "authenticated = 관리자" 가정을 쓰지 않고, 전 테이블을
+--     sl_admins 화이트리스트(is_sl_admin())로 게이트한다.
 --
 --   설계 원칙
 --     1) 공개 읽기는 published 행만. 미게시·PII 테이블은 anon 정책 자체를 만들지 않는다.
@@ -49,10 +46,11 @@ create policy sl_admins_read on public.sl_admins for select to authenticated
   using (public.is_sl_admin());
 -- 쓰기 정책 없음 → 관리자 추가/삭제는 SQL(또는 service_role)로만.
 
--- 최초 관리자 시드. 실제 로그인 계정(auth.users)에 존재해야 로그인 후 권한이 붙는다.
-insert into public.sl_admins(email, role, note)
-values ('duels@jbfg.com', 'admin', '쉴더스랩 최초 관리자')
-on conflict (email) do nothing;
+-- 최초 관리자 등록 — 공개 저장소이므로 실제 주소를 파일에 남기지 않는다.
+-- 아래 한 줄의 <관리자 이메일> 을 바꿔 SQL Editor 에서 직접 실행할 것.
+-- 해당 주소는 Authentication → Users 에 로그인 계정으로도 존재해야 권한이 붙는다.
+--   insert into public.sl_admins(email, role, note)
+--   values ('<관리자 이메일>', 'admin', '쉴더스랩 관리자') on conflict (email) do nothing;
 
 -- ═══════════════════ 2) 사이트 설정 (kv) ═══════════════════
 create table if not exists public.sl_settings (

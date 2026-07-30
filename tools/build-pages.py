@@ -62,7 +62,7 @@ FOOTER = """<footer class="site">
       <div class="foot-col">
         <h5>Contact</h5>
         <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
-        <span>평일 09:00 – 18:00</span>
+        <span data-setting="business_hours">평일 09:00 – 18:00</span>
         <a href="/contact/">상담 · 견적 요청 →</a>
       </div>
     </div>
@@ -74,7 +74,6 @@ FOOTER = """<footer class="site">
       <div class="legal-links">
         <a href="/legal/privacy.html">개인정보처리방침</a>
         <a href="/legal/terms.html">이용약관</a>
-        <a href="/admin/">관리자</a>
       </div>
     </div>
   </div>
@@ -197,8 +196,8 @@ def build_all():
 
     page("insights/view.html",
          "인사이트 | 쉴더스랩",
-         "쉴더스랩 보안 인사이트 상세.",
-         D.VIEW_BODY, "/insights/", extra_js=D.VIEW_JS)
+         "규제 변화와 진단 현장에서 반복되는 문제, 실제로 통했던 조치 방법을 정리한 쉴더스랩의 보안 인사이트.",
+         D.VIEW_BODY, "/insights/view.html", extra_js=D.VIEW_JS)
 
     page("careers/index.html",
          "채용 | 쉴더스랩 — 정보보호 컨설턴트 채용",
@@ -211,6 +210,49 @@ def build_all():
          D.CONTACT_BODY, "/contact/", extra_css=D.CONTACT_CSS, extra_js=D.CONTACT_JS,
          ld='{"@context":"https://schema.org","@type":"ContactPage","name":"상담 · 견적 요청 | 쉴더스랩",'
             '"url":"https://shilderslab.com/contact/"}')
+
+
+def build_sitemap():
+    """정적 페이지 + 공개된 인사이트 글로 sitemap.xml 을 생성한다.
+    인사이트는 CMS(Supabase)에 있으므로 빌드 시점에 공개분을 읽어 넣는다.
+    네트워크가 없거나 실패하면 정적 페이지만으로 생성한다(빌드는 계속된다)."""
+    import json, re as _re, urllib.request, datetime
+
+    static = [("/", "1.0"), ("/services/", "0.9"), ("/contact/", "0.9"), ("/about/", "0.8"),
+              ("/insights/", "0.8"), ("/careers/", "0.6"), ("/brand/", "0.4"),
+              ("/legal/privacy.html", "0.3"), ("/legal/terms.html", "0.3")]
+    today = datetime.date.today().isoformat()
+    rows = [(loc, today, pr) for loc, pr in static]
+
+    try:
+        cfg = open(os.path.join(ROOT, "config.js"), encoding="utf-8").read()
+        url = _re.search(r'SUPABASE_URL:\s*"([^"]+)"', cfg).group(1)
+        key = _re.search(r'SUPABASE_ANON_KEY:\s*"([^"]+)"', cfg).group(1)
+        req = urllib.request.Request(
+            f"{url}/rest/v1/sl_insights?select=slug,published_at&published=eq.true"
+            "&order=published_at.desc&limit=500",
+            headers={"apikey": key, "Authorization": f"Bearer {key}", "Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            posts = json.loads(r.read().decode())
+        for post in posts:
+            rows.append((f"/insights/view.html?slug={post['slug']}",
+                         post.get("published_at") or today, "0.7"))
+        print(f"  · sitemap: 인사이트 {len(posts)}건 포함")
+    except Exception as e:
+        print(f"  ! sitemap: 인사이트 조회 실패({e.__class__.__name__}) — 정적 페이지만 생성")
+
+    def esc(v):
+        return v.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    body = "\n".join(
+        f"  <url><loc>https://shilderslab.com{esc(loc)}</loc>"
+        f"<lastmod>{lm}</lastmod><priority>{pr}</priority></url>"
+        for loc, lm, pr in rows)
+    out = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "\n</urlset>\n")
+    with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
+        f.write(out)
+    print(f"  ✓ sitemap.xml  ({len(rows)} URL)")
 
 
 def sync_shell(paths):
@@ -232,6 +274,8 @@ def sync_shell(paths):
 if __name__ == "__main__":
     print("페이지 생성:")
     build_all()
+    print("사이트맵 생성:")
+    build_sitemap()
     print("공용 셸 동기화:")
     sync_shell(["index.html", "services/index.html"])
     print("완료.")

@@ -90,21 +90,31 @@
       <tbody>
         <tr>
           <td data-l="구분">상담 · 견적 문의</td>
-          <td data-l="항목">회사명, 담당자 성명, 이메일, (선택) 연락처, 문의 내용</td>
-          <td data-l="목적">문의 접수·확인, 상담 및 견적 회신, 과업 범위 협의</td>
+          <td data-l="항목">회사명, 담당자 성명, 이메일, (선택) 연락처, 문의 유형, 문의 내용<br>
+              <span style="color:var(--muted)">(자동 수집) 접속 IP 주소, 브라우저 정보(User-Agent)</span></td>
+          <td data-l="목적">문의 접수·확인, 상담 및 견적 회신, 과업 범위 협의<br>
+              <span style="color:var(--muted)">자동 수집 항목은 중복·스팸 접수 방지 목적으로만 이용</span></td>
           <td data-l="기간">문의 처리 완료 후 1년 (이후 지체 없이 파기)</td>
         </tr>
         <tr>
           <td data-l="구분">채용 지원</td>
-          <td data-l="항목">성명, 이메일, (선택) 연락처, 지원 직무, 경력 요약, (선택) 포트폴리오·이력서 링크</td>
-          <td data-l="목적">채용 전형 진행, 전형 결과 안내</td>
-          <td data-l="기간">해당 채용 전형 종료 후 6개월 (동의 철회 시 즉시 파기)</td>
+          <td data-l="항목">성명, 이메일, (선택) 연락처, 지원 직무, 경력 요약, (선택) 포트폴리오·이력서 링크<br>
+              <span style="color:var(--muted)">(자동 수집) 접속 IP 주소, 브라우저 정보(User-Agent)</span></td>
+          <td data-l="목적">채용 전형 진행, 전형 결과 안내<br>
+              <span style="color:var(--muted)">자동 수집 항목은 중복·스팸 접수 방지 목적으로만 이용</span></td>
+          <td data-l="기간">해당 채용 전형 종료 후 6개월<br>(진행 중인 전형이 없는 상시 지원은 접수일로부터 6개월)<br>동의 철회 시 즉시 파기</td>
         </tr>
         <tr>
           <td data-l="구분">웹사이트 운영 로그</td>
           <td data-l="항목">접속 IP 주소, 접속 일시, 요청 경로, 브라우저 정보(User-Agent), 연결 경로(Referer)</td>
           <td data-l="목적">서비스 운영 통계, 오류·비정상 접근 확인 등 보안 관리</td>
           <td data-l="기간">90일 (자동 삭제)</td>
+        </tr>
+        <tr>
+          <td data-l="구분">문의·지원 접수 기록<br>(감사 로그)</td>
+          <td data-l="항목">접속 IP 주소, 브라우저 정보(User-Agent), 접수 시각, 접수 구분(문의 유형·지원 직무)</td>
+          <td data-l="목적">중복·부정 접수 확인 및 침해사고 대응</td>
+          <td data-l="기간">1년 (자동 삭제)</td>
         </tr>
         <tr>
           <td data-l="구분">관리자 접속 기록</td>
@@ -115,7 +125,7 @@
       </tbody>
     </table>
     <p>문의·지원 과정에서 개인정보를 수집할 때에는 수집 항목, 목적, 보유 기간을 안내하고
-       정보주체의 <b>동의를 받은 후</b>에 처리합니다. 필수 항목 외 선택 항목은 미기재해도 서비스 이용에 제한이 없습니다.</p>
+       정보주체의 <b>동의를 받은 후</b>에 처리합니다. 필수 항목 외 선택 항목은 기재하지 않아도 서비스 이용에 제한이 없습니다.</p>
     <p>서비스 수행(컨설팅 과업) 과정에서 고객사로부터 제공받는 자료의 처리는 개별 계약과
        비밀유지계약(NDA)에 따르며, 이 방침은 본 웹사이트를 통한 처리에 적용됩니다.</p>
 
@@ -126,19 +136,31 @@
     <h2>3. 개인정보 처리업무의 위탁 및 국외 이전</h2>
     <p>서비스 운영을 위해 아래와 같이 처리업무를 위탁하고 있으며, 해당 업무 수행을 위해 개인정보가 국외로 이전됩니다.</p>
     <table>
-      <thead><tr><th>수탁자</th><th>위탁 업무</th><th>이전 항목</th><th>이전 국가 · 보유기간</th></tr></thead>
+      <thead><tr><th>수탁자 · 연락처</th><th>위탁 업무</th><th>이전 항목</th><th>이전 국가</th><th>이전 시기 · 방법</th><th>보유기간</th></tr></thead>
       <tbody>
         <tr>
-          <td data-l="수탁자">GitHub, Inc.</td>
+          <td data-l="수탁자">GitHub, Inc.<br><span style="color:var(--muted)">support.github.com/contact/privacy</span></td>
           <td data-l="업무">웹사이트 호스팅(GitHub Pages) 및 전송 구간 운영</td>
           <td data-l="항목">접속 IP, 접속 일시, 요청 정보</td>
-          <td data-l="국가">미국 · 위탁 계약 종료 시까지</td>
+          <td data-l="국가">미국</td>
+          <td data-l="시기·방법">이용자의 사이트 접속 시점에 정보통신망을 통해 수시 이전(HTTPS 전송)</td>
+          <td data-l="기간">위탁 계약 종료 시까지</td>
         </tr>
         <tr>
-          <td data-l="수탁자">Supabase, Inc.</td>
+          <td data-l="수탁자">Supabase, Inc.<br><span style="color:var(--muted)">privacy@supabase.io</span></td>
           <td data-l="업무">데이터베이스·인증 서비스 호스팅(문의·지원·로그 저장)</td>
           <td data-l="항목">위 1항의 수집 항목</td>
-          <td data-l="국가">미국 · 위탁 계약 종료 시까지</td>
+          <td data-l="국가">미국</td>
+          <td data-l="시기·방법">문의·지원 접수 및 방문 로깅 시점에 정보통신망을 통해 수시 이전(HTTPS 전송)</td>
+          <td data-l="기간">위탁 계약 종료 시까지</td>
+        </tr>
+        <tr>
+          <td data-l="수탁자">Google LLC<br><span style="color:var(--muted)">policies.google.com/privacy</span></td>
+          <td data-l="업무">웹폰트(Google Fonts) 제공</td>
+          <td data-l="항목">접속 IP, 브라우저 정보(User-Agent)</td>
+          <td data-l="국가">미국</td>
+          <td data-l="시기·방법">페이지 로딩 시 브라우저가 폰트를 내려받는 시점에 이전(HTTPS 전송)</td>
+          <td data-l="기간">Google 정책에 따름</td>
         </tr>
       </tbody>
     </table>
@@ -163,7 +185,7 @@
     </ol>
     <p>권리 행사는 <a href="mailto:contact@shilderslab.com" style="color:var(--cy-300)">contact@shilderslab.com</a>
        으로 서면·전자우편 등을 통해 요청하실 수 있으며, 쉴더스랩은 지체 없이 조치합니다.
-       정보주체가 요구한 열람·정정·삭제 요청은 법령에서 정한 사유가 없는 한 제한하지 않습니다.</p>
+       정보주체의 열람·정정·삭제 요구는 법령에서 정한 사유가 없는 한 제한하지 않습니다.</p>
 
     <h2>6. 개인정보의 안전성 확보 조치</h2>
     <ul>
@@ -185,7 +207,9 @@
     <p>개인정보 처리에 관한 문의, 불만처리, 피해구제 등에 관한 사항은 아래로 연락해 주시기 바랍니다.</p>
     <ul>
       <li>이메일: <a href="mailto:contact@shilderslab.com" style="color:var(--cy-300)">contact@shilderslab.com</a></li>
-      <li>상호 및 대표자, 사업장 주소, 개인정보 보호책임자 정보는 본 페이지 하단(사업자 정보)에 표시됩니다.</li>
+      <li>개인정보 보호책임자: 문의·열람 청구는 위 이메일로 접수하며, 접수 즉시 담당자가 처리합니다.
+          (보호책임자 성명·직책은 조직 확정 후 본 항목에 게시합니다.)</li>
+      <li>상호 및 대표자, 사업장 주소는 사업자 등록 정보 확정 후 본 페이지 하단(사업자 정보)에 게시합니다.</li>
     </ul>
     <p>개인정보 침해에 대한 신고·상담이 필요한 경우 아래 기관에 문의할 수 있습니다.</p>
     <ul>
@@ -231,7 +255,7 @@
       <div class="foot-col">
         <h5>Contact</h5>
         <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
-        <span>평일 09:00 – 18:00</span>
+        <span data-setting="business_hours">평일 09:00 – 18:00</span>
         <a href="/contact/">상담 · 견적 요청 →</a>
       </div>
     </div>
@@ -243,7 +267,6 @@
       <div class="legal-links">
         <a href="/legal/privacy.html">개인정보처리방침</a>
         <a href="/legal/terms.html">이용약관</a>
-        <a href="/admin/">관리자</a>
       </div>
     </div>
   </div>

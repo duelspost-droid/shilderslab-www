@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
+
+# /admin/ 은 크롤을 막지 않는다 — 페이지의 noindex 메타가 읽혀야 색인에서 확실히 제외된다.
 
 Sitemap: https://shilderslab.com/sitemap.xml

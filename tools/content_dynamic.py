@@ -83,7 +83,7 @@ INSIGHTS_JS = """<script>
   }
   SL.listPublished("sl_insights", {
     columns: "slug,category,title,summary,published_at",
-    order: { col: "published_at", asc: false }, limit: 60
+    order: [{ col: "sort_order", asc: false }, { col: "published_at", asc: false }], limit: 60
   }).then(function (r) {
     all = (r && r.data) || [];
     if (!all.length) {
@@ -176,8 +176,17 @@ VIEW_JS = """<script>
       return;
     }
     document.title = p.title + " | 쉴더스랩 인사이트";
-    var d = document.querySelector('meta[name="description"]');
-    if (d && p.summary) d.setAttribute("content", String(p.summary).slice(0, 150));
+    var desc = String(p.summary || "").slice(0, 150);
+    var canon = "https://shilderslab.com/insights/view.html?slug=" + encodeURIComponent(slug);
+    function setAttr(sel, attr, val) {
+      var el = document.querySelector(sel);
+      if (el && val) el.setAttribute(attr, val);
+    }
+    setAttr('meta[name="description"]', "content", desc);
+    setAttr('link[rel="canonical"]', "href", canon);
+    setAttr('meta[property="og:url"]', "content", canon);
+    setAttr('meta[property="og:title"]', "content", p.title + " | 쉴더스랩 인사이트");
+    setAttr('meta[property="og:description"]', "content", desc);
     headEl.innerHTML =
       '<div class="meta" style="display:flex;gap:12px;align-items:center;font-size:.78rem;color:var(--muted);' +
       'font-weight:700;margin-bottom:6px"><span class="cat" style="color:var(--cy-300);' +
@@ -261,10 +270,14 @@ CAREERS_BODY = """<section class="page-head">
       <span class="kicker">APPLY</span>
       <h2>지원하기</h2>
       <p>아래 양식으로 지원 의사를 남겨주시면 담당자가 확인 후 연락드립니다.
-         이력서·포트폴리오는 링크로 첨부해 주세요.</p>
+         이력서·포트폴리오는 공개 링크로 남겨 주세요.</p>
     </div>
     <form class="form-card reveal d1" id="apply-form" novalidate>
       <div class="alert" id="ap-alert" role="status"></div>
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+        <label for="ap-website">웹사이트</label>
+        <input id="ap-website" type="text" tabindex="-1" autocomplete="off">
+      </div>
       <div class="row2">
         <div class="field">
           <label for="ap-name">성명 <span class="req">*</span></label>
@@ -308,13 +321,14 @@ CAREERS_BODY = """<section class="page-head">
       </div>
       <label class="consent">
         <input type="checkbox" id="ap-consent" required>
-        <span>채용 전형 진행을 위한 개인정보 수집·이용에 동의합니다. 수집 항목(성명·이메일·연락처·지원 내용)은
-          전형 종료 후 6개월간 보관 후 파기되며, 동의 철회 시 즉시 파기됩니다.
+        <span>채용 전형 진행을 위한 개인정보 수집·이용에 동의합니다. 수집 항목(성명·이메일·연락처·지원 내용,
+          그리고 스팸·중복 접수 방지를 위해 자동 수집되는 접속 IP·브라우저 정보)은
+          전형 종료 후 6개월(상시 지원은 접수일로부터 6개월)간 보관 후 파기되며, 동의 철회 시 즉시 파기됩니다.
           자세한 내용은 <a href="/legal/privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>을 확인해 주세요.</span>
       </label>
       <div style="margin-top:22px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
         <button class="btn btn-primary" type="submit" id="ap-submit">지원서 제출</button>
-        <span class="form-note" style="margin:0">제출 후 담당자가 확인하는 데 수 일이 소요될 수 있습니다.</span>
+        <span class="form-note" style="margin:0">제출 후 담당자가 확인하는 데 수일이 소요될 수 있습니다.</span>
       </div>
     </form>
   </div>
@@ -376,6 +390,13 @@ CAREERS_JS = """<script>
     var consent = document.getElementById("ap-consent");
     var link = document.getElementById("ap-link");
     var phone = document.getElementById("ap-phone");
+
+    var hp = document.getElementById("ap-website");
+    if (hp && hp.value) {
+      form.reset();
+      show("ok", "지원서가 접수되었습니다. 확인 후 이메일로 연락드립니다.");
+      return;
+    }
 
     var bad = false;
     [[name, !name.value.trim()], [email, !/^[^@\\s]+@[^@\\s.]+\\.[^@\\s]+$/.test(email.value.trim())],
@@ -443,6 +464,10 @@ CONTACT_BODY = """<section class="page-head">
   <div class="wrap contact-grid">
     <form class="form-card reveal" id="inq-form" novalidate>
       <div class="alert" id="inq-alert" role="status"></div>
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+        <label for="inq-website">웹사이트</label>
+        <input id="inq-website" type="text" tabindex="-1" autocomplete="off">
+      </div>
       <div class="row2">
         <div class="field">
           <label for="inq-company">회사명 <span class="req">*</span></label>
@@ -490,13 +515,14 @@ CONTACT_BODY = """<section class="page-head">
       </div>
       <label class="consent">
         <input type="checkbox" id="inq-consent" required>
-        <span>상담 회신을 위한 개인정보 수집·이용에 동의합니다. 수집 항목(회사명·담당자명·이메일·연락처·문의 내용)은
+        <span>상담 회신을 위한 개인정보 수집·이용에 동의합니다. 수집 항목(회사명·담당자명·이메일·연락처·문의 유형·문의 내용,
+          그리고 스팸·중복 접수 방지를 위해 자동 수집되는 접속 IP·브라우저 정보)은
           문의 처리 완료 후 1년간 보관 후 파기됩니다.
           자세한 내용은 <a href="/legal/privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>을 확인해 주세요.</span>
       </label>
       <div style="margin-top:22px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
         <button class="btn btn-primary" type="submit" id="inq-submit">문의 보내기</button>
-        <span class="form-note" style="margin:0">영업일 기준 24시간 내 초기 회신</span>
+        <span class="form-note" data-setting="sla_note" style="margin:0">영업일 기준 24시간 내 초기 회신</span>
       </div>
     </form>
 
@@ -504,13 +530,13 @@ CONTACT_BODY = """<section class="page-head">
       <div class="info-card reveal d1">
         <h3>직접 연락</h3>
         <div class="info-row"><b>이메일</b><a href="mailto:contact@shilderslab.com" style="color:var(--cy-300)">contact@shilderslab.com</a></div>
-        <div class="info-row"><b>운영시간</b><span>평일 09:00 – 18:00 (주말·공휴일 휴무)</span></div>
+        <div class="info-row"><b>운영시간</b><span><span data-setting="business_hours">평일 09:00 – 18:00</span> (주말·공휴일 휴무)</span></div>
         <div class="info-row"><b>보안 신고</b><span>취약점 제보는 이메일로 보내주세요. 비공개로 검토합니다.</span></div>
       </div>
       <div class="info-card reveal d2">
         <h3>진행 절차</h3>
         <ol class="steps">
-          <li>문의 접수 — 담당자 확인 후 24시간 내 초기 회신</li>
+          <li>문의 접수 — 담당자 확인 후 영업일 기준 24시간 내 초기 회신</li>
           <li>사전 미팅 — 대상 범위·목표 일정·제약 사항 확인 (온라인 가능)</li>
           <li>제안 및 견적 — 진단 항목, 일정, 산출물, 비용을 문서로 제시</li>
           <li>계약 · NDA 체결 후 착수</li>
@@ -550,6 +576,14 @@ CONTACT_JS = """<script>
     var service = document.getElementById("inq-service");
     var message = document.getElementById("inq-message");
     var consent = document.getElementById("inq-consent");
+
+    /* 허니팟 — 자동 제출 봇만 채우는 숨김 필드. 조용히 성공 처리하고 서버에 보내지 않는다. */
+    var hp = document.getElementById("inq-website");
+    if (hp && hp.value) {
+      form.reset();
+      show("ok", "문의가 접수되었습니다. 영업일 기준 24시간 내에 담당자가 회신드립니다.");
+      return;
+    }
 
     var bad = false;
     [[company, !company.value.trim()], [name, !name.value.trim()],

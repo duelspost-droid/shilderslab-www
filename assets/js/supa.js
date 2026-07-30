@@ -32,7 +32,8 @@
     var s = String(u || "").trim();
     if (!s) return "";
     if (/^https?:\/\//i.test(s)) return s;
-    if (/^\//.test(s) && !/^\/\//.test(s)) return s; // 사이트 내부 절대경로
+    // 사이트 내부 절대경로만 허용 — //host, /\host 같은 프로토콜 상대경로는 차단
+    if (/^\//.test(s) && !/^\/[\/\\]/.test(s)) return s;
     return "";
   }
 
@@ -69,7 +70,12 @@
     if (!allowed[table]) return Promise.resolve({ data: [], error: new Error("not allowed") });
     var q = c.from(table).select(opts.columns || "*");
     if (table !== "sl_settings") q = q.eq("published", true);
-    if (opts.order) q = q.order(opts.order.col, { ascending: !!opts.order.asc, nullsFirst: false });
+    if (opts.order) {
+      var orders = Array.isArray(opts.order) ? opts.order : [opts.order];
+      orders.forEach(function (o) {
+        q = q.order(o.col, { ascending: !!o.asc, nullsFirst: false });
+      });
+    }
     if (opts.limit) q = q.limit(opts.limit);
     if (opts.eq) Object.keys(opts.eq).forEach(function (k) { q = q.eq(k, opts.eq[k]); });
     return q;

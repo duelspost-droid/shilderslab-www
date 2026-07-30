@@ -6,6 +6,12 @@
    ────────────────────────────────────────────────────────────────────────── */
 (function () {
   "use strict";
+  /* 프레임 버스터 — meta CSP 로는 frame-ancestors 가 적용되지 않으므로 클릭재킹을 JS로 차단한다. */
+  if (self !== top) {
+    document.documentElement.style.display = "none";
+    try { top.location = self.location; } catch (e) { location.replace("/"); }
+    return;
+  }
   var esc = SL.esc, escA = SL.escA, db = SL.db();
   var loginView = document.getElementById("login-view");
   var appView = document.getElementById("app-view");
@@ -316,6 +322,7 @@
     var box = document.getElementById("ins-table");
     box.innerHTML = emptyBox("불러오는 중…");
     db.from("sl_insights").select("id,slug,category,title,summary,body,author,published,published_at,sort_order")
+      .order("sort_order", { ascending: false })
       .order("published_at", { ascending: false }).limit(200).then(function (r) {
         if (r.error) { box.innerHTML = emptyBox("불러오지 못했습니다: " + r.error.message); return; }
         var rows = r.data || [];
@@ -366,12 +373,16 @@
     var payload = {
       title: val("f-title").trim(), slug: val("f-slug").trim().toLowerCase(),
       category: val("f-cat").trim() || "인사이트", author: val("f-author").trim(),
-      published_at: val("f-date"), sort_order: parseInt(val("f-order"), 10) || 0,
+      published_at: val("f-date") || new Date().toISOString().slice(0, 10),
+      sort_order: parseInt(val("f-order"), 10) || 0,
       summary: val("f-summary").trim(), body: val("f-body"), published: checked("f-pub"),
     };
     if (!payload.title) { show("md-alert", "bad", "제목을 입력해 주세요."); return; }
     if (!/^[a-z0-9]([a-z0-9-]{0,78}[a-z0-9])?$/.test(payload.slug)) {
       show("md-alert", "bad", "slug 는 영문 소문자·숫자·하이픈만 사용할 수 있습니다."); return;
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(payload.published_at)) {
+      show("md-alert", "bad", "발행일을 선택해 주세요."); return;
     }
     var p = id ? db.from("sl_insights").update(payload).eq("id", id)
                : db.from("sl_insights").insert(payload);
@@ -591,7 +602,7 @@
     db.from("sl_settings").upsert(rows, { onConflict: "key" }).then(function (r) {
       if (r.error) { show("set-alert", "bad", r.error.message); return; }
       audit("update_setting", "sl_settings", "notice", { on: checked("set-notice-on") });
-      show("set-alert", "ok", "저장되었습니다. 사이트에 즉시 반영됩니다.");
+      show("set-alert", "ok", "저장되었습니다. 공개 페이지에는 새로고침 시 반영됩니다.");
     });
   });
 

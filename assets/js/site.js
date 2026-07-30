@@ -152,6 +152,21 @@
   /* ─────────── 공지 배너 (sl_settings.notice, 관리자 화면에서 관리) ─────────── */
   if (window.SL && SL.db && SL.db() && !doc.body.hasAttribute("data-no-log")) {
     SL.loadSettings().then(function (s) {
+      /* 관리자 '사이트 설정' 값 반영 — 빈 값이면 정적 문구를 그대로 둔다. */
+      if (s && typeof s.contact_email === "string" && s.contact_email) {
+        Array.prototype.forEach.call(doc.querySelectorAll('a[href^="mailto:"]'), function (a) {
+          var txt = (a.textContent || "").trim();
+          a.setAttribute("href", "mailto:" + s.contact_email);
+          if (/^[^@\s]+@[^@\s]+$/.test(txt)) a.textContent = s.contact_email;
+        });
+      }
+      ["business_hours", "sla_note"].forEach(function (k) {
+        if (!s || typeof s[k] !== "string" || !s[k]) return;
+        Array.prototype.forEach.call(doc.querySelectorAll('[data-setting="' + k + '"]'), function (el) {
+          el.textContent = s[k];
+        });
+      });
+
       var n = s && s.notice;
       if (!n || !n.on || !n.text) return;
       var esc = SL.esc, href = SL.safeUrl(n.href);

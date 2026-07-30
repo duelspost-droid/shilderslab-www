@@ -2,6 +2,9 @@
 
 > 이 문서가 **정본**이다. 세션이 바뀌거나 다른 PC에서 이어받을 때 이 파일을 먼저 읽는다.
 > 상태·결정·남은 작업을 여기서만 관리한다.
+>
+> ⚠️ **이 저장소는 public 이다.** 계정 주소·미적용 보안조치·정확한 임계값 등 공격에 도움이 되는 정보는
+> 여기 적지 않는다. 그런 항목은 로컬 메모나 비공개 채널로 관리한다.
 
 최초 작성: 2026-07-30
 
@@ -18,8 +21,9 @@
 | 백엔드 보안 경계 | ✅ anon 경로 E2E 검증 통과 (아래 6항) |
 | 관리자 콘솔 | ⚠️ 구현 완료 · **로그인 미검증** — 관리자 Auth 계정 생성 필요(아래 ②) |
 | GitHub 저장소 · Pages | ✅ [duelspost-droid/shilderslab-www](https://github.com/duelspost-droid/shilderslab-www) · Pages 빌드 성공 |
-| 도메인 (가비아 DNS) | ✅ **등록 완료·전파 확인** (2026-07-30) — `http(s)://shilderslab.com` 200, www→apex 301 |
-| HTTPS 인증서 | ⏳ GitHub Let's Encrypt 발급 대기(자동) → 발급 후 Enforce HTTPS 켜기 |
+| 도메인 (가비아 DNS) | ✅ **등록 완료·전파 확인** (2026-07-30) |
+| HTTPS | ✅ **인증서 발급·강제 완료** — apex/www 모두 Let's Encrypt 유효, http→https 301 |
+| 라이브 감사 (5관점 병렬 + 적대적 검증) | ✅ 실시 — 확정 29건 중 high 2건 해소, 다수 반영(아래 7항) |
 | 접수 알림 메일 (선택) | ⏳ `notify-inquiry` 미배포 |
 
 로컬 경로: `/Users/hk/shilderslab-www` · 원격: `github.com/duelspost-droid/shilderslab-www` (public, main)
@@ -29,13 +33,11 @@
 ## 2. 아키텍처 결정 (요약)
 
 - **정적 프런트 + Supabase**: jbax-www(`/ax/`)와 동일한 방식. 빌드 도구·서버 런타임 없음 → GitHub Pages로 즉시 배포.
-- **Supabase 프로젝트 공유** (`nrdapzgtibbusvoaceuh`, secuday/VulnScan/jbax-www와 동일):
-  → 이 프로젝트에는 **다른 서비스의 로그인 사용자가 존재**한다. 따라서 기존 `ax_*` 테이블이 쓰던
-  `for all to authenticated using (true)` 패턴은 여기서 **권한 결함**이므로 사용하지 않았고,
-  전 테이블 쓰기를 `sl_admins` 화이트리스트(`is_sl_admin()`)로 게이트했다.
+- **Supabase 프로젝트를 다른 서비스와 공유**한다. 따라서 이 사이트에서는 `authenticated` 를 관리자와 동일시하지 않는다.
+  전 테이블의 읽기·쓰기 권한을 `sl_admins` 화이트리스트(`is_sl_admin()`)로 게이트했다.
 - **PII 테이블은 공개 정책 자체를 만들지 않음**: `sl_inquiries` / `sl_applications` 는 INSERT 정책이 없고
-  `SECURITY DEFINER` RPC(`sl_submit_inquiry`, `sl_apply`)로만 적재된다. 동의 필수·이메일 형식·길이 상한·
-  **IP 기준 레이트리밋**(문의 5건/시간, 지원 3건/시간)을 서버측에서 강제한다.
+  `SECURITY DEFINER` RPC(`sl_submit_inquiry`, `sl_apply`)로만 적재된다. 동의 필수·이메일 형식·길이 상한과
+  서버측 레이트리밋(IP 기준 + 전역 상한 2계층), 폼 허니팟을 적용했다. 구체적 임계값은 마이그레이션 파일 참조.
 - **CDN 의존 제거**: supabase-js를 `assets/vendor/` 에 자체 호스팅 → CSP를 `script-src 'self'` 로 좁혔다.
 - **워드마크 아웃라인**: 로고에 `<text>` 를 쓰지 않고 글리프를 패스로 변환해 임베드. 폰트 없는 환경·인쇄·커팅에서 동일 렌더.
 
@@ -43,24 +45,29 @@
 
 ## 3. 오너 조치 필요 (순서대로)
 
-### ① ~~DB 마이그레이션 적용~~ ✅ 완료 (2026-07-30)
-`0001` · `0002` 모두 SQL Editor에서 실행 완료("Success. No rows returned").
-두 파일 모두 재실행 안전(idempotent)이므로 필요 시 다시 실행해도 된다.
+### ① DB 마이그레이션
+- `0001_shilderslab_core.sql` · `0002_shilderslab_seed.sql` — ✅ 적용 완료 (2026-07-30)
+- `0003_shilderslab_hardening.sql` — 감사 후속 보강(서버측 길이 검증, 전역 남용 상한,
+  개인정보 보유기간 자동 파기 `sl_pii_purge`, pg_cron 스케줄). **적용 상태는 7항 참조.**
 
-### ② 관리자 Auth 계정 생성 — **현재 관리자 로그인 불가 상태**
-`0001` 이 `sl_admins` 화이트리스트에 `duels@jbfg.com` 을 넣어두었지만,
-확인 결과 **이 Supabase 프로젝트의 `auth.users` 에는 화이트리스트와 일치하는 계정이 없다**
-(`select email from auth.users where lower(email) in (select lower(email) from sl_admins)` → 0행).
-즉 지금은 `/admin/` 에서 로그인할 계정 자체가 없다. 둘 중 하나를 하면 된다.
+전부 재실행 안전(idempotent)이다.
 
-**(A) 기존 이메일로 계정 생성** — Supabase 대시보드 → Authentication → Users → **Add user**
-→ Email `duels@jbfg.com`, 비밀번호 지정, *Auto Confirm User* 켜기. (비밀번호 입력은 오너가 직접)
+### ② 관리자 Auth 계정 생성 — **아직 로그인 가능한 계정 없음**
+`0001` 시드가 화이트리스트(`sl_admins`)에 오너 주소 1건을 넣어두었으나, 확인 결과 이 Supabase 프로젝트의
+`auth.users` 에 대응하는 로그인 계정이 없다. 아래 확인 쿼리가 0행이면 로그인 계정을 먼저 만들어야 한다.
 
-**(B) 쉴더스랩 전용 주소 사용** — 위와 같은 방법으로 계정을 만든 뒤, SQL Editor에서 화이트리스트에 추가:
+```sql
+select count(*) from auth.users u
+ where lower(u.email) in (select lower(email) from public.sl_admins);
+```
+
+**계정 생성** — Supabase 대시보드 → Authentication → Users → **Add user**
+→ 이메일 입력, 비밀번호 지정, *Auto Confirm User* 켜기. (비밀번호 입력은 오너가 직접)
+
+**다른 주소를 쓰려면** 계정 생성 후 화이트리스트에 추가:
 ```sql
 insert into public.sl_admins(email, role, note)
-values ('admin@shilderslab.com', 'admin', '쉴더스랩 관리자')
-on conflict (email) do nothing;
+values ('<사용할 주소>', 'admin', '쉴더스랩 관리자') on conflict (email) do nothing;
 ```
 
 로그인 후 `/admin/` 대시보드에 통계가 보이면 정상이다. 화이트리스트에 없는 계정으로 로그인하면
@@ -89,8 +96,7 @@ gh api repos/duelspost-droid/shilderslab-www/pages --jq '.https_certificate.stat
 ```bash
 gh api -X PUT repos/duelspost-droid/shilderslab-www/pages -F https_enforced=true
 ```
-⚠️ **GitHub 웹 UI는 현재 2FA 등록 인터스티셜로 차단**되어 Settings→Pages 화면 접근이 안 된다(토큰 API는 정상).
-계정에 2FA를 등록하면 UI에서도 "Enforce HTTPS" 체크박스로 처리 가능하다.
+(GitHub 웹 UI 대신 위 API 로 처리했다. UI 사용이 막히는 경우 API 경로가 정본이다.)
 
 ### ④ 법인 정보 입력 (`config.js`)
 `config.js` 의 `COMPANY` 에서 빈 문자열인 항목을 채운다. **빈 값은 화면에 렌더되지 않으므로**
