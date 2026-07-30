@@ -1,4 +1,4 @@
-# 쉴더스랩 (SHILDERS LAB) — shilderslab.com
+# 쉴더스랩 (SHIELDUS LAB) — shilderslab.com
 
 정보보호 컨설팅 기업 쉴더스랩의 공식 웹사이트. **정적 프런트(GitHub Pages) + Supabase 백엔드** 구성.
 

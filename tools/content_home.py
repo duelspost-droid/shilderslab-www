@@ -8,7 +8,7 @@ TITLE = "쉴더스랩 | 정보보호 컨설팅 — ISMS-P · 모의해킹 · 취
 DESC = ("쉴더스랩은 규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행하는 정보보호 컨설팅 조직입니다. "
         "진단 절차와 산출물 규격을 계약 전에 공개합니다.")
 LD = ('{"@context":"https://schema.org","@type":"Organization","name":"쉴더스랩",'
-      '"alternateName":"SHILDERS LAB","url":"https://shilderslab.com/",'
+      '"alternateName":"SHIELDUS LAB","url":"https://shilderslab.com/",'
       '"logo":"https://shilderslab.com/assets/ci/symbol.svg","foundingDate":"2026",'
       '"description":"정보보호 컨설팅 — ISMS-P 인증 컨설팅, 모의해킹, 취약점 진단, 개인정보 컴플라이언스, 클라우드 보안",'
       '"email":"contact@shilderslab.com","areaServed":"KR",'

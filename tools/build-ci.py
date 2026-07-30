@@ -16,6 +16,8 @@ from fontTools.misc.transform import Identity
 
 SRC = os.path.dirname(os.path.abspath(__file__))
 OUT = sys.argv[1] if len(sys.argv) > 1 else "/Users/hk/shilderslab-www/assets/ci"
+NAME_EN = os.environ.get("SL_NAME_EN", "SHIELDUS LAB")
+DOMAIN  = "SHILDERSLAB.COM"   # 실제 서비스 도메인 (사명 표기와 별개 — 변경 시 함께 수정)
 MANROPE = os.path.join(SRC, "Manrope.ttf")
 NOTOKR = os.path.join(SRC, "NotoSansKR.ttf")
 
@@ -138,11 +140,11 @@ for tag, col in (("white", WHITE), ("black", INK_950)):
 
 # ─────────── 2) 워드마크 (순수 패스) ───────────
 EN_CAP, KO_CAP = 100, 74
-en_d, en_w, _ = text_path("SHILDERS LAB", MANROPE, 800, EN_CAP, tracking=0.035, baseline=EN_CAP)
+en_d, en_w, _ = text_path(NAME_EN, MANROPE, 800, EN_CAP, tracking=0.035, baseline=EN_CAP)
 ko_d, ko_w, _ = text_path("쉴더스랩", NOTOKR, 700, KO_CAP, tracking=0.02, baseline=KO_CAP)
 
 write("wordmark-en.svg", svg(round(en_w, 1), EN_CAP,
-      '<title>SHILDERS LAB 영문 워드마크</title>\n'
+      f'<title>{NAME_EN} 영문 워드마크</title>\n'
       f'<path d="{en_d}" fill="currentColor"/>'))
 write("wordmark-ko.svg", svg(round(ko_w, 1), KO_CAP,
       '<title>쉴더스랩 국문 워드마크</title>\n'
@@ -153,7 +155,7 @@ write("wordmark-ko.svg", svg(round(ko_w, 1), KO_CAP,
 SY = 64
 GAP = 22
 TX = SY + GAP
-en_l_d, en_l_w, _ = text_path("SHILDERS LAB", MANROPE, 800, 30, tracking=0.035, x0=TX, baseline=36.0)
+en_l_d, en_l_w, _ = text_path(NAME_EN, MANROPE, 800, 30, tracking=0.035, x0=TX, baseline=36.0)
 ko_l_d, ko_l_w, _ = text_path("쉴더스랩 · 정보보호 컨설팅", NOTOKR, 500, 14, tracking=0.02, x0=TX + 1.2, baseline=57.0)
 LOCK_W = round(TX + max(en_l_w, ko_l_w) + 2, 1)
 
@@ -173,11 +175,11 @@ write("lockup-mono-black.svg", lockup(INK, INK, INK, "", "쉴더스랩 로고 ·
 write("lockup-mono-white.svg", lockup(PAPER, PAPER, PAPER, "", "쉴더스랩 로고 · 단색 white"))
 
 # ─────────── 4) 세로 락업 ───────────
-st_en_d, st_en_w, _ = text_path("SHILDERS LAB", MANROPE, 800, 26, tracking=0.05, baseline=0)
+st_en_d, st_en_w, _ = text_path(NAME_EN, MANROPE, 800, 26, tracking=0.05, baseline=0)
 st_ko_d, st_ko_w, _ = text_path("쉴더스랩", NOTOKR, 500, 15, tracking=0.06, baseline=0)
 SW = round(max(st_en_w, st_ko_w, 64) + 8, 1)
 SH = 64 + 26 + 30 + 18
-st_en_d2, _, _ = text_path("SHILDERS LAB", MANROPE, 800, 26, tracking=0.05,
+st_en_d2, _, _ = text_path(NAME_EN, MANROPE, 800, 26, tracking=0.05,
                            x0=(SW - st_en_w) / 2, baseline=64 + 30)
 st_ko_d2, _, _ = text_path("쉴더스랩", NOTOKR, 500, 15, tracking=0.06,
                            x0=(SW - st_ko_w) / 2, baseline=64 + 30 + 24)
@@ -206,11 +208,11 @@ write("mask-icon.svg", svg(64, 64,
       f'<path d="{SYMBOL_COMPOUND}" fill="black" fill-rule="evenodd"/>'))
 
 # ─────────── 6) OG 커버 1200×630 (에디토리얼 라이트) ───────────
-og_en, og_en_w, _ = text_path("SHILDERS LAB", MANROPE, 800, 66, tracking=0.02, x0=96, baseline=330)
+og_en, og_en_w, _ = text_path(NAME_EN, MANROPE, 800, 66, tracking=0.02, x0=96, baseline=330)
 og_ko, _, _ = text_path("정보보호 컨설팅", NOTOKR, 500, 25, tracking=0.03, x0=98, baseline=392)
 og_tag, _, _ = text_path("ISMS-P 인증 · 모의해킹 · 취약점 진단 · 개인정보 컴플라이언스 · 클라우드 보안",
                          NOTOKR, 400, 18, tracking=0.01, x0=98, baseline=470)
-og_dom, _, _ = text_path("SHILDERSLAB.COM", MANROPE, 600, 15, tracking=0.16, x0=98, baseline=548)
+og_dom, _, _ = text_path(DOMAIN, MANROPE, 600, 15, tracking=0.16, x0=98, baseline=548)
 write("og-cover.svg", svg(1200, 630,
       '<title>쉴더스랩 · 정보보호 컨설팅</title>\n'
       f'<rect width="1200" height="630" fill="{PAPER}"/>\n'

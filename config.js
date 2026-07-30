@@ -10,7 +10,7 @@ window.SL_CONFIG = {
   // 회사 정보 — 값이 빈 문자열이면 화면에 렌더하지 않는다(임시 문구 노출 방지).
   COMPANY: {
     nameKo: "쉴더스랩",
-    nameEn: "SHILDERS LAB",
+    nameEn: "SHIELDUS LAB",
     legalKo: "",          // 예: "주식회사 쉴더스랩"  ← 등기 상호 확정 후 입력
     ceo: "",              // 대표자명
     bizNo: "",            // 사업자등록번호

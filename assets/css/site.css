@@ -636,3 +636,13 @@ table.spec caption{font-size:.78rem}
   .brand img{height:26px}
   .home-hero .acts .btn,.cta .btn{flex:1 1 100%}
 }
+
+/* ─────────── 경고 노트 ───────────
+   발주·배포처럼 되돌리기 어려운 행동을 막아야 할 때만 쓴다. 남용하면 무시된다. */
+.note-warn{
+  margin:18px 0 0;padding:14px 16px;
+  border:1px solid var(--rule-2);border-left:3px solid #8A5A1C;
+  background:var(--paper-2);
+  font-size:.86rem;line-height:1.62;color:var(--ink-2);letter-spacing:.005em
+}
+.note-warn b{color:#8A5A1C}

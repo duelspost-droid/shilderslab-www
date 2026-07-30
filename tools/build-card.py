@@ -163,11 +163,11 @@ def guide_overlay():
 # 시안
 # ══════════════════════════════════════════════════════════════════════
 def lockup(x, y, cap, sym_fill, ko_fill, en_fill, en_cap=None):
-    """심볼 + SHILDERS LAB + 쉴더스랩 조합 (좌측 정렬)"""
+    """심볼 + SHIELDUS LAB + 쉴더스랩 조합 (좌측 정렬)"""
     en_cap = en_cap or cap
     s = sym(x, y, cap * 2.0, sym_fill)
     tx = x + cap * 2.0 + cap * 0.62
-    en_d, en_w = text_path("SHILDERS LAB", en_cap, tx, y + cap * 1.16, 0.03, 800)
+    en_d, en_w = text_path("SHIELDUS LAB", en_cap, tx, y + cap * 1.16, 0.03, 800)
     ko_d, _ = text_path("정보보호 컨설팅", en_cap * 0.52, tx + 0.1, y + cap * 1.92, 0.02, 500)
     return (s + f'<path d="{en_d}" fill="{en_fill}"/>'
             f'<path d="{ko_d}" fill="{ko_fill}"/>'), tx + en_w
@@ -216,8 +216,8 @@ def dsn_a(p):
 
 def dsn_a_back(p):
     b = [sym(W / 2 - 9, H / 2 - 11.5, 18, PAPER)]
-    d, w = text_path("SHILDERS LAB", 2.6, 0, 0, 0.18, 700)
-    d, _ = text_path("SHILDERS LAB", 2.6, W / 2 - w / 2, H / 2 + 14.2, 0.18, 700)
+    d, w = text_path("SHIELDUS LAB", 2.6, 0, 0, 0.18, 700)
+    d, _ = text_path("SHIELDUS LAB", 2.6, W / 2 - w / 2, H / 2 + 14.2, 0.18, 700)
     b.append(f'<path d="{d}" fill="{PAPER}"/>')
     return "".join(b), ACCENT
 
@@ -319,7 +319,7 @@ def to_pdf(svg_path, pdf_path):
             page.artbox = page.trimbox
             w.add_page(page)
         w.add_metadata({
-            "/Title": "SHILDERS LAB 명함",
+            "/Title": "SHIELDUS LAB 명함",
             "/Creator": "shilderslab.com / tools/build-card.py",
             "/Subject": f"trim {TRIM_W:.0f}x{TRIM_H:.0f}mm, bleed {BLEED:.0f}mm, fonts outlined",
         })

@@ -27,7 +27,7 @@ ABOUT_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 회사소개</div>
     <h1 class="d1">보안을<br>검증의 문제로<br>다룹니다</h1>
-    <p class="lead">쉴더스랩(SHILDERS LAB)은 2026년에 설립된 정보보호 컨설팅 조직입니다.
+    <p class="lead">쉴더스랩(SHIELDUS LAB)은 2026년에 설립된 정보보호 컨설팅 조직입니다.
        인증 기준을 충족시키는 관리체계 컨설팅과, 실제 공격 관점의 기술 진단을 한 팀에서 수행합니다.</p>
   </div>
 </section>
@@ -54,7 +54,7 @@ ABOUT_BODY = """<section class="phead">
     </div>
     <div class="c4 start9">
       <div class="kv">
-        <div class="row"><div class="k">기업명</div><div class="v">쉴더스랩 (SHILDERS LAB)</div></div>
+        <div class="row"><div class="k">기업명</div><div class="v">쉴더스랩 (SHIELDUS LAB)</div></div>
         <div class="row"><div class="k">설립</div><div class="v">2026년</div></div>
         <div class="row"><div class="k">사업 분야</div><div class="v">정보보호 컨설팅 — 관리체계 인증, 모의해킹,
           취약점 진단, 개인정보 컴플라이언스, 클라우드 보안</div></div>
@@ -553,6 +553,9 @@ BRAND_BODY = """<section class="phead">
         <h2 class="d3">명함</h2>
         <p class="lead">세 가지 시안을 준비했습니다. 모두 <b>인쇄소에 그대로 넘길 수 있는 규격</b>으로 만들었습니다 —
            재단 90 × 50 mm에 사방 3 mm 도련, 글자는 전부 아웃라인 처리되어 폰트를 함께 보낼 필요가 없습니다.</p>
+        <p class="note-warn"><b>발주 보류 중입니다.</b> 아래 파일은 이전 영문 표기(SHILDERS LAB)로 제작된 것으로,
+           현재 표기(SHIELDUS LAB)로 재제작하기 전까지 인쇄를 발주하지 마십시오.
+           워드마크가 아웃라인 패스로 삽입되어 있어 파일 안의 글자는 편집으로 교체되지 않습니다.</p>
       </div>
     </div>
 
