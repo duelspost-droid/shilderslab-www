@@ -18,7 +18,8 @@
 | 백엔드 보안 경계 | ✅ anon 경로 E2E 검증 통과 (아래 6항) |
 | 관리자 콘솔 | ⚠️ 구현 완료 · **로그인 미검증** — 관리자 Auth 계정 생성 필요(아래 ②) |
 | GitHub 저장소 · Pages | ✅ [duelspost-droid/shilderslab-www](https://github.com/duelspost-droid/shilderslab-www) · Pages 빌드 성공 |
-| 도메인 (가비아 DNS) | ⏳ **레코드 등록 대기** — 오너 작업 (아래 ③) |
+| 도메인 (가비아 DNS) | ✅ **등록 완료·전파 확인** (2026-07-30) — `http(s)://shilderslab.com` 200, www→apex 301 |
+| HTTPS 인증서 | ⏳ GitHub Let's Encrypt 발급 대기(자동) → 발급 후 Enforce HTTPS 켜기 |
 | 접수 알림 메일 (선택) | ⏳ `notify-inquiry` 미배포 |
 
 로컬 경로: `/Users/hk/shilderslab-www` · 원격: `github.com/duelspost-droid/shilderslab-www` (public, main)
@@ -65,20 +66,31 @@ on conflict (email) do nothing;
 로그인 후 `/admin/` 대시보드에 통계가 보이면 정상이다. 화이트리스트에 없는 계정으로 로그인하면
 콘솔이 자동 로그아웃시키고 "관리자로 등록되어 있지 않습니다" 를 표시한다.
 
-### ③ 가비아 DNS — shilderslab.com → GitHub Pages
-가비아 My가비아 → DNS 관리 → shilderslab.com → 레코드 수정에서:
+### ③ ~~가비아 DNS~~ ✅ 완료 (2026-07-30)
+가비아 DNS 관리에 아래 5개 레코드 등록 완료(TTL 600). 권위 네임서버(ns.gabia.co.kr)와 공용 리졸버(8.8.8.8) 양쪽에서 응답 확인.
 
-| 타입 | 호스트 | 값 | TTL |
-|---|---|---|---|
-| A | @ | 185.199.108.153 | 3600 |
-| A | @ | 185.199.109.153 | 3600 |
-| A | @ | 185.199.110.153 | 3600 |
-| A | @ | 185.199.111.153 | 3600 |
-| CNAME | www | duelspost-droid.github.io. | 3600 |
+| 타입 | 호스트 | 값 |
+|---|---|---|
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+| CNAME | www | duelspost-droid.github.io. |
 
-등록 후 GitHub 저장소 → Settings → Pages → Custom domain 에 `shilderslab.com` 입력,
-DNS 검증 통과 후 **Enforce HTTPS** 체크(인증서 발급까지 수십 분 소요될 수 있음).
-※ 가비아 로그인은 CAPTCHA로 자동화가 불가능하므로 오너가 직접 진행해야 한다.
+실측: `http://shilderslab.com/` 200 · `http://www.shilderslab.com/` → apex 301.
+
+**남은 것 = HTTPS 인증서**: GitHub이 DNS 확인 후 Let's Encrypt 인증서를 자동 발급한다(보통 수십 분, 최대 24시간).
+발급 전에는 `https://` 접속 시 `*.github.io` 인증서가 응답해 브라우저 경고가 뜬다.
+발급 완료 확인:
+```bash
+gh api repos/duelspost-droid/shilderslab-www/pages --jq '.https_certificate.state'   # approved 면 완료
+```
+`approved` 가 되면 강제 HTTPS를 켠다:
+```bash
+gh api -X PUT repos/duelspost-droid/shilderslab-www/pages -F https_enforced=true
+```
+⚠️ **GitHub 웹 UI는 현재 2FA 등록 인터스티셜로 차단**되어 Settings→Pages 화면 접근이 안 된다(토큰 API는 정상).
+계정에 2FA를 등록하면 UI에서도 "Enforce HTTPS" 체크박스로 처리 가능하다.
 
 ### ④ 법인 정보 입력 (`config.js`)
 `config.js` 의 `COMPANY` 에서 빈 문자열인 항목을 채운다. **빈 값은 화면에 렌더되지 않으므로**
