@@ -319,14 +319,27 @@ grant  execute on function public.sl_admin_login_uid(text)         to authentica
 --   -- ② 로그인 가능한 admin 수. 0 이면 아래 복구 절차가 필요하다.
 --   select count(*) from public.sl_admins where role='admin' and user_id is not null;
 --
--- ⚠ admin 0명 복구 절차 (SQL Editor 에서만 가능 — 앱 내부 경로는 없다)
---   1) Authentication → Users 에서 계정을 만들고(Auto Confirm) 이메일을 확인한다.
---   2) 아래를 실행한다. 이 경로는 service_role/postgres 권한이 필요하므로 외부에서 악용할 수 없다.
---        insert into public.sl_admins(email, role, note, user_id)
---        select lower(u.email), 'admin', '복구', u.id from auth.users u
---         where lower(u.email) = lower('<계정 이메일>') and u.email_confirmed_at is not null
---        on conflict (lower(email)) do update set role='admin', user_id=excluded.user_id;
+-- ⚠ 최초 관리자 부트스트랩 / admin 0명 복구
+--    권한이 이메일이 아니라 계정(user_id)에 결속되므로, 첫 관리자는 반드시 이 경로로 세운다.
+--    (앱 안에서 스스로 관리자가 되는 경로는 의도적으로 없다 — 그게 이 마이그레이션의 목적이다.)
+--
+--    ① Authentication → Users → Add user 로 계정을 만든다. **Auto Confirm User 를 켠다.**
+--       (비밀번호 입력은 오너가 직접)
+--    ② 아래 한 문장을 SQL Editor 에서 실행한다. 이메일만 바꾸면 된다. 재실행 안전.
+--
+--       insert into public.sl_admins (email, role, note, user_id)
+--       select lower(u.email), 'admin', '최초 관리자', u.id
+--         from auth.users u
+--        where lower(u.email) = lower('여기에_관리자_이메일')
+--          and u.email_confirmed_at is not null
+--       on conflict (lower(email))
+--       do update set user_id = excluded.user_id, role = 'admin';
+--
+--    ③ 확인: 아래가 1 이상이어야 콘솔에 들어갈 수 있다.
+--       select count(*) from public.sl_admins where role='admin' and user_id is not null;
+--
+--    이후 관리자 추가·연결·삭제는 콘솔의 [계정 관리] 탭에서 하면 된다.
 --
 -- ⚠ 오너 확인 사항: Authentication → Providers → Email 의 'Confirm email' 을 켜 둘 것.
---    이 마이그레이션으로 이메일 선점 경로는 막혔지만, 확인 메일 절차는 그대로 유지하는 편이 안전하다.
+--    이 마이그레이션으로 이메일 선점 경로는 막혔지만, 확인 메일 절차는 유지하는 편이 안전하다.
 -- ════════════════════════════════════════════════════════════════════════════

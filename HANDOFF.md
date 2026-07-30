@@ -85,32 +85,40 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
 - `0001_shilderslab_core.sql` · `0002_shilderslab_seed.sql` — ✅ 적용 완료 (2026-07-30)
 - `0003_shilderslab_hardening.sql` — ✅ 적용 완료 (2026-07-30). 서버측 길이 검증, 전역 남용 상한,
   개인정보 보유기간 자동 파기(`sl_pii_purge`), `pg_cron` 일일 스케줄 `sl_purge_daily`(03:20 UTC) 등록 확인.
-- `0004_shilderslab_admin_roles.sql` — ⏳ **라이브 미적용**. 역할(admin/editor) 분리와 관리자 계정 관리 RPC.
-  적용 전에는 관리자 콘솔의 **계정 관리 탭이 동작하지 않는다**(다른 탭은 정상).
-  적용 방법: Supabase SQL Editor 에 파일 내용을 붙여 1회 실행. 검증 쿼리는 파일 맨 아래 주석 참조.
+- `0004_shilderslab_admin_roles.sql` — ✅ 적용 완료 (2026-07-30). 역할(admin/editor) 분리 + 관리자 계정 관리 RPC
+  + **권한을 이메일 문자열이 아니라 로그인 계정(user_id)에 결속**.
+  적대적 검토에서 나온 critical(계정 없는 화이트리스트 행을 제3자가 선점 → 관리자 탈취) 을 막기 위한 변경이다.
+  적용 후 anon 경로 검증: 신규 권한 함수 7개 전부 `permission denied`.
 
 전부 재실행 안전(idempotent)이다.
 
-### ② 관리자 Auth 계정 생성 — **아직 로그인 가능한 계정 없음**
-`0001` 시드가 화이트리스트(`sl_admins`)에 오너 주소 1건을 넣어두었으나, 확인 결과 이 Supabase 프로젝트의
-`auth.users` 에 대응하는 로그인 계정이 없다. 아래 확인 쿼리가 0행이면 로그인 계정을 먼저 만들어야 한다.
+### ② 최초 관리자 부트스트랩 — **지금 관리자가 0명이다 (의도된 안전 상태)**
+0004 부터 권한은 이메일 문자열이 아니라 **로그인 계정(auth.users.id)** 에 결속된다.
+화이트리스트에 이메일만 있고 계정이 연결되지 않은 행은 **권한이 전혀 없다**.
+공유 프로젝트에서 누군가 그 주소로 가입해 관리자가 되는 경로를 막기 위한 설계다.
 
+현재 상태(2026-07-30 실측): 화이트리스트 1행(미연결) · auth 계정 1개(화이트리스트와 불일치)
+→ **콘솔에 들어갈 수 있는 사람이 없다.** 아래 두 단계로 첫 관리자를 세운다.
+
+**① 계정 생성** — Supabase 대시보드 → Authentication → Users → **Add user**
+→ 이메일 입력, 비밀번호 지정, **Auto Confirm User 켜기**. (비밀번호 입력은 오너가 직접)
+
+**② 부트스트랩 SQL 1회 실행** — SQL Editor 에서 이메일만 바꿔 실행. 재실행 안전.
 ```sql
-select count(*) from auth.users u
- where lower(u.email) in (select lower(email) from public.sl_admins);
+insert into public.sl_admins (email, role, note, user_id)
+select lower(u.email), 'admin', '최초 관리자', u.id
+  from auth.users u
+ where lower(u.email) = lower('여기에_관리자_이메일')
+   and u.email_confirmed_at is not null
+on conflict (lower(email))
+do update set user_id = excluded.user_id, role = 'admin';
+
+-- 확인: 1 이상이어야 콘솔 접속 가능
+select count(*) from public.sl_admins where role='admin' and user_id is not null;
 ```
 
-**계정 생성** — Supabase 대시보드 → Authentication → Users → **Add user**
-→ 이메일 입력, 비밀번호 지정, *Auto Confirm User* 켜기. (비밀번호 입력은 오너가 직접)
-
-**다른 주소를 쓰려면** 계정 생성 후 화이트리스트에 추가:
-```sql
-insert into public.sl_admins(email, role, note)
-values ('<사용할 주소>', 'admin', '쉴더스랩 관리자') on conflict (email) do nothing;
-```
-
-로그인 후 `/admin/` 대시보드에 통계가 보이면 정상이다. 화이트리스트에 없는 계정으로 로그인하면
-콘솔이 자동 로그아웃시키고 "관리자로 등록되어 있지 않습니다" 를 표시한다.
+이후 관리자 추가·연결·역할변경·삭제는 콘솔 **[계정 관리]** 탭에서 처리한다.
+앱 안에서 스스로 관리자가 되는 경로는 의도적으로 없다 — 첫 관리자만 이 SQL 경로가 필요하다.
 
 ### ③ ~~가비아 DNS~~ ✅ 완료 (2026-07-30)
 가비아 DNS 관리에 아래 5개 레코드 등록 완료(TTL 600). 권위 네임서버(ns.gabia.co.kr)와 공용 리졸버(8.8.8.8) 양쪽에서 응답 확인.
