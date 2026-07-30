@@ -1,0 +1,21 @@
+{
+  "symbol_grid": 64,
+  "shield": "M32 2.4 L57.4 11.9 V32.2 C57.4 46.4 46.6 57.9 32 61.6 C17.4 57.9 6.6 46.4 6.6 32.2 V11.9 Z",
+  "s_cap": 27.5,
+  "lockup_width": 388.9,
+  "wordmark_en_width": 1002.94,
+  "colors": {
+    "cy200": "#B4F6FF",
+    "cy300": "#7CEBFB",
+    "cy400": "#38D8EF",
+    "cy500": "#12B5CE",
+    "cy600": "#0A8CA3",
+    "vi400": "#8B93F8",
+    "ink950": "#03070E",
+    "ink900": "#050B16"
+  },
+  "fonts": {
+    "latin": "Manrope ExtraBold (SIL OFL 1.1) — 아웃라인 변환",
+    "hangul": "Noto Sans KR (SIL OFL 1.1) — 아웃라인 변환"
+  }
+}

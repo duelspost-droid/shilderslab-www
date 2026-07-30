@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://nrdapzgtibbusvoaceuh.supabase.co wss://nrdapzgtibbusvoaceuh.supabase.co; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인사이트 | 쉴더스랩 — 보안 규제와 진단 현장 이야기</title>
+<meta name="description" content="규제 변화와 진단 현장에서 반복적으로 발견되는 문제, 실제로 통했던 조치 방법을 정리한 쉴더스랩의 보안 인사이트.">
+<link rel="canonical" href="https://shilderslab.com/insights/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="쉴더스랩">
+<meta property="og:title" content="인사이트 | 쉴더스랩 — 보안 규제와 진단 현장 이야기">
+<meta property="og:description" content="규제 변화와 진단 현장에서 반복적으로 발견되는 문제, 실제로 통했던 조치 방법을 정리한 쉴더스랩의 보안 인사이트.">
+<meta property="og:url" content="https://shilderslab.com/insights/">
+<meta property="og:image" content="https://shilderslab.com/assets/ci/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/ci/favicon.svg" type="image/svg+xml">
+<link rel="mask-icon" href="/assets/ci/mask-icon.svg" color="#12B5CE">
+<link rel="apple-touch-icon" href="/assets/ci/apple-touch-icon.png">
+<meta name="theme-color" content="#050B16">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css">
+<style>
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:30px}
+  .filters button{background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--fg-dim);
+    padding:8px 15px;border-radius:999px;font-size:.82rem;font-weight:700;cursor:pointer;transition:.2s}
+  .filters button:hover{color:#fff;border-color:var(--line-2)}
+  .filters button.active{background:linear-gradient(135deg,var(--cy-400),var(--cy-600));
+    color:var(--ink-950);border-color:transparent}
+  #post-list{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media (max-width:980px){#post-list{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:680px){#post-list{grid-template-columns:1fr}}
+
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Blog","name":"쉴더스랩 인사이트","url":"https://shilderslab.com/insights/"}
+</script>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<header class="nav" id="nav">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label="쉴더스랩 홈">
+      <img class="mark" src="/assets/ci/symbol.svg" alt="" width="38" height="38">
+      <span class="txt"><b>쉴더스랩</b><span>SHILDERS LAB</span></span>
+    </a>
+    <nav class="menu" id="menu" aria-label="주요 메뉴">
+      <a href="/services/">서비스</a>
+      <a href="/about/">회사소개</a>
+      <a href="/insights/">인사이트</a>
+      <a href="/careers/">채용</a>
+      <a class="nav-cta" href="/contact/">상담 · 견적 요청</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="crumb"><a href="/">홈</a> / 인사이트</div>
+    <span class="eyebrow"><span class="dot"></span>INSIGHTS</span>
+    <h1 class="display">현장에서 반복되는 문제들</h1>
+    <p>규제 변화와 진단 현장에서 자주 마주치는 문제, 그리고 실제로 통했던 조치 방법을 정리합니다.</p>
+  </div>
+</section>
+
+<section class="sec tight">
+  <div class="wrap">
+    <div class="filters" id="filters"></div>
+    <div id="post-list"><div class="empty" style="grid-column:1/-1">인사이트를 불러오는 중…</div></div>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <img src="/assets/ci/lockup-horizontal-dark.svg" alt="쉴더스랩 SHILDERS LAB" height="42" style="height:42px;width:auto">
+        <p>정보보호 컨설팅 전문기업. 규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행합니다.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Services</h5>
+        <a href="/services/#isms">ISMS-P 인증 컨설팅</a>
+        <a href="/services/#pentest">모의해킹 · 침투테스트</a>
+        <a href="/services/#vuln">취약점 진단</a>
+        <a href="/services/#privacy">개인정보 컴플라이언스</a>
+        <a href="/services/#cloud">클라우드 보안</a>
+      </div>
+      <div class="foot-col">
+        <h5>Company</h5>
+        <a href="/about/">회사소개</a>
+        <a href="/insights/">인사이트</a>
+        <a href="/careers/">채용</a>
+        <a href="/brand/">브랜드 · CI</a>
+        <a href="/contact/">문의</a>
+      </div>
+      <div class="foot-col">
+        <h5>Contact</h5>
+        <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
+        <span>평일 09:00 – 18:00</span>
+        <a href="/contact/">상담 · 견적 요청 →</a>
+      </div>
+    </div>
+    <div class="legal">
+      <div>
+        <div class="biz" id="bizline"></div>
+        <div class="copy">© <span data-year>2026</span> SHILDERS LAB. All rights reserved.</div>
+      </div>
+      <div class="legal-links">
+        <a href="/legal/privacy.html">개인정보처리방침</a>
+        <a href="/legal/terms.html">이용약관</a>
+        <a href="/admin/">관리자</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="/config.js"></script>
+<script src="/assets/vendor/supabase.min.js"></script>
+<script src="/assets/js/supa.js"></script>
+<script src="/assets/js/site.js"></script>
+<script>
+(function () {
+  var listEl = document.getElementById("post-list");
+  var filterEl = document.getElementById("filters");
+  var all = [], cur = "전체";
+
+  function render() {
+    var rows = cur === "전체" ? all : all.filter(function (p) { return (p.category || "") === cur; });
+    if (!rows.length) {
+      listEl.innerHTML = '<div class="empty" style="grid-column:1/-1">해당 분류의 글이 아직 없습니다.</div>';
+      return;
+    }
+    listEl.innerHTML = rows.map(function (p) {
+      return '<a class="post" href="/insights/view.html?slug=' + encodeURIComponent(p.slug) + '">' +
+        '<div class="meta"><span class="cat">' + SL.esc(p.category || "인사이트") + '</span>' +
+        '<span>' + SL.esc(SL.fmtDate(p.published_at)) + '</span></div>' +
+        '<h3>' + SL.esc(p.title) + '</h3>' +
+        '<p>' + SL.esc(p.summary || "") + '</p></a>';
+    }).join("");
+  }
+
+  function renderFilters() {
+    var cats = ["전체"];
+    all.forEach(function (p) {
+      var c = p.category || "인사이트";
+      if (cats.indexOf(c) < 0) cats.push(c);
+    });
+    if (cats.length <= 2) { filterEl.innerHTML = ""; return; }
+    filterEl.innerHTML = cats.map(function (c) {
+      return '<button type="button" data-cat="' + SL.escA(c) + '"' +
+        (c === cur ? ' class="active"' : "") + ">" + SL.esc(c) + "</button>";
+    }).join("");
+    Array.prototype.forEach.call(filterEl.querySelectorAll("button"), function (b) {
+      b.addEventListener("click", function () {
+        cur = b.getAttribute("data-cat");
+        Array.prototype.forEach.call(filterEl.querySelectorAll("button"), function (x) {
+          x.classList.toggle("active", x === b);
+        });
+        render();
+      });
+    });
+  }
+
+  if (!window.SL || !SL.db()) {
+    listEl.innerHTML = '<div class="empty" style="grid-column:1/-1">인사이트를 준비하고 있습니다.</div>';
+    return;
+  }
+  SL.listPublished("sl_insights", {
+    columns: "slug,category,title,summary,published_at",
+    order: { col: "published_at", asc: false }, limit: 60
+  }).then(function (r) {
+    all = (r && r.data) || [];
+    if (!all.length) {
+      listEl.innerHTML = '<div class="empty" style="grid-column:1/-1">첫 인사이트를 준비하고 있습니다. 곧 공개됩니다.</div>';
+      return;
+    }
+    renderFilters(); render();
+  }).catch(function () {
+    listEl.innerHTML = '<div class="empty" style="grid-column:1/-1">목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>';
+  });
+})();
+</script>
+</body>
+</html>
