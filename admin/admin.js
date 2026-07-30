@@ -16,7 +16,7 @@
   var loginView = document.getElementById("login-view");
   var appView = document.getElementById("app-view");
   var modal = document.getElementById("modal");
-  var state = { email: "", cache: {} };
+  var state = { email: "", role: "", cache: {} };
 
   if (!db) {
     document.body.innerHTML =
@@ -113,11 +113,23 @@
             btn.disabled = false; btn.textContent = "로그인";
           });
         }
-        loginView.style.display = "none";
-        appView.style.display = "";
-        document.getElementById("who").innerHTML = "<b>" + esc(state.email) + "</b> 로 로그인";
-        audit("login");
-        loadDash(); loadInq(); loadApp();
+        return db.rpc("sl_my_role").then(function (rr) {
+          state.role = (rr && !rr.error && rr.data) || "editor";
+          loginView.style.display = "none";
+          appView.style.display = "";
+          document.getElementById("who").innerHTML =
+            "<b>" + esc(state.email) + "</b> · " +
+            '<span class="badge ' + (state.role === "admin" ? "on" : "off") + '">' +
+            esc(state.role) + "</span>";
+          /* editor 는 계정 관리·설정 탭을 볼 수 없다(서버측에서도 차단된다) */
+          if (state.role !== "admin") {
+            Array.prototype.forEach.call(document.querySelectorAll("[data-owner]"), function (el) {
+              el.style.display = "none";
+            });
+          }
+          audit("login");
+          loadDash(); loadInq(); loadApp();
+        });
       });
     });
   }
@@ -131,7 +143,8 @@
     Array.prototype.forEach.call(document.querySelectorAll(".panel"), function (p) {
       p.classList.toggle("show", p.id === "panel-" + name);
     });
-    var loaders = { dash: loadDash, inq: loadInq, app: loadApp, ins: loadIns, job: loadJob, log: loadLog, set: loadSet };
+    var loaders = { dash: loadDash, inq: loadInq, app: loadApp, ins: loadIns, job: loadJob,
+                    log: loadLog, acct: loadAcct, set: loadSet };
     if (!loaded[name] && loaders[name]) { loaded[name] = true; loaders[name](); }
   }
   document.getElementById("tabs").addEventListener("click", function (e) {
@@ -604,6 +617,162 @@
       audit("update_setting", "sl_settings", "notice", { on: checked("set-notice-on") });
       show("set-alert", "ok", "저장되었습니다. 공개 페이지에는 새로고침 시 반영됩니다.");
     });
+  });
+
+
+  /* ═══════════════ 계정 관리 (admin 역할 전용) ═══════════════ */
+  function tempPassword() {
+    /* 혼동하기 쉬운 문자(0/O, 1/l/I)를 뺀 안전한 문자셋 */
+    var A = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*-_";
+    var out = "", buf = new Uint32Array(20);
+    (window.crypto || window.msCrypto).getRandomValues(buf);
+    for (var i = 0; i < 20; i++) out += A[buf[i] % A.length];
+    return out;
+  }
+
+  function loadAcct() {
+    var box = document.getElementById("acct-table");
+    box.innerHTML = emptyBox("불러오는 중…");
+    db.rpc("sl_admin_list").then(function (r) {
+      if (r.error) { box.innerHTML = emptyBox("불러오지 못했습니다: " + r.error.message); return; }
+      var rows = r.data || [];
+      state.cache.acct = {};
+      rows.forEach(function (x) { state.cache.acct[x.email] = x; });
+      if (!rows.length) { box.innerHTML = emptyBox("등록된 관리자가 없습니다."); return; }
+      var owners = rows.filter(function (x) { return x.role === "admin"; }).length;
+      box.innerHTML = '<table class="tbl"><thead><tr><th>이메일</th><th>역할</th><th>로그인 계정</th>' +
+        "<th>최근 로그인</th><th>등록일</th><th>메모</th><th></th></tr></thead><tbody>" +
+        rows.map(function (x) {
+          var lastAdmin = x.role === "admin" && owners <= 1;
+          var acts = [];
+          if (!x.is_self && !lastAdmin) {
+            acts.push('<button class="lnk" data-acct-role="' + escA(x.email) + '">' +
+              (x.role === "admin" ? "editor 로 변경" : "admin 으로 변경") + "</button>");
+          }
+          if (!x.is_self && !lastAdmin) {
+            acts.push('<button class="lnk danger" data-acct-del="' + escA(x.email) + '">삭제</button>');
+          }
+          if (x.is_self) acts.push('<span class="tiny">내 계정</span>');
+          else if (lastAdmin) acts.push('<span class="tiny">마지막 admin</span>');
+          return '<tr><td class="t-title">' + esc(x.email) + "</td>" +
+            '<td><span class="badge ' + (x.role === "admin" ? "on" : "off") + '">' + esc(x.role) + "</span></td>" +
+            "<td>" + (x.has_login
+              ? '<span class="badge done">있음</span>'
+              : '<span class="badge doing">없음 · 로그인 불가</span>') + "</td>" +
+            "<td>" + esc(x.last_sign_in_at ? SL.fmtDateTime(x.last_sign_in_at) : "-") + "</td>" +
+            "<td>" + esc(SL.fmtDate(x.created_at)) + "</td>" +
+            "<td>" + esc(x.note || "-") + "</td>" +
+            '<td><div class="row-actions">' + acts.join("") + "</div></td></tr>";
+        }).join("") + "</tbody></table>";
+    });
+  }
+
+  document.getElementById("acct-reload").addEventListener("click", loadAcct);
+
+  document.getElementById("acct-new").addEventListener("click", function () {
+    var pw = tempPassword();
+    openModal("관리자 추가",
+      '<div class="field"><label for="ac-email">이메일 *</label>' +
+      '<input id="ac-email" type="email" maxlength="160" placeholder="name@shilderslab.com"></div>' +
+      '<div class="field"><label for="ac-role">역할</label><select id="ac-role">' +
+      '<option value="editor">editor — 콘텐츠 · 문의 처리</option>' +
+      '<option value="admin">admin — 계정 · 설정까지 전체</option></select></div>' +
+      '<div class="field"><label for="ac-note">메모</label>' +
+      '<input id="ac-note" type="text" maxlength="200" placeholder="담당 · 소속 등"></div>' +
+      '<label class="consent"><input type="checkbox" id="ac-login">' +
+      "<span><b>로그인 계정도 함께 생성</b>합니다. 체크하지 않으면 화이트리스트에만 등록되고, " +
+      "로그인 계정은 Supabase 대시보드에서 따로 만들어야 합니다.</span></label>" +
+      '<div class="field" id="ac-pw-wrap" style="display:none">' +
+      '<label for="ac-pw">임시 비밀번호 (한 번만 표시됩니다)</label>' +
+      '<input id="ac-pw" type="text" value="' + escA(pw) + '" readonly ' +
+      'style="font-family:\'IBM Plex Mono\',monospace">' +
+      '<div class="hint">이 값을 안전한 경로로 전달하고, 첫 로그인 후 변경하도록 안내하세요. ' +
+      "이 창을 닫으면 다시 볼 수 없습니다.</div></div>" +
+      '<div class="alert" id="md-alert"></div>',
+      [
+        { label: "취소", on: closeModal },
+        { label: "추가", cls: "", on: function () {
+            var email = val("ac-email").trim().toLowerCase();
+            var role = val("ac-role");
+            var note = val("ac-note").trim();
+            var withLogin = checked("ac-login");
+            if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email)) {
+              show("md-alert", "bad", "이메일 형식을 확인해 주세요."); return;
+            }
+            if (!withLogin) {
+              db.rpc("sl_admin_add", { p_email: email, p_role: role, p_note: note })
+                .then(function (r) {
+                  if (r.error) { show("md-alert", "bad", r.error.message); return; }
+                  closeModal(); loadAcct();
+                });
+              return;
+            }
+            /* 로그인 계정까지 생성 — Edge 함수 필요 */
+            show("md-alert", "info", "계정을 생성하는 중…");
+            db.functions.invoke("sl-admin-user", {
+              body: { action: "create", email: email, password: val("ac-pw"), role: role, note: note },
+            }).then(function (r) {
+              if (r.error) throw r.error;
+              closeModal(); loadAcct();
+              show("acct-alert", "ok",
+                email + " 계정을 생성했습니다. 임시 비밀번호를 안전한 경로로 전달하세요.");
+            }).catch(function (err) {
+              var m = (err && err.message) || "";
+              show("md-alert", "bad", /Function not found|404/i.test(m)
+                ? "로그인 계정 생성 함수(sl-admin-user)가 아직 배포되지 않았습니다. " +
+                  "체크를 해제해 화이트리스트만 등록하거나, 함수를 먼저 배포하세요."
+                : "계정 생성 실패: " + m);
+            });
+          } },
+      ]);
+    var chk = document.getElementById("ac-login");
+    chk.addEventListener("change", function () {
+      document.getElementById("ac-pw-wrap").style.display = chk.checked ? "" : "none";
+    });
+  });
+
+  document.addEventListener("click", function (e) {
+    var rl = e.target.closest("[data-acct-role]");
+    if (rl) {
+      var email = rl.getAttribute("data-acct-role");
+      var cur = state.cache.acct[email];
+      var next = cur.role === "admin" ? "editor" : "admin";
+      openModal("역할 변경",
+        "<p style='color:var(--ink-2);line-height:1.7'><b>" + esc(email) + "</b> 의 역할을 " +
+        "<b>" + esc(cur.role) + "</b> → <b>" + esc(next) + "</b> 로 변경합니다." +
+        (next === "admin"
+          ? " admin 은 계정 관리와 사이트 설정까지 모두 접근할 수 있습니다."
+          : " editor 는 계정 관리·설정에 접근할 수 없습니다.") + "</p>" +
+        '<div class="alert" id="md-alert"></div>',
+        [{ label: "취소", on: closeModal },
+         { label: "변경", cls: "", on: function () {
+             db.rpc("sl_admin_set_role", { p_email: email, p_role: next }).then(function (r) {
+               if (r.error) { show("md-alert", "bad", r.error.message); return; }
+               closeModal(); loadAcct();
+             });
+           } }]);
+      return;
+    }
+    var dl = e.target.closest("[data-acct-del]");
+    if (dl) {
+      var em = dl.getAttribute("data-acct-del");
+      var it = state.cache.acct[em];
+      openModal("관리자 삭제",
+        "<p style='color:var(--ink-2);line-height:1.7'><b>" + esc(em) + "</b> 를 관리자 목록에서 제거합니다. " +
+        "즉시 콘솔 접근이 차단됩니다.</p>" +
+        "<p class='tiny' style='margin-top:12px'>" +
+        (it && it.has_login
+          ? "Supabase 로그인 계정은 그대로 남습니다. 계정까지 삭제하려면 Supabase 대시보드에서 처리하세요."
+          : "이 이메일에는 로그인 계정이 없습니다.") + "</p>" +
+        '<div class="alert" id="md-alert"></div>',
+        [{ label: "취소", on: closeModal },
+         { label: "삭제 확인", cls: "", on: function () {
+             db.rpc("sl_admin_remove", { p_email: em }).then(function (r) {
+               if (r.error) { show("md-alert", "bad", r.error.message); return; }
+               closeModal(); loadAcct();
+             });
+           } }]);
+    }
   });
 
   /* ═══════════════ 시작 ═══════════════ */

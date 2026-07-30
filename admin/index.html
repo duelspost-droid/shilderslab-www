@@ -50,8 +50,8 @@
   <div class="admin-top">
     <div class="shell bar">
       <a class="brand" href="/admin/" style="text-decoration:none">
-        <img src="/assets/ci/symbol.svg" alt="" width="28" height="28">
-        <span class="wm"><b>쉴더스랩 관리자</b><span>ADMIN CONSOLE</span></span>
+        <img src="/assets/ci/lockup-horizontal-light.svg" alt="쉴더스랩" height="30">
+        <span class="admin-tag">ADMIN</span>
       </a>
       <div class="admin-who">
         <span id="who"></span>
@@ -69,7 +69,8 @@
       <button data-tab="ins">인사이트</button>
       <button data-tab="job">채용 공고</button>
       <button data-tab="log">로그 · 감사</button>
-      <button data-tab="set">설정</button>
+      <button data-tab="acct" data-owner>계정 관리</button>
+      <button data-tab="set" data-owner>설정</button>
     </div>
 
     <!-- 대시보드 -->
@@ -165,6 +166,24 @@
         방문 로그는 90일, 관리자·제출 로그는 365일 후 자동 삭제됩니다. IP는 위조 가능성이 있어 단독 근거로 사용하지 않습니다.
       </p>
       <div class="tbl-wrap" id="log-table"></div>
+    </section>
+
+    <!-- 계정 관리 -->
+    <section class="panel" id="panel-acct">
+      <div class="panel-head">
+        <h2>관리자 계정</h2>
+        <div class="tools">
+          <button class="btn btn-line btn-sm" id="acct-reload">새로고침</button>
+          <button class="btn btn-sm" id="acct-new">관리자 추가</button>
+        </div>
+      </div>
+      <div class="alert" id="acct-alert" role="status"></div>
+      <p class="tiny" style="margin:0 0 18px">
+        이 목록에 있는 이메일만 관리자 콘솔에 들어올 수 있습니다.
+        <b>로그인 계정</b>은 Supabase Auth 계정을 뜻합니다 — 목록에 있어도 로그인 계정이 없으면 접속할 수 없습니다.
+        역할은 <b>admin</b>(계정·설정 포함 전체) / <b>editor</b>(콘텐츠·문의 처리)로 나뉩니다.
+      </p>
+      <div class="tbl-wrap" id="acct-table"></div>
     </section>
 
     <!-- 설정 -->

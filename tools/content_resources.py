@@ -242,15 +242,15 @@ _RFP_BODY = """      <p>모의해킹 견적은 같은 대상, 같은 이름의 �
       <table class="spec">
         <thead><tr><th>항목</th><th>업체 A</th><th>업체 B</th><th>업체 C</th></tr></thead>
         <tbody>
-          <tr><td data-l="항목">수동 검증 비중</td><td></td><td></td><td></td></tr>
-          <tr><td data-l="항목">인증 이후 영역</td><td></td><td></td><td></td></tr>
-          <tr><td data-l="항목">API 포함 / 산정 기준</td><td></td><td></td><td></td></tr>
-          <tr><td data-l="항목">재점검 횟수 · 범위</td><td></td><td></td><td></td></tr>
-          <tr><td data-l="항목">산출물 종수</td><td></td><td></td><td></td></tr>
-          <tr><td data-l="항목">수행 규칙 문서</td><td></td><td></td><td></td></tr>
-          <tr><td data-l="항목">파기 확인서</td><td></td><td></td><td></td></tr>
-          <tr><td data-l="항목">참여 인력 이력</td><td></td><td></td><td></td></tr>
-          <tr><td data-l="항목">금액</td><td></td><td></td><td></td></tr>
+          <tr><td data-l="항목">수동 검증 비중</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
+          <tr><td data-l="항목">인증 이후 영역</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
+          <tr><td data-l="항목">API 포함 / 산정 기준</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
+          <tr><td data-l="항목">재점검 횟수 · 범위</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
+          <tr><td data-l="항목">산출물 종수</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
+          <tr><td data-l="항목">수행 규칙 문서</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
+          <tr><td data-l="항목">파기 확인서</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
+          <tr><td data-l="항목">참여 인력 이력</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
+          <tr><td data-l="항목">금액</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
         </tbody>
       </table>
       <div class="doc-note">
