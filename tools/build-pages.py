@@ -13,6 +13,43 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import shell  # noqa: E402
 
 
+import content_blocks  # noqa: E402
+
+# 빌드 시작 시 한 번 채운다(fetch_content). key -> {"value":…, "kind":…}
+CONTENT = {}
+
+# data-content 를 단 요소의 안쪽 전체를 교체한다.
+#   여는 태그를 잡고, 같은 태그명으로 닫힐 때까지를 비탐욕으로 문다.
+#   → data-content 요소 안에 같은 태그를 중첩하면 안 된다(content_blocks.py 주석 참조).
+_CONTENT_RE = re.compile(r'(<(\w+)\b[^>]*\bdata-content="([^"]+)"[^>]*>)(.*?)(</\2>)', re.S)
+
+
+def render_block(key, value):
+    """저장된 평문/마크다운 → HTML. 이스케이프가 먼저이므로 원문 HTML은 출력되지 않는다."""
+    if content_blocks.kind_of(key) == "rich":
+        return md(value)
+    return esc(value).replace("\n", "<br>")
+
+
+def apply_content(html):
+    """DB 값이 있는 블록만 갈아끼운다. 비어 있으면 코드에 박힌 기본 문구를 그대로 둔다
+       — 관리자가 실수로 비워도 페이지가 빈칸이 되지 않게."""
+    if not CONTENT:
+        return html
+
+    def rep(m):
+        key = m.group(3)
+        row = CONTENT.get(key)
+        if not row:
+            return m.group(0)
+        v = (row.get("value") or "").strip()
+        if not v:
+            return m.group(0)
+        return m.group(1) + render_block(key, v) + m.group(5)
+
+    return _CONTENT_RE.sub(rep, html)
+
+
 def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld="", body_attr=""):
     html = f"""<!DOCTYPE html>
 <html lang="ko">
@@ -34,6 +71,7 @@ def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld="", b
 </body>
 </html>
 """
+    html = apply_content(html)
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
     with open(full, "w", encoding="utf-8") as f:
@@ -42,21 +80,47 @@ def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld="", b
     return path
 
 
+def _rest(path):
+    """anon 키로 REST 조회. 공개 읽기 권한이 있는 테이블만 대상으로 한다."""
+    cfg = open(os.path.join(ROOT, "config.js"), encoding="utf-8").read()
+    url = re.search(r'SUPABASE_URL:\s*"([^"]+)"', cfg).group(1)
+    key = re.search(r'SUPABASE_ANON_KEY:\s*"([^"]+)"', cfg).group(1)
+    req = urllib.request.Request(
+        f"{url}/rest/v1/{path}",
+        headers={"apikey": key, "Authorization": f"Bearer {key}", "Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return json.loads(r.read().decode())
+
+
 def fetch_insights():
     """공개 인사이트 전문(빌드 시점) — 정적 페이지 생성용. 실패해도 빌드는 계속한다."""
     try:
-        cfg = open(os.path.join(ROOT, "config.js"), encoding="utf-8").read()
-        url = re.search(r'SUPABASE_URL:\s*"([^"]+)"', cfg).group(1)
-        key = re.search(r'SUPABASE_ANON_KEY:\s*"([^"]+)"', cfg).group(1)
-        req = urllib.request.Request(
-            f"{url}/rest/v1/sl_insights?select=slug,category,title,summary,body,author,published_at"
-            "&published=eq.true&order=sort_order.desc,published_at.desc&limit=500",
-            headers={"apikey": key, "Authorization": f"Bearer {key}", "Accept": "application/json"})
-        with urllib.request.urlopen(req, timeout=20) as r:
-            return json.loads(r.read().decode())
+        return _rest("sl_insights?select=slug,category,title,summary,body,author,published_at"
+                     "&published=eq.true&order=sort_order.desc,published_at.desc&limit=500")
     except Exception as e:
         print(f"  ! 인사이트 조회 실패({e.__class__.__name__}) — 정적 글 페이지 생략")
         return []
+
+
+def fetch_content():
+    """관리자가 고친 문구를 빌드 시점에 구워 넣기 위해 읽는다.
+       0005 미적용이거나 네트워크가 없으면 조용히 비운다 — 그 경우 코드 기본 문구로 빌드된다."""
+    try:
+        rows = _rest("sl_content?select=key,value,kind&limit=500")
+    except Exception as e:
+        print(f"  ! 콘텐츠 조회 실패({e.__class__.__name__}) — 코드 기본 문구로 빌드합니다"
+              f" (0005 마이그레이션 미적용이면 정상)")
+        return {}
+    out = {r["key"]: r for r in rows if r.get("key")}
+    filled = sum(1 for r in out.values() if (r.get("value") or "").strip())
+    unknown = [k for k in out if k not in content_blocks.BY_KEY]
+    if unknown:
+        print(f"  ! DB 에만 있는 블록 {len(unknown)}개 — 페이지에 자리가 없어 무시합니다: {', '.join(unknown[:5])}")
+    missing = [b["key"] for b in content_blocks.BLOCKS if b["key"] not in out]
+    if missing:
+        print(f"  ! DB 에 없는 블록 {len(missing)}개 — 코드 기본값 사용(0005 재적용 필요): {', '.join(missing[:5])}")
+    print(f"  · 콘텐츠 블록 {len(out)}개 조회 · 값이 채워진 것 {filled}개")
+    return out
 
 
 def esc(v):
@@ -200,6 +264,10 @@ def main():
     import content_trust as T
     import content_legal as L
     import content_dynamic as D
+
+    global CONTENT
+    print("콘텐츠(CMS):")
+    CONTENT = fetch_content()
 
     print("페이지 생성:")
     static = []

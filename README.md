@@ -21,15 +21,28 @@
 /admin/                 관리자 콘솔 (대시보드·문의·지원·CMS·로그·설정)
 
 assets/css/site.css     전 페이지 공용 디자인 시스템
-assets/js/site.js       내비·리빌·카운터·공지배너·방문로깅
-assets/js/supa.js       Supabase 클라이언트 + esc/safeUrl 등 공용 유틸
+assets/js/site.js       내비·리빌·카운터·공지배너·방문로깅 + 페이지 문구(CMS) 반영
+assets/js/supa.js       Supabase 클라이언트 + esc/safeUrl/md 등 공용 유틸
 assets/vendor/           supabase-js UMD (자체 호스팅 — CDN 의존 없음)
 assets/ci/              CI 벡터 원본(SVG) + OG/파비콘 래스터
-config.js               Supabase URL/anon 키 + 회사 정보(COMPANY)
-supabase/migrations/    DB 스키마·RLS·RPC (0001) + 초기 콘텐츠 시드 (0002)
+config.js               Supabase URL/anon 키 + 회사 정보(COMPANY, sl_content 가 덮어씀)
+supabase/migrations/    DB 스키마·RLS·RPC (0001) · 시드 (0002) · 하드닝 (0003)
+                        · 관리자 역할 (0004) · 페이지 문구 CMS (0005)
 supabase/functions/     notify-inquiry (선택: 접수 알림 메일)
-tools/                  페이지 빌더 · CI 생성기
+tools/                  페이지 빌더 · CI 생성기 · 명함 생성기
+tools/content_blocks.py 관리자가 편집하는 문구 블록의 정본 정의(빌드·시드·관리자 UI 공용)
+tools/gen-content-seed.py  content_blocks.py → 0005 SQL 생성기
 ```
+
+## 페이지 문구를 고치는 두 가지 경로
+
+| 대상 | 방법 |
+|---|---|
+| 회사소개·대표이사 인사말·서비스 인트로·푸터·법인 정보 | 관리자 콘솔 → **[페이지 문구]** 탭 (재빌드 없이 즉시 반영) |
+| 그 밖의 모든 페이지 | `tools/content_*.py` 수정 → `python3 tools/build-pages.py` → 푸시 |
+
+CMS 블록은 HTML 에 `data-content="키"` 앵커로 표시돼 있다. 빌드가 DB 값을 정적 HTML 에 구워 넣고
+(검색엔진 대응), 클라이언트가 같은 값으로 다시 그린다(저장 직후 반영). 값이 비면 코드 기본 문구가 남는다.
 
 ## 로컬 개발
 

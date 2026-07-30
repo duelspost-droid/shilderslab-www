@@ -35,8 +35,8 @@ CSS = """
 BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 서비스</div>
-    <h1 class="d1">여섯 개 영역,<br>하나의 기준</h1>
-    <p class="lead">관리체계·기술진단·개인정보·클라우드를 서로 다른 언어로 다루면 조치가 흩어집니다.
+    <h1 class="d1" data-content="services.hero_title">여섯 개 영역,<br>하나의 기준</h1>
+    <p class="lead" data-content="services.hero_lead">관리체계·기술진단·개인정보·클라우드를 서로 다른 언어로 다루면 조치가 흩어집니다.
        모든 발견 사항을 같은 위험도 기준과 우선순위로 정리해 전달합니다.</p>
   </div>
 </section>

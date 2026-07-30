@@ -164,7 +164,7 @@
       p.classList.toggle("show", p.id === "panel-" + name);
     });
     var loaders = { dash: loadDash, inq: loadInq, app: loadApp, ins: loadIns, job: loadJob,
-                    log: loadLog, acct: loadAcct, set: loadSet };
+                    cnt: loadCnt, log: loadLog, acct: loadAcct, set: loadSet };
     if (!loaded[name] && loaders[name]) { loaded[name] = true; loaders[name](); }
   }
   document.getElementById("tabs").addEventListener("click", function (e) {
@@ -636,6 +636,92 @@
       if (r.error) { show("set-alert", "bad", r.error.message); return; }
       audit("update_setting", "sl_settings", "notice", { on: checked("set-notice-on") });
       show("set-alert", "ok", "저장되었습니다. 공개 페이지에는 새로고침 시 반영됩니다.");
+    });
+  });
+
+
+  /* ═══════════════ 페이지 문구 (sl_content) ═══════════════
+     값은 평문/최소 마크다운으로만 저장한다. HTML 을 저장하지 않는 것이 이 화면의 계약이고,
+     그래서 공개 페이지에서 이스케이프 후 렌더해도 안전하다. */
+  var cntRows = [];
+
+  function loadCnt() {
+    db.from("sl_content").select("key,value,kind,section,label,hint,sort_order")
+      .order("sort_order", { ascending: true })
+      .then(function (r) {
+        var box = document.getElementById("cnt-body");
+        if (r.error) {
+          cntRows = [];
+          box.innerHTML = emptyBox(
+            "문구 목록을 불러오지 못했습니다. 0005 마이그레이션이 아직 적용되지 않았을 수 있습니다. (" +
+            r.error.message + ")");
+          return;
+        }
+        cntRows = r.data || [];
+        if (!cntRows.length) {
+          box.innerHTML = emptyBox("편집할 문구 블록이 없습니다. 0005 마이그레이션을 적용해 주세요.");
+          return;
+        }
+        var html = "", sec = null;
+        cntRows.forEach(function (row, i) {
+          if (row.section !== sec) {
+            if (sec !== null) html += "</div>";
+            sec = row.section;
+            html += '<h3 class="cnt-sec">' + esc(sec) + "</h3><div class=\"form\" style=\"max-width:820px\">";
+          }
+          var id = "cnt-f-" + i;
+          var rich = row.kind === "rich";
+          var long = rich || (row.value || "").length > 90;
+          html += '<div class="field">' +
+            '<label for="' + id + '">' + esc(row.label || row.key) + "</label>" +
+            (long
+              ? '<textarea id="' + id + '" rows="' + (rich ? 9 : 3) + '" maxlength="20000"></textarea>'
+              : '<input id="' + id + '" type="text" maxlength="20000">') +
+            (row.hint ? '<div class="hint">' + esc(row.hint) + "</div>" : "") +
+            '<div class="hint mono" style="opacity:.7">' + esc(row.key) +
+              (rich ? " · 마크다운" : "") + "</div>" +
+            "</div>";
+        });
+        if (sec !== null) html += "</div>";
+        box.innerHTML = html;
+        cntRows.forEach(function (row, i) {
+          var el = document.getElementById("cnt-f-" + i);
+          if (el) el.value = row.value || "";
+        });
+      });
+  }
+
+  document.getElementById("cnt-save").addEventListener("click", function () {
+    if (!cntRows.length) { show("cnt-alert", "bad", "불러온 문구가 없어 저장할 수 없습니다."); return; }
+    var changed = [];
+    cntRows.forEach(function (row, i) {
+      var el = document.getElementById("cnt-f-" + i);
+      if (!el) return;
+      var v = el.value;
+      if (v === (row.value || "")) return;
+      changed.push({ key: row.key, value: v });
+    });
+    if (!changed.length) { show("cnt-alert", "ok", "바뀐 내용이 없습니다."); return; }
+
+    /* key 만 보내면 나머지 컬럼이 기본값으로 덮인다 — value 만 갱신한다. */
+    var done = 0, failed = null;
+    changed.forEach(function (c) {
+      db.from("sl_content").update({ value: c.value }).eq("key", c.key).then(function (r) {
+        done++;
+        if (r.error && !failed) failed = r.error.message;
+        if (done === changed.length) {
+          if (failed) { show("cnt-alert", "bad", "저장 실패: " + failed); return; }
+          changed.forEach(function (c2) {
+            for (var i = 0; i < cntRows.length; i++) {
+              if (cntRows[i].key === c2.key) { cntRows[i].value = c2.value; break; }
+            }
+          });
+          audit("update_content", "sl_content", changed.map(function (c2) { return c2.key; }).join(","),
+                { count: changed.length });
+          show("cnt-alert", "ok",
+               changed.length + "개 항목을 저장했습니다. 공개 페이지는 새로고침하면 바로 반영됩니다.");
+        }
+      });
     });
   });
 

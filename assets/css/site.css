@@ -495,6 +495,20 @@ select.inp,input.inp{background:transparent;border:1px solid var(--rule-2);paddi
 }
 
 /* ══════════════════════════════════════════════════════════════
+   CMS 리치 블록
+   관리자 콘솔에서 편집하는 여러 문단짜리 블록(data-content, kind=rich).
+   글자 크기·색은 부모(.lead 등)에서 상속받고, 여기서는 문단 간격만 잡는다.
+   빌드가 구워 넣은 마크업과 클라이언트가 다시 그린 마크업이 같은 모양이어야 하므로
+   자식 선택자(>)로만 규칙을 건다.
+   ══════════════════════════════════════════════════════════════ */
+.cms-rich>p{margin:0 0 18px}
+.cms-rich>p:last-child{margin-bottom:0}
+.cms-rich>ul,.cms-rich>ol{margin:0 0 18px;padding-left:20px}
+.cms-rich>ul>li,.cms-rich>ol>li{margin-bottom:6px}
+.cms-rich>blockquote{margin:0 0 18px;padding-left:16px;border-left:2px solid var(--rule-2);color:var(--ink-3)}
+.cms-rich>h2,.cms-rich>h3{margin:26px 0 10px;font-size:1.05rem;color:var(--ink)}
+
+/* ══════════════════════════════════════════════════════════════
    한글 라벨 보정
    모노스페이스 + 대문자 + 넓은 자간은 라틴 알파벳 전용 조판이다.
    한글이 들어가는 라벨은 산세리프로 되돌리고 자간을 좁힌다.

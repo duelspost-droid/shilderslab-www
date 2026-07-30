@@ -66,20 +66,59 @@
   });
 
   var bizEl = doc.getElementById("bizline");
-  if (bizEl) {
-    var esc = (window.SL && window.SL.esc) || function (s) { return String(s == null ? "" : s); };
+  var esc = (window.SL && window.SL.esc) || function (s) { return String(s == null ? "" : s); };
+
+  /* 관리자 콘솔(sl_content 의 company.*)이 config.js 의 COMPANY 를 덮어쓴다.
+     값이 비면 config.js 값을, 그것도 비면 아예 렌더하지 않는다(임시 문구 노출 방지). */
+  function renderBizline(cnt) {
+    if (!bizEl) return;
+    function pick(key, fallback) {
+      var row = cnt && cnt["company." + key];
+      var v = row && typeof row.value === "string" ? row.value.trim() : "";
+      return v || fallback || "";
+    }
     var rows = [
-      ["상호", C.legalKo || C.nameKo], ["대표자", C.ceo], ["사업자등록번호", C.bizNo],
-      ["주소", C.addr], ["대표번호", C.tel], ["팩스", C.fax],
-      ["이메일", C.email], ["개인정보 보호책임자", C.privacyOfficer],
+      ["상호", pick("legal_name", C.legalKo) || C.nameKo],
+      ["대표자", pick("ceo", C.ceo)],
+      ["사업자등록번호", pick("biz_no", C.bizNo)],
+      ["주소", pick("addr", C.addr)],
+      ["대표번호", pick("tel", C.tel)],
+      ["팩스", pick("fax", C.fax)],
+      ["이메일", C.email],
+      ["개인정보 보호책임자", pick("privacy_officer", C.privacyOfficer)],
     ].filter(function (r) { return r[1]; });
     bizEl.innerHTML = rows.map(function (r) {
       return "<b>" + esc(r[0]) + "</b> " + esc(r[1]);
     }).join("&nbsp; · &nbsp;");
   }
+  renderBizline(null);   /* 백엔드 응답 전에도 config.js 기준으로 먼저 보여 준다 */
+
+  /* ─────────── 페이지 문구(CMS) 반영 ───────────
+     빌드가 이미 정적 HTML 로 구워 넣었다. 여기서 다시 그리는 이유는 관리자가 저장한 직후
+     재빌드를 기다리지 않고 반영되게 하기 위함이다. 값이 비면 구워진 문구를 그대로 둔다. */
+  function hydrateContent(cnt) {
+    if (!cnt) return;
+    Array.prototype.forEach.call(doc.querySelectorAll("[data-content]"), function (el) {
+      var row = cnt[el.getAttribute("data-content")];
+      if (!row) return;
+      var v = typeof row.value === "string" ? row.value.trim() : "";
+      if (!v) return;
+      if (row.kind === "rich" && window.SL && SL.md) {
+        el.innerHTML = SL.md(v);
+      } else {
+        el.innerHTML = esc(v).replace(/\n/g, "<br>");
+      }
+    });
+  }
 
   /* ─────────── 사이트 설정 반영 + 공지 배너 ─────────── */
   if (window.SL && SL.db && SL.db() && !doc.body.hasAttribute("data-no-log")) {
+    if (SL.loadContent) {
+      SL.loadContent().then(function (cnt) {
+        hydrateContent(cnt);
+        renderBizline(cnt);
+      }).catch(function () { /* 0005 미적용 등 — 구워진 문구를 그대로 둔다 */ });
+    }
     SL.loadSettings().then(function (s) {
       if (s && typeof s.contact_email === "string" && s.contact_email) {
         Array.prototype.forEach.call(doc.querySelectorAll('a[href^="mailto:"]'), function (a) {

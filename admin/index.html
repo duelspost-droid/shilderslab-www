@@ -17,6 +17,12 @@
   /* 관리자 전용 보정 — 공용 디자인 시스템 토큰을 그대로 쓴다 */
   .two{display:grid;grid-template-columns:1.3fr .7fr;gap:var(--gut)}
   @media (max-width:900px){.two{grid-template-columns:1fr}}
+  /* 페이지 문구 탭 — 섹션 구분선 */
+  .cnt-sec{font-size:.86rem;letter-spacing:.02em;color:var(--accent);
+    border-top:1px solid var(--rule);padding-top:16px;margin:30px 0 14px}
+  .cnt-sec:first-child{border-top:none;padding-top:0;margin-top:0}
+  #panel-cnt textarea{line-height:1.7;resize:vertical}
+  @media (max-width:640px){#panel-cnt .panel-head{flex-wrap:wrap;gap:10px}}
 </style>
 </head>
 <body data-no-log>
@@ -68,6 +74,7 @@
       <button data-tab="app">채용 지원 <span id="badge-app"></span></button>
       <button data-tab="ins">인사이트</button>
       <button data-tab="job">채용 공고</button>
+      <button data-tab="cnt">페이지 문구</button>
       <button data-tab="log" data-owner>로그 · 감사</button>
       <button data-tab="acct" data-owner>계정 관리</button>
       <button data-tab="set" data-owner>설정</button>
@@ -188,6 +195,22 @@
     </section>
 
     <!-- 설정 -->
+    <!-- 페이지 문구 (CMS) -->
+    <section class="panel" id="panel-cnt">
+      <div class="panel-head">
+        <h2>페이지 문구</h2>
+        <button class="btn primary" id="cnt-save">전체 저장</button>
+      </div>
+      <div class="alert" id="cnt-alert" role="status"></div>
+      <p class="hint" style="margin:0 0 18px;max-width:74ch">
+        공개 페이지의 문구를 여기서 고칩니다. 저장하면 <b>방문자에게는 즉시</b> 반영되고,
+        다음 배포 때 정적 파일에도 구워집니다(검색엔진 대응).
+        <b>비워두면 사이트 기본 문구가 그대로 나옵니다</b> — 빈 화면이 되지 않습니다.
+        여러 문단짜리 칸은 <b>빈 줄로 문단을 나누고</b> <code>**굵게**</code> 를 쓸 수 있습니다.
+      </p>
+      <div id="cnt-body"><div class="empty">불러오는 중…</div></div>
+    </section>
+
     <section class="panel" id="panel-set">
       <div class="panel-head"><h2>사이트 설정</h2></div>
       <div class="alert" id="set-alert" role="status"></div>
