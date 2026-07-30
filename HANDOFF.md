@@ -11,16 +11,17 @@
 
 | 항목 | 상태 |
 |---|---|
-| 프런트 (11개 페이지) | ✅ 작성 완료 · 로컬 검증 통과(전 경로 200, 콘솔 오류 0) |
+| 프런트 (12개 페이지) | ✅ 완료 · 로컬/라이브 검증 통과(전 경로 200, 콘솔 오류 0) |
 | CI 벡터 원본 | ✅ 심볼·가로/세로 락업·모노·워드마크·파비콘·OG (아웃라인 패스) |
-| DB 스키마·RLS·RPC (`0001`) | ⏳ **라이브 미적용** — SQL Editor에서 1회 실행 필요 |
-| 초기 콘텐츠 시드 (`0002`) | ⏳ 라이브 미적용 (0001 이후 실행) |
-| 관리자 콘솔 | ✅ 작성 완료 (로그인·문의·지원·CMS·로그·설정) — DB 적용 후 동작 |
-| GitHub 저장소 · Pages | ⏳ 생성·푸시 대기 |
-| 도메인 (가비아 DNS) | ⏳ 레코드 등록 대기 (아래 4항) |
+| DB 스키마·RLS·RPC (`0001`) | ✅ **라이브 적용 완료** (2026-07-30) |
+| 초기 콘텐츠 시드 (`0002`) | ✅ 라이브 적용 완료 — 인사이트 3건 공개, 채용 2건 초안 |
+| 백엔드 보안 경계 | ✅ anon 경로 E2E 검증 통과 (아래 6항) |
+| 관리자 콘솔 | ⚠️ 구현 완료 · **로그인 미검증** — 관리자 Auth 계정 생성 필요(아래 ②) |
+| GitHub 저장소 · Pages | ✅ [duelspost-droid/shilderslab-www](https://github.com/duelspost-droid/shilderslab-www) · Pages 빌드 성공 |
+| 도메인 (가비아 DNS) | ⏳ **레코드 등록 대기** — 오너 작업 (아래 ③) |
 | 접수 알림 메일 (선택) | ⏳ `notify-inquiry` 미배포 |
 
-로컬 경로: `/Users/hk/shilderslab-www`
+로컬 경로: `/Users/hk/shilderslab-www` · 원격: `github.com/duelspost-droid/shilderslab-www` (public, main)
 
 ---
 
@@ -41,30 +42,28 @@
 
 ## 3. 오너 조치 필요 (순서대로)
 
-### ① DB 마이그레이션 적용 — 가장 먼저
-Supabase 대시보드 → 프로젝트 `nrdapzgtibbusvoaceuh` → SQL Editor 에서 순서대로 1회 실행:
+### ① ~~DB 마이그레이션 적용~~ ✅ 완료 (2026-07-30)
+`0001` · `0002` 모두 SQL Editor에서 실행 완료("Success. No rows returned").
+두 파일 모두 재실행 안전(idempotent)이므로 필요 시 다시 실행해도 된다.
 
-1. `supabase/migrations/0001_shilderslab_core.sql`
-2. `supabase/migrations/0002_shilderslab_seed.sql`
+### ② 관리자 Auth 계정 생성 — **현재 관리자 로그인 불가 상태**
+`0001` 이 `sl_admins` 화이트리스트에 `duels@jbfg.com` 을 넣어두었지만,
+확인 결과 **이 Supabase 프로젝트의 `auth.users` 에는 화이트리스트와 일치하는 계정이 없다**
+(`select email from auth.users where lower(email) in (select lower(email) from sl_admins)` → 0행).
+즉 지금은 `/admin/` 에서 로그인할 계정 자체가 없다. 둘 중 하나를 하면 된다.
 
-두 파일 모두 **재실행 안전**(idempotent)하다. 적용 전에는 문의 폼이 "지금은 접수를 처리할 수 없습니다"로
-안전하게 실패하고, 인사이트 영역은 "준비 중" 문구가 나온다(사이트 자체는 정상).
+**(A) 기존 이메일로 계정 생성** — Supabase 대시보드 → Authentication → Users → **Add user**
+→ Email `duels@jbfg.com`, 비밀번호 지정, *Auto Confirm User* 켜기. (비밀번호 입력은 오너가 직접)
 
-검증 쿼리:
-```sql
-select count(*) from sl_insights where published;      -- 3
-select public.is_sl_admin();                            -- 관리자 계정 로그인 시 true
-```
-
-### ② 관리자 계정
-`0001` 시드가 `duels@jbfg.com` 을 관리자로 등록한다. 이 계정은 **해당 Supabase 프로젝트의 `auth.users`에
-이미 존재해야** 로그인이 된다(없으면 대시보드 Authentication → Users 에서 생성).
-쉴더스랩 전용 주소를 쓰려면:
+**(B) 쉴더스랩 전용 주소 사용** — 위와 같은 방법으로 계정을 만든 뒤, SQL Editor에서 화이트리스트에 추가:
 ```sql
 insert into public.sl_admins(email, role, note)
-values ('본인@shilderslab.com', 'admin', '쉴더스랩 관리자') on conflict do nothing;
+values ('admin@shilderslab.com', 'admin', '쉴더스랩 관리자')
+on conflict (email) do nothing;
 ```
-계정 자체는 Supabase Authentication → Users → Add user 로 생성한다. (비밀번호 입력은 오너가 직접)
+
+로그인 후 `/admin/` 대시보드에 통계가 보이면 정상이다. 화이트리스트에 없는 계정으로 로그인하면
+콘솔이 자동 로그아웃시키고 "관리자로 등록되어 있지 않습니다" 를 표시한다.
 
 ### ③ 가비아 DNS — shilderslab.com → GitHub Pages
 가비아 My가비아 → DNS 관리 → shilderslab.com → 레코드 수정에서:
@@ -130,7 +129,29 @@ privacyOfficer: "",   // 개인정보 보호책임자
 
 ## 6. 검증 기록
 
-- 2026-07-30 · 로컬(`python3 -m http.server 8188`) 전 경로 200 확인(11페이지 + 정적 자원 11개).
-- 2026-07-30 · `/contact/` 런타임 검증: supabase-js 로드·클라이언트 생성·폼 필드 7개·nav active·푸터 사업자 렌더·콘솔 오류 0.
-- 2026-07-30 · `/insights/` DB 미적용 상태에서 폴백 문구 정상 표시(그레이스풀 디그레이드 확인).
-- 2026-07-30 · 전 JS 파일 및 인라인 스크립트 5개 `node --check` 통과.
+**프런트 (2026-07-30)**
+- 로컬(`python3 -m http.server 8188`) 전 경로 200 — 12페이지 + 정적 자원 11개.
+- 라이브 GitHub Pages 서빙 확인: DNS 연결 전이라 `curl --resolve shilderslab.com:80:185.199.108.153` 로
+  직접 확인 — `/`, `/services/`, `/contact/`, CI 자산, `robots.txt` 모두 200, 홈 `<title>` 일치.
+- `/contact/` 런타임: supabase-js 로드·클라이언트 생성·폼 필드 7개·nav active·푸터 사업자 렌더·콘솔 오류 0.
+- 전 JS 파일 + 인라인 스크립트 5개 `node --check` 통과.
+
+**백엔드 보안 경계 — anon 키 실경로 E2E (2026-07-30)**
+
+| 검증 항목 | 결과 |
+|---|---|
+| 공개 인사이트 조회 | ✅ 3건 (시드) |
+| 미게시 채용공고 | ✅ anon 에게 0건 노출 (published 게이트 동작) |
+| `sl_stats()` anon 호출 | ✅ `permission denied for function sl_stats` |
+| `sl_log()` anon 호출 (로그 위조 시도) | ✅ `permission denied for function sl_log` |
+| 동의 없이 문의 제출 | ✅ 거부 — "개인정보 수집·이용 동의가 필요합니다" |
+| 잘못된 이메일 형식 | ✅ 거부 — "이메일 형식이 올바르지 않습니다" |
+| 정상 문의 제출 | ✅ 적재 성공(uuid 반환) |
+| **적재 직후 anon 재조회** | ✅ **0행 — RLS 차단 실증** (행은 존재하나 조회 불가) |
+| 방문 로깅 RPC | ✅ 성공, `sl_audit` 는 anon 조회 0행 |
+
+※ 위 테스트로 생성된 문의 1건과 감사 로그는 SQL Editor에서 삭제 완료(`sl_inquiries` 0행 확인).
+
+**미검증 (오너 계정 필요)**
+- `/admin/` 로그인 이후 흐름 전체(대시보드 통계·문의 처리·CMS 저장·감사 로그 열람).
+  관리자 Auth 계정이 없어 진행 불가 — 위 ②항 완료 후 확인 필요.

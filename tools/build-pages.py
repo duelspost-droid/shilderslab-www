@@ -136,9 +136,35 @@ def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld=""):
     print(f"  ✓ {path}  ({len(html):,}B)")
 
 
+NOT_FOUND_BODY = """<section class="page-head" style="padding-bottom:40px">
+  <div class="wrap">
+    <div class="crumb"><a href="/">홈</a> / 404</div>
+    <span class="eyebrow"><span class="dot"></span>404 NOT FOUND</span>
+    <h1 class="display">요청하신 페이지가 <span class="grad">없습니다</span></h1>
+    <p>주소가 변경되었거나 삭제된 페이지입니다. 아래에서 필요한 곳으로 이동해 주세요.</p>
+  </div>
+</section>
+
+<section class="sec tight">
+  <div class="wrap">
+    <div class="grid g3">
+      <a class="card" href="/services/"><h3>서비스</h3><p>ISMS-P 인증, 모의해킹, 취약점 진단 등 6개 영역</p><span class="more">이동</span></a>
+      <a class="card" href="/insights/"><h3>인사이트</h3><p>규제 변화와 진단 현장에서 반복되는 문제들</p><span class="more">이동</span></a>
+      <a class="card" href="/contact/"><h3>상담 · 견적</h3><p>범위 검토와 견적 산정은 비용이 발생하지 않습니다</p><span class="more">이동</span></a>
+    </div>
+    <div style="margin-top:30px"><a class="btn btn-ghost" href="/">← 홈으로</a></div>
+  </div>
+</section>"""
+
+
 def build_all():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import content_static as S, content_legal as L, content_dynamic as D
+
+    page("404.html",
+         "페이지를 찾을 수 없습니다 | 쉴더스랩",
+         "요청하신 페이지를 찾을 수 없습니다.",
+         NOT_FOUND_BODY, "/404.html")
 
     page("about/index.html",
          "회사소개 | 쉴더스랩 — 정보보호 컨설팅",
