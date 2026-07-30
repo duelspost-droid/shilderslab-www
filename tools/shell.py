@@ -68,7 +68,6 @@ FOOTER = """<footer class="site">
         <a href="/about/">회사소개</a>
         <a href="/method/">진단 방법론</a>
         <a href="/regulations/">규제 가이드</a>
-        <a href="/trust/">신뢰 센터</a>
         <a href="/resources/">자료실</a>
         <a href="/careers/">채용</a>
         <a href="/brand/">브랜드 · CI</a>
