@@ -69,10 +69,45 @@ ABOUT_BODY = """<section class="phead">
   </div>
 </section>
 
+<section class="sec">
+  <div class="shell g12">
+    <div class="c3">
+      <span class="lbl">02 / Message</span>
+    </div>
+    <div class="c8 start4">
+      <h2 class="d2" style="margin:0 0 30px">대표이사 인사말</h2>
+      <p class="lead" style="margin-bottom:18px">
+        정보보호 컨설팅을 받아 본 담당자에게 무엇이 가장 아쉬웠는지 물으면, 대체로 같은 대답이 돌아옵니다.
+        보고서는 두꺼웠지만 <b>무엇부터 해야 할지는 알 수 없었다</b>는 것입니다.
+      </p>
+      <p class="lead" style="margin-bottom:18px">
+        쉴더스랩은 그 지점에서 시작했습니다. 취약점을 찾아내는 일은 이제 그 자체로 변별력이 되기 어렵습니다.
+        발견을 규제 조항과 시스템 담당자의 작업 단위로 옮겨 놓는 일, 우선순위를 근거와 함께 제시하는 일,
+        그리고 조치가 실제로 적용되었는지 다시 확인하고 과업을 닫는 일 — 저희는 여기까지를 컨설팅의 범위로 봅니다.
+      </p>
+      <p class="lead" style="margin-bottom:18px">
+        저희가 스스로에게 두는 규칙은 두 가지입니다. 첫째, <b>할 수 없는 일을 할 수 있다고 말하지 않습니다.</b>
+        법령상 수행 자격이 제한된 과업이 있고, 저희가 아직 보유하지 못한 지위가 있습니다.
+        그 경계는 홈페이지에 그대로 적어 두었습니다. 둘째, <b>확인하지 않은 것을 확인했다고 쓰지 않습니다.</b>
+        재현되지 않은 취약점은 보고서에 올리지 않고, 근거는 재현 절차와 함께 제시합니다.
+      </p>
+      <p class="lead">
+        보안은 결국 신뢰의 문제이고, 신뢰는 검증할 수 있을 때만 성립합니다.
+        고객사가 저희의 결론을 다시 확인할 수 있도록 방법론과 산출물 규격을 공개하는 이유입니다.
+        함께 볼 범위부터 편하게 말씀해 주시면, 거기서부터 시작하겠습니다.
+      </p>
+      <div class="sign" style="margin-top:40px">
+        <p class="tiny" style="margin-bottom:6px">쉴더스랩 대표이사</p>
+        <p class="d3" style="font-size:1.24rem">이성훈</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="sec band">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">02 / Principles</span></div>
+      <div class="idx"><span class="lbl">03 / Principles</span></div>
       <div class="body">
         <h2 class="d2">일하는 방식 세 가지</h2>
         <p class="lead">신생 조직이 신뢰를 얻는 방법은 실적을 주장하는 것이 아니라
@@ -105,7 +140,7 @@ ABOUT_BODY = """<section class="phead">
 <section class="sec">
   <div class="shell g12">
     <div class="c5">
-      <span class="lbl">03 / Capability</span>
+      <span class="lbl">04 / Capability</span>
       <h2 class="d2" style="margin:20px 0 24px">규제와 공격,<br>두 언어를 함께</h2>
       <p class="lead">관리체계 컨설팅과 기술 진단을 서로 다른 회사가 맡으면, 심사는 통과하지만
          침해 경로는 그대로 남는 상태가 만들어집니다. 저희는 두 관점을 같은 프로젝트 안에서 다룹니다.</p>
@@ -125,7 +160,7 @@ ABOUT_BODY = """<section class="phead">
 <section class="sec band-3">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">04 / History</span></div>
+      <div class="idx"><span class="lbl">05 / History</span></div>
       <div class="body"><h2 class="d2">연혁</h2></div>
     </div>
     <div class="tl">

@@ -12,7 +12,7 @@ window.SL_CONFIG = {
     nameKo: "쉴더스랩",
     nameEn: "SHIELDUS LAB",
     legalKo: "",          // 예: "주식회사 쉴더스랩"  ← 등기 상호 확정 후 입력
-    ceo: "",              // 대표자명
+    ceo: "이성훈",         // 대표자명
     bizNo: "",            // 사업자등록번호
     addr: "",             // 주소
     tel: "",              // 대표번호
