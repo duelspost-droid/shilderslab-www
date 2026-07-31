@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """홈 v2 — 에디토리얼 구성
-   신생 조직이라 실적을 주장할 수 없으므로, 신뢰 장치를 '공개'로 만든다:
-   방법론 공개 · 산출물 공개 · 못 하는 일 공개 · 바로 쓸 수 있는 자료 공개.
+   신뢰 장치를 '공개'로 만든다: 방법론 공개 · 산출물 공개 · 못 하는 일 공개 · 바로 쓸 수 있는 자료 공개.
+   ⚠ 설립 시기·실적 유무를 카피에서 앞세우지 않는다(오너 방침). 공개하는 내용은 그대로 두되
+     "실적이 없어서 대신 공개한다"는 방어적 프레임은 쓰지 않는다.
 """
 
 TITLE = "쉴더스랩 | 정보보호 컨설팅 — ISMS-P · 모의해킹 · 취약점 진단"
-DESC = ("쉴더스랩은 규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행하는 정보보호 컨설팅 조직입니다. "
-        "진단 절차와 산출물 규격을 계약 전에 공개합니다.")
+DESC = ("쉴더스랩은 ISMS-P 인증 대응과 모의해킹·취약점 진단을 한 계약 안에서 수행하는 정보보호 컨설팅 "
+        "회사입니다. 진단 절차와 산출물 규격을 계약 전에 공개합니다.")
 LD = ('{"@context":"https://schema.org","@type":"Organization","name":"쉴더스랩",'
       '"alternateName":"SHIELDUS LAB","url":"https://shilderslab.com/",'
       '"logo":"https://shilderslab.com/assets/ci/symbol.svg","foundingDate":"2026",'
@@ -62,7 +63,7 @@ BODY = """<section class="home-hero">
     </div>
     <div class="c4 start9">
       <div class="hero-meta">
-        <div class="r"><span class="k">설립</span><span class="v">2026년 — 수행 실적 공개 전</span></div>
+        <div class="r"><span class="k">위험도 판정</span><span class="v">5등급 정의 공개 · 보고서 첫 장 수록</span></div>
         <div class="r"><span class="k">수행 영역</span><span class="v">관리체계 · 기술진단 · 개인정보 · 클라우드</span></div>
         <div class="r"><span class="k">초기 회신</span><span class="v" data-setting="sla_note">영업일 24시간 이내, 사람이 직접</span></div>
         <div class="r"><span class="k">과업 종료 기준</span><span class="v">재점검 결과서 제출 시점</span></div>
@@ -163,9 +164,9 @@ BODY = """<section class="home-hero">
     <div class="sec-head">
       <div class="idx"><span class="lbl">03 / Why us</span></div>
       <div class="body">
-        <h2 class="d2">신생 조직입니다.<br>그래서 공개합니다</h2>
-        <p class="lead">2026년에 시작한 회사라 보여드릴 수행 실적이 없습니다.
-           그래서 판단 기준과 작업 방식을 계약 전에 공개합니다.
+        <h2 class="d2">판단 기준을<br>먼저 공개합니다</h2>
+        <p class="lead">제안서만 보고 어느 업체가 무엇을 어떻게 하겠다는 것인지 가려내기는 어렵습니다.
+           위험도 판정 기준, 서비스별 산출물 목록, 수행 규칙을 계약 전에 공개하는 이유입니다.
            다른 업체 제안서와 나란히 놓고 보셔도 됩니다.</p>
       </div>
     </div>

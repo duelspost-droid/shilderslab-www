@@ -7,8 +7,8 @@ from content_resources import RES_TITLE, RES_DESC, RES_CSS, RES_BODY  # noqa: F4
 # 회사소개
 # ══════════════════════════════════════════════════════════════════════
 ABOUT_TITLE = "회사소개 | 쉴더스랩 — 정보보호 컨설팅"
-ABOUT_DESC = ("쉴더스랩은 2026년 설립된 정보보호 컨설팅 회사입니다. ISMS-P 인증 대응과 기술 진단을 "
-              "한 계약 안에서 수행하고, 조치를 확인하는 재점검까지를 과업 범위로 봅니다.")
+ABOUT_DESC = ("쉴더스랩은 ISMS-P 인증 대응과 기술 진단을 한 계약 안에서 수행하는 정보보호 컨설팅 "
+              "회사입니다. 조치를 확인하는 재점검까지를 과업 범위로 봅니다.")
 ABOUT_LD = ('{"@context":"https://schema.org","@type":"AboutPage","name":"회사소개 | 쉴더스랩",'
             '"url":"https://shilderslab.com/about/"}')
 
@@ -27,7 +27,7 @@ ABOUT_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 회사소개</div>
     <h1 class="d1" data-content="about.hero_title">확인한 것만<br>보고서에 씁니다</h1>
-    <p class="lead" data-content="about.hero_lead">쉴더스랩(SHIELDUS LAB)은 2026년에 설립된 정보보호 컨설팅 회사입니다.
+    <p class="lead" data-content="about.hero_lead">쉴더스랩(SHIELDUS LAB)은 정보보호 컨설팅 회사입니다.
        ISMS-P 인증 대응과 모의해킹·취약점 진단을 한 계약 안에서 수행하고,
        조치를 확인하는 재점검까지를 과업 범위로 봅니다.</p>
   </div>
@@ -66,9 +66,6 @@ ABOUT_BODY = """<section class="phead">
           <div class="v"><a href="mailto:contact@shilderslab.com" style="border-bottom:1px solid var(--rule-2)">contact@shilderslab.com</a></div></div>
         <div class="row"><div class="k">웹사이트</div><div class="v">shilderslab.com</div></div>
       </div>
-      <p class="tiny" style="margin-top:18px">
-        사업자 등록 정보(상호·대표자·주소)는 확정 후 페이지 하단에 게시합니다.
-      </p>
     </div>
   </div>
 </section>
@@ -92,7 +89,7 @@ ABOUT_BODY = """<section class="phead">
         </p>
         <p>
           저희가 스스로에게 두는 규칙은 두 가지입니다. 첫째, <b>할 수 없는 일을 할 수 있다고 말하지 않습니다.</b>
-          법령상 수행 자격이 제한된 과업이 있고, 아직 보유하지 못한 지위가 있습니다.
+          법령상 수행 자격이 제한된 과업이 있고, 저희가 보유하지 않은 지위가 있습니다.
           그 경계는 홈페이지에 그대로 적어 두었습니다. 둘째, <b>확인하지 않은 것을 확인했다고 쓰지 않습니다.</b>
           재현되지 않은 취약점은 보고서에 올리지 않습니다.
         </p>
@@ -116,7 +113,7 @@ ABOUT_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">03 / Principles</span></div>
       <div class="body">
         <h2 class="d2">일하는 방식 세 가지</h2>
-        <p class="lead">실적으로 증명할 수 없는 동안에는 판단 근거를 공개하는 방법밖에 없다고 봅니다.
+        <p class="lead">판단 근거를 공개하지 않으면 고객사가 결론을 검증할 방법이 없습니다.
            아래 세 가지는 요청하시면 계약서 조항으로 넣을 수 있는 항목입니다.</p>
       </div>
     </div>
@@ -159,40 +156,6 @@ ABOUT_BODY = """<section class="phead">
         <li><span><b>클라우드</b> — AWS·Azure·GCP 구성 진단, IAM 권한과 로깅 체계 검토</span></li>
         <li><span><b>운영 정착</b> — 침해사고 대응 절차, 모의훈련, 담당자·임직원 교육</span></li>
       </ul>
-    </div>
-  </div>
-</section>
-
-<section class="sec band-3">
-  <div class="shell">
-    <div class="sec-head">
-      <div class="idx"><span class="lbl">05 / History</span></div>
-      <div class="body"><h2 class="d2">연혁</h2></div>
-    </div>
-    <div class="tl">
-      <div class="item">
-        <time>2026</time>
-        <div>
-          <h4>쉴더스랩 설립</h4>
-          <p>정보보호 컨설팅 전문 조직으로 출발. 관리체계 인증과 기술 진단을 함께 수행하는 서비스 체계를 정립했습니다.</p>
-        </div>
-      </div>
-      <div class="item">
-        <time>2026</time>
-        <div>
-          <h4>표준 방법론 · 산출물 규격 확립</h4>
-          <p>5단계 컨설팅 프로세스(범위 정의 → 진단 → 분석·보고 → 이행 지원 → 재점검)와
-             위험도 산정 기준, 보고서 구성을 문서화해 공개했습니다.</p>
-        </div>
-      </div>
-      <div class="item">
-        <time class="ko">진행 중</time>
-        <div>
-          <h4>공개 자료 축적</h4>
-          <p>담당자가 계약 없이도 바로 쓸 수 있는 점검 체크리스트와 진단 항목표를 자료실에 공개하고 있습니다.
-             이력과 사례는 수행이 쌓이는 대로 이 페이지에 갱신합니다.</p>
-        </div>
-      </div>
     </div>
   </div>
 </section>
