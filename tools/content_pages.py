@@ -599,9 +599,9 @@ BRAND_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">04 / Business card</span></div>
       <div class="body">
         <h2 class="d3">명함</h2>
-        <p class="note-warn"><b>도메인 확인 후 발주하십시오.</b> 명함에는 <b>shilduslab.com</b> 이 새겨져 있으나,
-           웹사이트는 아직 shilderslab.com 에서 서비스 중입니다. 새 도메인 등록과 메일 수신이 확인되기 전에
-           인쇄하면 명함의 주소와 이메일이 닿지 않습니다.</p>
+        <p class="note-warn"><b>웹 주소가 아직 전환 전입니다.</b> 명함에는 <b>shielduslab.com</b> 이 새겨져 있고
+           이 도메인은 등록·메일(MX) 설정이 확인되었습니다. 다만 홈페이지는 아직 shilderslab.com 에서
+           서비스 중이라, 명함의 주소로 접속하면 준비 중 페이지가 나옵니다. 사이트 전환 후 배포하십시오.</p>
         <p class="lead">세 가지 시안을 준비했습니다. 모두 <b>인쇄소에 그대로 넘길 수 있는 규격</b>으로 만들었습니다 —
            재단 90 × 50 mm에 사방 3 mm 도련, 글자는 전부 아웃라인 처리되어 폰트를 함께 보낼 필요가 없습니다.
            각 시안마다 <b>영문형</b>과 <b>한글형</b>이 있습니다. 한글형은 쉴더스랩이 크고 SHIELDUS LAB 이 아래에 병기됩니다.</p>
@@ -750,7 +750,7 @@ BRAND_BODY = """<section class="phead">
                     font-family:var(--font-mono);font-size:.78rem;line-height:1.7">python3 tools/build-card.py \
   --name 김보안 --title 보안컨설턴트 \
   --mobile 010-1234-5678 \
-  --email kim@shilduslab.com</pre>
+  --email kim@shielduslab.com</pre>
         <p class="tiny" style="margin-top:12px">
           시안 3종 × 앞뒤 × 4포맷이 <code>assets/ci/card/</code> 에 생성됩니다.
           <code>--phone</code>(대표번호) · <code>--dept</code>(부서) · <code>--addr</code>(주소) 도 넣을 수 있습니다.
