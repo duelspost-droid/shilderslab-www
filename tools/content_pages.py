@@ -7,8 +7,8 @@ from content_resources import RES_TITLE, RES_DESC, RES_CSS, RES_BODY  # noqa: F4
 # 회사소개
 # ══════════════════════════════════════════════════════════════════════
 ABOUT_TITLE = "회사소개 | 쉴더스랩 — 정보보호 컨설팅"
-ABOUT_DESC = ("쉴더스랩은 2026년 설립된 정보보호 컨설팅 조직입니다. 관리체계 인증과 공격자 관점의 "
-              "기술 진단을 한 팀에서 수행하고, 조치 확인까지를 과업 범위로 봅니다.")
+ABOUT_DESC = ("쉴더스랩은 2026년 설립된 정보보호 컨설팅 회사입니다. ISMS-P 인증 대응과 기술 진단을 "
+              "한 계약 안에서 수행하고, 조치를 확인하는 재점검까지를 과업 범위로 봅니다.")
 ABOUT_LD = ('{"@context":"https://schema.org","@type":"AboutPage","name":"회사소개 | 쉴더스랩",'
             '"url":"https://shilderslab.com/about/"}')
 
@@ -26,9 +26,10 @@ ABOUT_CSS = """
 ABOUT_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 회사소개</div>
-    <h1 class="d1" data-content="about.hero_title">보안을<br>검증의 문제로<br>다룹니다</h1>
-    <p class="lead" data-content="about.hero_lead">쉴더스랩(SHIELDUS LAB)은 2026년에 설립된 정보보호 컨설팅 조직입니다.
-       인증 기준을 충족시키는 관리체계 컨설팅과, 실제 공격 관점의 기술 진단을 한 팀에서 수행합니다.</p>
+    <h1 class="d1" data-content="about.hero_title">확인한 것만<br>보고서에 씁니다</h1>
+    <p class="lead" data-content="about.hero_lead">쉴더스랩(SHIELDUS LAB)은 2026년에 설립된 정보보호 컨설팅 회사입니다.
+       ISMS-P 인증 대응과 모의해킹·취약점 진단을 한 계약 안에서 수행하고,
+       조치를 확인하는 재점검까지를 과업 범위로 봅니다.</p>
   </div>
 </section>
 
@@ -36,22 +37,23 @@ ABOUT_BODY = """<section class="phead">
   <div class="shell g12">
     <div class="c7">
       <span class="lbl">01 / Our view</span>
-      <h2 class="d2" style="margin:20px 0 26px" data-content="about.view_title">보고서는 결과가 아니라<br>작업 지시서입니다</h2>
+      <h2 class="d2" style="margin:20px 0 26px" data-content="about.view_title">발견마다 담당자와<br>순서를 붙입니다</h2>
       <div class="lead cms-rich" data-content="about.view_body">
         <p>
-          많은 조직이 진단을 받고도 이듬해 같은 취약점을 다시 발견합니다. 원인은 대개 진단 역량이 아니라
-          <b>조치까지 이어지지 않는 구조</b>입니다. 발견 사항이 담당자의 언어로 번역되지 않고, 우선순위가 없고,
-          조치 결과를 확인하는 절차가 없기 때문입니다.
+          진단을 받은 다음 해에 같은 항목이 다시 지적되는 일이 있습니다.
+          발견 사항이 담당 조직의 작업 단위로 옮겨지지 않고, 조치 결과를 확인하는 절차가
+          <b>계약 범위에 없을 때</b> 그렇습니다.
         </p>
         <p>
-          그래서 저희는 발견을 규제 항목과 시스템 담당자의 작업 단위에 함께 연결합니다.
-          그리고 조치가 실제로 적용되었는지 재점검으로 확인한 뒤 과업을 종료합니다.
-          “무엇이 취약한가”에서 멈추지 않고 “지금은 안전한가”에 답하는 것이 기준입니다.
+          쉴더스랩은 발견을 규제 항목과 시스템 담당자의 작업 단위에 함께 연결합니다.
+          조치가 적용됐는지 재점검으로 확인한 뒤 과업을 닫습니다.
+          “무엇이 취약한가”에서 멈추지 않습니다. “지금은 안전한가”에 답하고 끝냅니다.
         </p>
       </div>
       <div class="pull" style="margin-top:44px">
-        <p>취약점을 찾는 일은 절반입니다. 나머지 절반은 그것이 닫혔다는 걸 증명하는 일입니다.</p>
-        <cite>쉴더스랩 과업 원칙</cite>
+        <p>재현되지 않은 항목은 보고서에 올리지 않습니다.
+           판단이 어려우면 “확인 필요” 등급으로 분리하고, 무엇을 더 받으면 확정할 수 있는지 적습니다.</p>
+        <cite>보고서 작성 규칙</cite>
       </div>
     </div>
     <div class="c4 start9">
@@ -80,23 +82,23 @@ ABOUT_BODY = """<section class="phead">
       <h2 class="d2" style="margin:0 0 30px" data-content="about.message_title">대표이사 인사말</h2>
       <div class="lead cms-rich" data-content="about.message_body">
         <p>
-          정보보호 컨설팅을 받아 본 담당자에게 무엇이 가장 아쉬웠는지 물으면, 대체로 같은 대답이 돌아옵니다.
-          보고서는 두꺼웠지만 <b>무엇부터 해야 할지는 알 수 없었다</b>는 것입니다.
+          두꺼운 보고서를 받고도 다음 주 월요일에 무엇부터 손댈지 정하지 못하는 상황이 있습니다.
+          저는 그 상태를 <b>컨설팅의 실패</b>로 봅니다.
         </p>
         <p>
-          쉴더스랩은 그 지점에서 시작했습니다. 취약점을 찾아내는 일은 이제 그 자체로 변별력이 되기 어렵습니다.
-          발견을 규제 조항과 시스템 담당자의 작업 단위로 옮겨 놓는 일, 우선순위를 근거와 함께 제시하는 일,
-          그리고 조치가 실제로 적용되었는지 다시 확인하고 과업을 닫는 일 — 저희는 여기까지를 컨설팅의 범위로 봅니다.
+          쉴더스랩은 그 지점에서 시작했습니다. 취약점을 찾아내는 일만으로는 변별력이 되기 어렵습니다.
+          발견을 규제 조항과 담당자의 작업 단위로 옮기고, 우선순위에 근거를 붙이고,
+          조치를 다시 확인한 뒤 과업을 닫습니다. 여기까지를 계약 범위에 넣습니다.
         </p>
         <p>
           저희가 스스로에게 두는 규칙은 두 가지입니다. 첫째, <b>할 수 없는 일을 할 수 있다고 말하지 않습니다.</b>
-          법령상 수행 자격이 제한된 과업이 있고, 저희가 아직 보유하지 못한 지위가 있습니다.
+          법령상 수행 자격이 제한된 과업이 있고, 아직 보유하지 못한 지위가 있습니다.
           그 경계는 홈페이지에 그대로 적어 두었습니다. 둘째, <b>확인하지 않은 것을 확인했다고 쓰지 않습니다.</b>
-          재현되지 않은 취약점은 보고서에 올리지 않고, 근거는 재현 절차와 함께 제시합니다.
+          재현되지 않은 취약점은 보고서에 올리지 않습니다.
         </p>
         <p>
-          보안은 결국 신뢰의 문제이고, 신뢰는 검증할 수 있을 때만 성립합니다.
-          고객사가 저희의 결론을 다시 확인할 수 있도록 방법론과 산출물 규격을 공개하는 이유입니다.
+          그래서 방법론과 산출물 규격을 계약 전에 공개합니다.
+          저희 판정이 맞는지 고객사가 직접 되짚어 볼 수 있어야 한다고 보기 때문입니다.
           함께 볼 범위부터 편하게 말씀해 주시면, 거기서부터 시작하겠습니다.
         </p>
       </div>
@@ -114,8 +116,8 @@ ABOUT_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">03 / Principles</span></div>
       <div class="body">
         <h2 class="d2">일하는 방식 세 가지</h2>
-        <p class="lead">신생 조직이 신뢰를 얻는 방법은 실적을 주장하는 것이 아니라
-           판단 근거를 공개하는 것이라고 봅니다.</p>
+        <p class="lead">실적으로 증명할 수 없는 동안에는 판단 근거를 공개하는 방법밖에 없다고 봅니다.
+           아래 세 가지는 요청하시면 계약서 조항으로 넣을 수 있는 항목입니다.</p>
       </div>
     </div>
     <div class="cols cols-3 divided">
@@ -123,7 +125,7 @@ ABOUT_BODY = """<section class="phead">
         <span class="n">01</span>
         <h3>근거 없는 지적은 하지 않습니다</h3>
         <p>모든 발견 사항에 재현 절차와 확인 근거를 붙입니다. 판단이 어려운 항목은 추정으로 적지 않고
-           “확인 필요”로 분리해 표기합니다. 오탐을 남기면 담당자의 시간이 사라집니다.</p>
+           “확인 필요” 등급으로 분리해, 무엇을 더 받으면 확정할 수 있는지 함께 적습니다.</p>
       </div>
       <div class="col-item rv d1">
         <span class="n">02</span>
@@ -146,8 +148,8 @@ ABOUT_BODY = """<section class="phead">
     <div class="c5">
       <span class="lbl">04 / Capability</span>
       <h2 class="d2" style="margin:20px 0 24px">규제와 공격,<br>두 언어를 함께</h2>
-      <p class="lead">관리체계 컨설팅과 기술 진단을 서로 다른 회사가 맡으면, 심사는 통과하지만
-         침해 경로는 그대로 남는 상태가 만들어집니다. 저희는 두 관점을 같은 프로젝트 안에서 다룹니다.</p>
+      <p class="lead">인증 심사를 준비하는 언어와 침투 경로를 찾는 언어는 다릅니다.
+         쉴더스랩은 두 가지를 같은 프로젝트 안에서 다루고, 발견을 하나의 우선순위 목록으로 합칩니다.</p>
       <div style="margin-top:32px"><a class="alink" href="/method/">진단 방법론 전체 보기</a></div>
     </div>
     <div class="c6 start7">
@@ -350,8 +352,8 @@ METHOD_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">02 / Severity</span></div>
       <div class="body">
         <h2 class="d2">위험도 산정 기준</h2>
-        <p class="lead">등급은 느낌이 아니라 기준으로 정합니다. 아래 정의를 보고서 첫 장에 함께 싣기 때문에,
-           담당자가 등급의 의미를 두고 협의할 필요가 없습니다.</p>
+        <p class="lead">등급은 아래 정의표로 정하고, 항목마다 어느 조건에 해당해 그 등급이 됐는지 함께 적습니다.
+           같은 표를 보고서 첫 장에 실어서 등급의 의미를 다시 협의하지 않아도 되게 합니다.</p>
       </div>
     </div>
     <table class="spec sev">

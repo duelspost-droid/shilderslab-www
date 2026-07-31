@@ -57,7 +57,7 @@ FOOTER = """<footer class="site">
     <div class="top">
       <div class="fbrand">
         <img src="/assets/ci/lockup-horizontal-dark.svg" alt="쉴더스랩 SHIELDUS LAB">
-        <p data-content="footer.blurb">규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행하는 정보보호 컨설팅 조직입니다.
+        <p data-content="footer.blurb">ISMS-P 인증 대응과 기술 진단을 한 계약 안에서 수행하는 정보보호 컨설팅 회사입니다.
            발견에는 재현 절차를, 종료에는 재점검을 붙입니다.</p>
       </div>
       <div class="fcol">
