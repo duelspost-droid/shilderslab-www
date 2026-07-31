@@ -31,8 +31,12 @@
  *           상태 코드와 짧은 코드만 남긴다.
  */
 
+// ⚠ 이 값은 **관리자 콘솔이 실제로 서비스되는 출처**와 같아야 한다.
+//   도메인 전환 전에 배포하면 안 된다 — 지금 사이트는 shilderslab.com 에서 돌고 있어
+//   여기(shielduslab.com)와 어긋나면 브라우저가 응답을 차단한다.
+//   `tools/set-domain.py` 가 이 문자열도 함께 갱신하므로, 전환 후 배포하면 맞아떨어진다.
 const CORS = {
-  "Access-Control-Allow-Origin": "https://shilderslab.com",
+  "Access-Control-Allow-Origin": "https://shielduslab.com",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Vary": "Origin",

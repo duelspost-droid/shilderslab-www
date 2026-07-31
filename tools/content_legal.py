@@ -138,7 +138,7 @@ PRIVACY_BODY = """<section class="phead">
       </tbody>
     </table>
     <p>정보주체는 국외 이전을 거부할 수 있습니다. 다만 이 경우 웹사이트를 통한 문의·지원 접수가 제한되며,
-       이메일(contact@shilderslab.com)로 문의하실 수 있습니다.</p>
+       이메일(contact@shielduslab.com)로 문의하실 수 있습니다.</p>
 
     <h2>4. 개인정보의 파기 절차 및 방법</h2>
     <ul>
@@ -156,7 +156,7 @@ PRIVACY_BODY = """<section class="phead">
       <li>처리 정지 요구</li>
       <li>동의 철회</li>
     </ol>
-    <p>권리 행사는 <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
+    <p>권리 행사는 <a href="mailto:contact@shielduslab.com">contact@shielduslab.com</a>
        으로 서면·전자우편 등을 통해 요청하실 수 있으며, 쉴더스랩은 지체 없이 조치합니다.
        정보주체의 열람·정정·삭제 요구는 법령에서 정한 사유가 없는 한 제한하지 않습니다.</p>
 
@@ -179,7 +179,7 @@ PRIVACY_BODY = """<section class="phead">
     <h2>8. 개인정보 보호책임자 및 문의처</h2>
     <p>개인정보 처리에 관한 문의, 불만처리, 피해구제 등에 관한 사항은 아래로 연락해 주시기 바랍니다.</p>
     <ul>
-      <li>이메일: <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a></li>
+      <li>이메일: <a href="mailto:contact@shielduslab.com">contact@shielduslab.com</a></li>
       <li>개인정보 보호책임자: 문의·열람 청구는 위 이메일로 접수하며, 접수 즉시 담당자가 처리합니다.
           (보호책임자 성명·직책은 조직 확정 후 본 항목에 게시합니다.)</li>
       <li>상호 및 대표자, 사업장 주소는 사업자 등록 정보 확정 후 본 페이지 하단(사업자 정보)에 게시합니다.</li>
@@ -197,7 +197,7 @@ PRIVACY_BODY = """<section class="phead">
 
     <div class="rev">
       시행일: 2026년 7월 30일 (최초 제정)<br>
-      본 방침은 쉴더스랩 웹사이트(shilderslab.com)를 통한 개인정보 처리에 적용됩니다.
+      본 방침은 쉴더스랩 웹사이트(shielduslab.com)를 통한 개인정보 처리에 적용됩니다.
     </div>
   </div>
 </section>"""
@@ -209,7 +209,7 @@ TERMS_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 이용약관</div>
     <h1 class="d2">이용약관</h1>
-    <p class="lead">본 약관은 쉴더스랩이 운영하는 웹사이트(shilderslab.com, 이하 “본 사이트”)의 이용 조건과 절차에 관한 사항을 정합니다.</p>
+    <p class="lead">본 약관은 쉴더스랩이 운영하는 웹사이트(shielduslab.com, 이하 “본 사이트”)의 이용 조건과 절차에 관한 사항을 정합니다.</p>
   </div>
 </section>
 
@@ -239,7 +239,7 @@ TERMS_BODY = """<section class="phead">
     </ol>
     <div class="note">
       보안 취약점을 발견하신 경우 악용하지 마시고
-      <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
+      <a href="mailto:contact@shielduslab.com">contact@shielduslab.com</a>
       으로 알려주시기 바랍니다. 신고 내용은 비공개로 검토하며, 선의의 신고자에게 법적 조치를 취하지 않습니다.
     </div>
 

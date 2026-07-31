@@ -1,7 +1,7 @@
-# 쉴더스랩 취약점 제보 정책 — https://shilderslab.com/trust/
-Contact: mailto:contact@shilderslab.com
-Contact: https://shilderslab.com/contact/
+# 쉴더스랩 취약점 제보 정책 — https://shielduslab.com/trust/
+Contact: mailto:contact@shielduslab.com
+Contact: https://shielduslab.com/contact/
 Preferred-Languages: ko, en
-Canonical: https://shilderslab.com/.well-known/security.txt
-Policy: https://shilderslab.com/trust/
+Canonical: https://shielduslab.com/.well-known/security.txt
+Policy: https://shielduslab.com/trust/
 Expires: 2027-07-30T00:00:00.000Z

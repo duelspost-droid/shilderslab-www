@@ -438,6 +438,7 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-07-31 | **명함 비율 재조정** — 심볼 6.2→9.87mm · 워드마크 cap 3.1→4.2 · 국문 사명 병기 · 시안 B 앞면에 회사명 신설 · 도메인 `shilduslab.com` 반영(DOMAIN 상수) | **shilduslab.com 미등록** — 등록·메일 확인 전 인쇄 금지(/brand/ 경고 게재) |
 | 2026-07-31 | **한글형(국문 우선·영문 병기) 추가** — CI 락업 6종 · 명함 `--ko` 30종(총 60개) · /brand/ 에 02 Korean lockup 섹션 신설 | — |
 | 2026-07-31 | 명함 도메인 **shielduslab.com** 으로 확정·60개 재생성(앞 커밋의 shilduslab 은 오기) | **사이트 도메인 전환** — CNAME·인증서·canonical·CSP·security.txt·JSON-LD |
+| 2026-07-31 | **도메인 정본 shielduslab.com 확정** — 코드·콘텐츠 244건 교체(`tools/set-domain.py` 신설) | **DNS 전환 대기**(11항 절차서) · 도메인 확보 후 실행 |
 
 ---
 
@@ -535,3 +536,64 @@ Windows git 기본값 `core.autocrlf=true` 인데, PDF 는 앞부분에 NUL 바�
 그대로 두면 체크아웃마다 LF→CRLF 치환이 일어나 **인쇄 납품용 벡터 PDF 6개가 소리 없이 깨진다**.
 `.gitattributes` 에 `*.pdf binary` 를 포함해 전 플랫폼에서 바이트를 보존하도록 했다(PNG/JPG/TTF 도 함께).
 텍스트는 `eol=lf` 로 못박아 macOS↔Windows 간 전체 파일 재작성 diff 가 생기지 않게 했다.
+
+---
+
+## 11. 도메인 전환 — shilderslab.com → shielduslab.com
+
+**정본은 `shielduslab.com`** (2026-07-31 오너 확정). 옛 도메인은 **보유하면서 301 리다이렉트**.
+
+### 현재 상태
+| 항목 | 상태 |
+|---|---|
+| 코드·콘텐츠 | ✅ 전부 `shielduslab.com` (2026-07-31, `tools/set-domain.py` 로 244건 교체) |
+| `CNAME` | ⏳ 아직 `shilderslab.com` — **호스팅 바인딩이라 DNS 와 함께 움직인다** |
+| 도메인 확보 | ⏳ **미확보(확보는 확정)** — 손에 들어오기 전에는 아래를 실행하지 않는다 |
+| 명함 | 새 도메인으로 제작 완료. `/brand/` 에 **발주 보류 경고** 게재 중 |
+
+> ⚠ 지금은 canonical·sitemap 이 아직 서비스되지 않는 주소를 가리킨다.
+> 사이트가 새로 만들어져 색인이 거의 없으므로 손해는 작지만, **전환 창은 짧게 가져간다.**
+
+### 실행 순서 — 이 순서를 지킨다
+
+**① DNS 먼저** (새 도메인 관리 콘솔)
+```
+A     @     185.199.108.153
+A     @     185.199.109.153
+A     @     185.199.110.153
+A     @     185.199.111.153
+CNAME www   duelspost-droid.github.io.
+```
+> 🚨 **MX 레코드를 지우지 말 것.** 새 도메인에는 Google Workspace 메일(`smtp.google.com`)이
+> 이미 걸려 있다. A 레코드는 **추가**하는 것이지 전체 교체가 아니다. 지우면 메일이 끊긴다.
+
+전파 확인(권위 NS 와 공용 리졸버 양쪽):
+```bash
+dig +short shielduslab.com A
+dig +short @8.8.8.8 shielduslab.com A
+dig +short shielduslab.com MX     # 비어 있으면 안 된다
+```
+
+**② DNS 가 응답한 뒤에 Pages 커스텀 도메인 교체**
+```bash
+gh api -X PUT repos/duelspost-droid/shilderslab-www/pages -f cname=shielduslab.com
+gh api repos/duelspost-droid/shilderslab-www/pages --jq '.https_certificate.state'
+gh api -X PUT repos/duelspost-droid/shilderslab-www/pages -F https_enforced=true   # approved 후
+```
+> 🚨 **DNS 보다 먼저 커스텀 도메인을 설정하면 `https_certificate.state` 가 `null` 로 굳어
+> 영영 발급되지 않는다.** 그 상태가 되면 `-f cname=""` 로 비웠다가 다시 설정해 재트리거한다.
+> 이 PUT 은 레포 main 에 CNAME 커밋을 자동 생성하므로 다음 push 전에 `git rebase origin/main`.
+
+**③ 옛 도메인 301** — 가비아 DNS 관리에서 `shilderslab.com` URL 포워딩 → `https://shielduslab.com`
+(301 영구이동). 포워딩 설정 전까지 옛 주소는 404 가 된다 — ②와 붙여서 처리한다.
+
+**④ 마무리**
+- Supabase Edge `sl-admin-user` 를 배포한다면 **전환 후에** 한다(CORS 가 새 도메인 고정).
+- Google Search Console 에 새 속성 등록 + 사이트맵 제출.
+- `/brand/` 명함 섹션의 발주 보류 경고 제거.
+
+### 되돌리기
+```bash
+python3 tools/set-domain.py --to shilderslab.com --apply && python3 tools/build-pages.py
+gh api -X PUT repos/duelspost-droid/shilderslab-www/pages -f cname=shilderslab.com
+```

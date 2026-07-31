@@ -56,7 +56,7 @@ LOCK_CAP = 4.2     # 앞면 락업 워드마크 cap (3.1 → 4.2: 로고가 아�
 NAME_CAP = 4.8     # 성명 cap. 회사 워드마크보다 지나치게 크면 브랜드가 눌린다
 
 # 명함에 새길 도메인. 여기를 바꾸면 앞면 W 줄 · 이메일 기본값 · 뒷면 C 가 한꺼번에 따라간다.
-# ⚠ 웹사이트는 아직 shilderslab.com 에서 서비스 중이다(도메인 전환은 별도 작업).
+# ⚠ 웹사이트는 아직 shielduslab.com 에서 서비스 중이다(도메인 전환은 별도 작업).
 #   shielduslab.com 은 2026-07-28 등록 · Google Workspace MX 설정 확인됨.
 DOMAIN = "shielduslab.com"
 X0, Y0 = BLEED, BLEED                            # 재단 시작

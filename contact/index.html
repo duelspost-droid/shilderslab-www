@@ -7,13 +7,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>상담 · 견적 요청 | 쉴더스랩</title>
 <meta name="description" content="정보보호 컨설팅 상담·견적 요청. 범위 검토와 견적 산정까지는 비용이 발생하지 않으며, 영업일 기준 24시간 내 초기 회신합니다.">
-<link rel="canonical" href="https://shilderslab.com/contact/">
+<link rel="canonical" href="https://shielduslab.com/contact/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="쉴더스랩">
 <meta property="og:title" content="상담 · 견적 요청 | 쉴더스랩">
 <meta property="og:description" content="정보보호 컨설팅 상담·견적 요청. 범위 검토와 견적 산정까지는 비용이 발생하지 않으며, 영업일 기준 24시간 내 초기 회신합니다.">
-<meta property="og:url" content="https://shilderslab.com/contact/">
-<meta property="og:image" content="https://shilderslab.com/assets/ci/og-cover.png">
+<meta property="og:url" content="https://shielduslab.com/contact/">
+<meta property="og:image" content="https://shielduslab.com/assets/ci/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/ci/favicon.svg" type="image/svg+xml">
 <link rel="mask-icon" href="/assets/ci/mask-icon.svg" color="#1A4B3A">
@@ -34,7 +34,7 @@
 
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"ContactPage","name":"상담 · 견적 요청 | 쉴더스랩","url":"https://shilderslab.com/contact/"}
+{"@context":"https://schema.org","@type":"ContactPage","name":"상담 · 견적 요청 | 쉴더스랩","url":"https://shielduslab.com/contact/"}
 </script>
 </head>
 <body>
@@ -137,7 +137,7 @@
     <aside class="c4 start9">
       <div class="kv">
         <div class="row"><div class="k">이메일</div>
-          <div class="v"><a href="mailto:contact@shilderslab.com" style="border-bottom:1px solid var(--rule-2)">contact@shilderslab.com</a></div></div>
+          <div class="v"><a href="mailto:contact@shielduslab.com" style="border-bottom:1px solid var(--rule-2)">contact@shielduslab.com</a></div></div>
         <div class="row"><div class="k">운영시간</div>
           <div class="v"><span data-setting="business_hours">평일 09:00 – 18:00</span><br>
             <span class="tiny">주말·공휴일 휴무</span></div></div>
@@ -193,7 +193,7 @@
       </div>
       <div class="fcol">
         <h5>Contact</h5>
-        <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
+        <a href="mailto:contact@shielduslab.com">contact@shielduslab.com</a>
         <span data-setting="business_hours">평일 09:00 – 18:00</span>
         <a href="/contact/">상담 · 견적 요청 →</a>
       </div>
@@ -251,7 +251,7 @@
     if (!consent.checked) { show("bad", "개인정보 수집·이용 동의가 필요합니다."); return; }
 
     var c = SL.db();
-    if (!c) { show("bad", "지금은 접수를 처리할 수 없습니다. contact@shilderslab.com 으로 보내주세요."); return; }
+    if (!c) { show("bad", "지금은 접수를 처리할 수 없습니다. contact@shielduslab.com 으로 보내주세요."); return; }
 
     btn.disabled = true; btn.textContent = "전송 중…";
     c.rpc("sl_submit_inquiry", {
@@ -266,7 +266,7 @@
       var m = (err && err.message) || "";
       show("bad", /too many|rate/i.test(m)
         ? "짧은 시간에 여러 번 접수되었습니다. 잠시 후 다시 시도해 주세요."
-        : "전송에 실패했습니다. contact@shilderslab.com 으로 보내주시면 확인하겠습니다.");
+        : "전송에 실패했습니다. contact@shielduslab.com 으로 보내주시면 확인하겠습니다.");
       btn.disabled = false; btn.textContent = "문의 보내기";
     });
   });

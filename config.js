@@ -17,7 +17,7 @@ window.SL_CONFIG = {
     addr: "",             // 주소
     tel: "",              // 대표번호
     fax: "",
-    email: "contact@shilderslab.com",
+    email: "contact@shielduslab.com",
     privacyOfficer: "",   // 개인정보 보호책임자
     founded: "2026",
   },

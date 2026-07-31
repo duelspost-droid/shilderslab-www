@@ -162,12 +162,12 @@ TRUST_BODY = """<section class="phead">
     <div class="c6 start7">
       <div class="trust-kv">
         <div class="row"><div class="k">접수</div>
-          <div class="v"><a href="mailto:contact@shilderslab.com" style="border-bottom:1px solid var(--rule-2)">contact@shilderslab.com</a>
+          <div class="v"><a href="mailto:contact@shielduslab.com" style="border-bottom:1px solid var(--rule-2)">contact@shielduslab.com</a>
             — 제목에 <b>[제보]</b>를 붙여 주시면 우선 확인합니다.</div></div>
         <div class="row"><div class="k">회신</div>
           <div class="v">영업일 기준 <b>3일 내</b> 접수 확인, <b>14일 내</b> 검토 결과 회신을 목표로 합니다.</div></div>
         <div class="row"><div class="k">범위</div>
-          <div class="v">shilderslab.com 및 하위 경로. 서비스 거부(DoS), 물리적 침입, 사회공학,
+          <div class="v">shielduslab.com 및 하위 경로. 서비스 거부(DoS), 물리적 침입, 사회공학,
             제3자 서비스에 대한 시험은 제외합니다.</div></div>
         <div class="row"><div class="k">원칙</div>
           <div class="v">확인에 필요한 최소 범위에서만 검증해 주시고, 타인의 데이터에 접근하거나
