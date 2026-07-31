@@ -439,7 +439,8 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-07-31 | **한글형(국문 우선·영문 병기) 추가** — CI 락업 6종 · 명함 `--ko` 30종(총 60개) · /brand/ 에 02 Korean lockup 섹션 신설 | — |
 | 2026-07-31 | 명함 도메인 **shielduslab.com** 으로 확정·60개 재생성(앞 커밋의 shilduslab 은 오기) | **사이트 도메인 전환** — CNAME·인증서·canonical·CSP·security.txt·JSON-LD |
 | 2026-07-31 | **도메인 정본 shielduslab.com 확정** — 코드·콘텐츠 244건 교체(`tools/set-domain.py` 신설) | **DNS 전환 대기**(11항 절차서) · 도메인 확보 후 실행 |
-| 2026-08-01 | **도메인 코드 원복(253건)** — `shielduslab.com` 이 제3자(Squarespace) 운영 중임을 실측하고, canonical·og·sitemap 이 남의 도메인을 정본으로 지목하던 상태를 해소 · `/brand/` 인쇄 보류 경고가 `set-domain.py` 에 뒤집힌 것 수정(도메인 리터럴 제거) | **도메인 확보 후 재전환**(11항) · CMS 8블록 DB 반영 |
+| 2026-08-01 | **도메인 코드 원복(253건)** — `shielduslab.com` 이 제3자(Squarespace) 운영 중임을 실측하고, canonical·og·sitemap 이 남의 도메인을 정본으로 지목하던 상태를 해소 · `/brand/` 인쇄 보류 경고가 `set-domain.py` 에 뒤집힌 것 수정(도메인 리터럴 제거) | **도메인 확보 후 재전환**(11항) |
+| 2026-08-01 | **CMS 8블록 DB 반영 완료**(카피 톤 정비 + 신생 프레임 제거가 이제 라이브에 보인다) · 적용 전 `services.hero_lead` 문구 정본 드리프트 1건 발견·해소 | — |
 
 ---
 
