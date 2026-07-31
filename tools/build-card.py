@@ -12,7 +12,7 @@
 사용
   python3 tools/build-card.py                                  # 예시 정보로 전체 생성
   python3 tools/build-card.py --name 홍길동 --title 대표 \
-      --mobile 010-1234-5678 --email hong@shilderslab.com
+      --mobile 010-1234-5678 --email hong@shilduslab.com
   python3 tools/build-card.py --list                           # 생성 목록만 확인
 
 필요
@@ -52,6 +52,12 @@ TRIM_W, TRIM_H = 90.0, 50.0
 BLEED = 3.0
 W, H = TRIM_W + BLEED * 2, TRIM_H + BLEED * 2   # 96 × 56
 SAFE = 5.0                                       # 재단선에서 안쪽 안전여백
+LOCK_CAP = 4.2     # 앞면 락업 워드마크 cap (3.1 → 4.2: 로고가 아이콘처럼 작았다)
+NAME_CAP = 4.8     # 성명 cap. 회사 워드마크보다 지나치게 크면 브랜드가 눌린다
+
+# 명함에 새길 도메인. ⚠ 웹사이트는 아직 shilderslab.com 에서 서비스 중이다.
+#   여기를 바꾸면 앞면 W 줄 · 이메일 기본값 · 뒷면 C 가 한꺼번에 따라간다.
+DOMAIN = "shilduslab.com"
 X0, Y0 = BLEED, BLEED                            # 재단 시작
 XS, YS = BLEED + SAFE, BLEED + SAFE              # 안전영역 시작
 XE, YE = BLEED + TRIM_W - SAFE, BLEED + TRIM_H - SAFE
@@ -128,6 +134,7 @@ def sym_path():
     return f"{shield} {s_d}"
 
 
+SYM_RATIO = 2.35   # 락업에서 심볼 높이 = 워드마크 cap × 이 값
 SYMBOL = None  # lazy
 
 
@@ -165,10 +172,14 @@ def guide_overlay():
 def lockup(x, y, cap, sym_fill, ko_fill, en_fill, en_cap=None):
     """심볼 + SHIELDUS LAB + 쉴더스랩 조합 (좌측 정렬)"""
     en_cap = en_cap or cap
-    s = sym(x, y, cap * 2.0, sym_fill)
-    tx = x + cap * 2.0 + cap * 0.62
-    en_d, en_w = text_path("SHIELDUS LAB", en_cap, tx, y + cap * 1.16, 0.03, 800)
-    ko_d, _ = text_path("정보보호 컨설팅", en_cap * 0.52, tx + 0.1, y + cap * 1.92, 0.02, 500)
+    # 심볼 높이는 워드마크 cap 의 2.35 배. 2.0 배로는 워드마크 옆에서 아이콘처럼 눌려 보인다.
+    sym_h = cap * SYM_RATIO
+    s = sym(x, y, sym_h, sym_fill)
+    tx = x + sym_h + cap * 0.55
+    # 두 줄(영문+국문)의 시각 중심을 심볼 중심(y + sym_h/2)에 맞춘다.
+    en_d, en_w = text_path("SHIELDUS LAB", en_cap, tx, y + cap * 1.30, 0.03, 800)
+    # CI 원본(lockup-horizontal)과 같은 구성 — 국문 사명을 함께 적는다.
+    ko_d, _ = text_path("쉴더스랩 · 정보보호 컨설팅", en_cap * 0.50, tx + 0.1, y + cap * 2.08, 0.02, 500)
     return (s + f'<path d="{en_d}" fill="{en_fill}"/>'
             f'<path d="{ko_d}" fill="{ko_fill}"/>'), tx + en_w
 
@@ -198,73 +209,84 @@ def contact_block(p, x, y, gap, cap, label_fill, value_fill, align_right=False):
 def dsn_a(p):
     """시안 A — 에디토리얼: 상단 액센트 바, 좌측 정렬, 하단 헤어라인 + 연락처"""
     b = [f'<rect x="0" y="0" width="{W}" height="{BLEED + 1.6}" fill="{ACCENT}"/>']
-    lk, _ = lockup(XS, YS + 1.2, 3.1, ACCENT, INK_3, INK)
+    lk, _ = lockup(XS, YS + 1.5, LOCK_CAP, ACCENT, INK_3, INK)
     b.append(lk)
-    name_d, name_w = text_path(p["name"], 5.0, XS, YS + 20.5, -0.01, 600)
+    name_d, name_w = text_path(p["name"], NAME_CAP, XS, YS + 21.8, -0.01, 600)
     b.append(f'<path d="{name_d}" fill="{INK}"/>')
     if p.get("title"):
-        t_d, _ = text_path(p["title"], 2.5, XS + name_w + 2.4, YS + 20.5, 0.03, 500)
+        t_d, _ = text_path(p["title"], 2.6, XS + name_w + 2.6, YS + 21.8, 0.03, 500)
         b.append(f'<path d="{t_d}" fill="{ACCENT}"/>')
     if p.get("dept"):
         d_d, _ = text_path(p["dept"], 2.3, XS, YS + 25.2, 0.02, 400)
         b.append(f'<path d="{d_d}" fill="{INK_3}"/>')
-    b.append(f'<rect x="{XS}" y="{YE - 13.4}" width="{XE - XS}" height="0.18" fill="{RULE}"/>')
-    cb, _ = contact_block(p, XS, YE - 9.4, 3.3, 2.35, ACCENT, INK_2)
+    b.append(f'<rect x="{XS}" y="{YE - 12.0}" width="{XE - XS}" height="0.18" fill="{RULE}"/>')
+    cb, _ = contact_block(p, XS, YE - 8.0, 3.3, 2.35, ACCENT, INK_2)
     b.append(cb)
     return "".join(b), PAPER
 
 
 def dsn_a_back(p):
-    b = [sym(W / 2 - 9, H / 2 - 11.5, 18, PAPER)]
-    d, w = text_path("SHIELDUS LAB", 2.6, 0, 0, 0.18, 700)
-    d, _ = text_path("SHIELDUS LAB", 2.6, W / 2 - w / 2, H / 2 + 14.2, 0.18, 700)
+    b = [sym(W / 2 - 11, H / 2 - 16.9, 22, PAPER)]
+    d, w = text_path("SHIELDUS LAB", 3.2, 0, 0, 0.18, 700)
+    d, _ = text_path("SHIELDUS LAB", 3.2, W / 2 - w / 2, H / 2 + 11.5, 0.18, 700)
     b.append(f'<path d="{d}" fill="{PAPER}"/>')
+    kd, kw = text_path("쉴더스랩", 2.2, 0, 0, 0.22, 500)
+    kd, _ = text_path("쉴더스랩", 2.2, W / 2 - kw / 2, H / 2 + 16.9, 0.22, 500)
+    b.append(f'<path d="{kd}" fill="#8FB3A2"/>')
     return "".join(b), ACCENT
 
 
 def dsn_b(p):
     """시안 B — 여백형: 심볼만 작게, 이름 중심, 연락처 한 덩어리 우측 하단"""
-    b = [sym(XS, YS, 7.2, ACCENT)]
-    name_d, name_w = text_path(p["name"], 5.6, XS, YS + 22.8, -0.012, 600)
+    b = [sym(XS, YS, 10.6, ACCENT)]
+    # 여백형이라 가로 락업 대신 심볼 아래 세로로 쌓는다. 회사명은 반드시 들어간다.
+    en_d, _ = text_path("SHIELDUS LAB", 2.7, XS, YS + 15.6, 0.05, 800)
+    b.append(f'<path d="{en_d}" fill="{INK}"/>')
+    ko_d, _ = text_path("쉴더스랩 · 정보보호 컨설팅", 1.75, XS + 0.1, YS + 19.4, 0.03, 500)
+    b.append(f'<path d="{ko_d}" fill="{INK_3}"/>')
+    name_d, name_w = text_path(p["name"], 5.4, XS, YS + 29.6, -0.012, 600)
     b.append(f'<path d="{name_d}" fill="{INK}"/>')
     if p.get("title"):
-        t_d, _ = text_path(p["title"], 2.4, XS, YS + 27.6, 0.04, 500)
+        t_d, _ = text_path(p["title"], 2.5, XS, YS + 34.2, 0.04, 500)
         b.append(f'<path d="{t_d}" fill="{ACCENT}"/>')
-    cb, _ = contact_block(p, XE, YE - 9.4, 3.2, 2.25, INK_3, INK_2, align_right=True)
+    cb, _ = contact_block(p, XE, YE - 8.0, 3.2, 2.25, INK_3, INK_2, align_right=True)
     b.append(cb)
     return "".join(b), PAPER
 
 
 def dsn_b_back(p):
-    lk, w = lockup(0, 0, 3.4, ACCENT, INK_3, INK)
+    lk, w = lockup(0, 0, 4.4, ACCENT, INK_3, INK)
     # 중앙 배치를 위해 다시 그린다
     total = w
-    lk, _ = lockup((W - total) / 2, H / 2 - 5.2, 3.4, ACCENT, INK_3, INK)
+    lk, _ = lockup((W - total) / 2, H / 2 - 8.0, 4.4, ACCENT, INK_3, INK)
     tag = "ISMS-P · 모의해킹 · 취약점 진단 · 클라우드 보안"
     td, tw = text_path(tag, 1.85, 0, 0, 0.02, 400)
-    td, _ = text_path(tag, 1.85, (W - tw) / 2, H / 2 + 9.4, 0.02, 400)
+    td, _ = text_path(tag, 1.85, (W - tw) / 2, H / 2 + 8.0, 0.02, 400)
     return lk + f'<path d="{td}" fill="{INK_3}"/>', PAPER
 
 
 def dsn_c(p):
     """시안 C — 역상: 딥파인 전면, 페이퍼 텍스트"""
-    lk, _ = lockup(XS, YS + 1.2, 3.1, PAPER, "#8FB3A2", PAPER)
+    lk, _ = lockup(XS, YS + 1.5, LOCK_CAP, PAPER, "#8FB3A2", PAPER)
     b = [lk]
-    name_d, name_w = text_path(p["name"], 5.0, XS, YS + 20.5, -0.01, 600)
+    name_d, name_w = text_path(p["name"], NAME_CAP, XS, YS + 21.8, -0.01, 600)
     b.append(f'<path d="{name_d}" fill="{PAPER}"/>')
     if p.get("title"):
-        t_d, _ = text_path(p["title"], 2.5, XS + name_w + 2.4, YS + 20.5, 0.03, 500)
+        t_d, _ = text_path(p["title"], 2.6, XS + name_w + 2.6, YS + 21.8, 0.03, 500)
         b.append(f'<path d="{t_d}" fill="#9FBDAF"/>')
-    b.append(f'<rect x="{XS}" y="{YE - 13.4}" width="{XE - XS}" height="0.18" fill="#3D6B58"/>')
-    cb, _ = contact_block(p, XS, YE - 9.4, 3.3, 2.35, "#93B6A5", PAPER)
+    b.append(f'<rect x="{XS}" y="{YE - 12.0}" width="{XE - XS}" height="0.18" fill="#3D6B58"/>')
+    cb, _ = contact_block(p, XS, YE - 8.0, 3.3, 2.35, "#93B6A5", PAPER)
     b.append(cb)
     return "".join(b), ACCENT
 
 
 def dsn_c_back(p):
-    b = [sym(W / 2 - 8, H / 2 - 10.6, 16, ACCENT)]
-    d, w = text_path("shilderslab.com", 2.2, 0, 0, 0.12, 600)
-    d, _ = text_path("shilderslab.com", 2.2, W / 2 - w / 2, H / 2 + 13.4, 0.12, 600)
+    b = [sym(W / 2 - 10, H / 2 - 16.0, 20, ACCENT)]
+    kd, kw = text_path("쉴더스랩", 2.6, 0, 0, 0.2, 600)
+    kd, _ = text_path("쉴더스랩", 2.6, W / 2 - kw / 2, H / 2 + 11.2, 0.2, 600)
+    b.append(f'<path d="{kd}" fill="{INK}"/>')
+    d, w = text_path(DOMAIN, 2.1, 0, 0, 0.12, 500)
+    d, _ = text_path(DOMAIN, 2.1, W / 2 - w / 2, H / 2 + 16.0, 0.12, 500)
     b.append(f'<path d="{d}" fill="{INK_3}"/>')
     return "".join(b), PAPER
 
@@ -320,7 +342,7 @@ def to_pdf(svg_path, pdf_path):
             w.add_page(page)
         w.add_metadata({
             "/Title": "SHIELDUS LAB 명함",
-            "/Creator": "shilderslab.com / tools/build-card.py",
+            "/Creator": "shilduslab.com / tools/build-card.py",
             "/Subject": f"trim {TRIM_W:.0f}x{TRIM_H:.0f}mm, bleed {BLEED:.0f}mm, fonts outlined",
         })
         with open(pdf_path, "wb") as f:
@@ -366,8 +388,8 @@ def main():
     ap.add_argument("--dept", default="")
     ap.add_argument("--mobile", default="010-0000-0000")
     ap.add_argument("--phone", default="")
-    ap.add_argument("--email", default="contact@shilderslab.com")
-    ap.add_argument("--web", default="shilderslab.com")
+    ap.add_argument("--email", default=f"contact@{DOMAIN}")
+    ap.add_argument("--web", default=DOMAIN)
     ap.add_argument("--addr", default="")
     ap.add_argument("--out", default=os.path.join(ROOT, "assets/ci/card"))
     ap.add_argument("--list", action="store_true")
