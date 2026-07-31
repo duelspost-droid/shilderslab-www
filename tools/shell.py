@@ -12,10 +12,16 @@ CSP = ("default-src 'self'; script-src 'self' 'unsafe-inline'; "
        f"connect-src 'self' {SUPA_HOST} {SUPA_WS}; "
        "base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'")
 
+# 실제로 쓰는 것만 요청한다. 이 URL 이 렌더 차단 스타일시트라, 안 쓰는 페이스를
+# 얹어두면 첫 화면이 그만큼 늦게 뜨고 그 사이 시스템 폰트로 그려졌다 바뀐다.
+#   · Sans KR 300  — CSS 선언 0건이라 제거
+#   · Serif        — 인용문(.pull)이 전부 한글인데 IBM Plex Serif 에는 한글 글리프가 없다.
+#                    실측 결과 한 글자도 렌더되지 않고 Sans KR 로 떨어졌다(폭 349.83 vs
+#                    Serif 단독 340.11). 내려받기만 하고 쓰이지 않아 제거했다.
+#                    라틴 인용문이 필요해지면 --font-serif 의 Georgia 가 받는다.
 FONTS = ("https://fonts.googleapis.com/css2?"
          "family=IBM+Plex+Mono:wght@400;500&"
-         "family=IBM+Plex+Sans+KR:wght@300;400;500;600&"
-         "family=IBM+Plex+Serif:ital,wght@0,400;1,400&display=swap")
+         "family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap")
 
 # (라벨, 경로) — 순서가 곧 내비 순서
 NAV = [

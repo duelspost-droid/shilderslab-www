@@ -16,13 +16,13 @@ CSS = """
   .svc-row{display:grid;grid-template-columns:56px 1fr 1.15fr auto;gap:var(--gut);padding:28px 0;
     border-bottom:1px solid var(--rule);align-items:start;transition:background .18s}
   .svc-row:hover{background:rgba(26,75,58,.035)}
-  .svc-row .n{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  .svc-row .n{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;
     color:var(--ink-3);padding-top:6px}
   .svc-row h3{font-size:1.22rem;letter-spacing:-.024em;margin-bottom:9px}
-  .svc-row .for{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.1em;
+  .svc-row .for{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.1em;
     text-transform:uppercase;color:var(--accent)}
   .svc-row p{font-size:.93rem;color:var(--ink-2);line-height:1.72}
-  .svc-row .go{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ink-3);
+  .svc-row .go{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-3);
     white-space:nowrap;padding-top:6px}
   .svc-row:hover .go{color:var(--accent)}
   @media (max-width:900px){
@@ -187,17 +187,17 @@ DETAIL_CSS = """
   .when li{display:grid;grid-template-columns:56px 1fr;gap:var(--gut);padding:18px 0;
     border-bottom:1px solid var(--rule);font-size:.96rem;color:var(--ink-2);line-height:1.72;
     list-style:none}
-  .when li span.n{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;
+  .when li span.n{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;
     color:var(--accent);padding-top:5px}
   .out-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 var(--gut)}
   .out-grid .o{border-top:1px solid var(--ink);padding:18px 0 26px}
-  .out-grid .o .k{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.12em;
+  .out-grid .o .k{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;
     text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:14px}
   .out-grid .o ul{list-style:none;display:grid;gap:9px}
   .out-grid .o li{font-size:.92rem;color:var(--ink-2);line-height:1.68;padding-left:15px;position:relative}
   .out-grid .o li::before{content:"·";position:absolute;left:0;color:var(--ink-3)}
   .nav-svc{display:flex;gap:0;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:20px;margin-top:34px}
-  .nav-svc a{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;
+  .nav-svc a{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;
     text-transform:uppercase;color:var(--ink-3);padding-right:20px;margin-right:20px;
     border-right:1px solid var(--rule);margin-bottom:8px}
   .nav-svc a:last-child{border-right:0;margin-right:0;padding-right:0}

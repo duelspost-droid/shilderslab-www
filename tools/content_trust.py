@@ -17,11 +17,11 @@ TRUST_CSS = """
   .trust-kv{border-top:1px solid var(--ink)}
   .trust-kv .row{display:grid;grid-template-columns:200px 1fr;gap:24px;padding:17px 0;
     border-bottom:1px solid var(--rule)}
-  .trust-kv .k{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.12em;
+  .trust-kv .k{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.12em;
     text-transform:uppercase;color:var(--ink-3);padding-top:4px}
   .trust-kv .v{font-size:.94rem;color:var(--ink-2);line-height:1.72}
   .trust-kv .v b{color:var(--ink)}
-  .state{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;
+  .state{display:inline-block;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;
     text-transform:uppercase;padding:2px 8px;border:1px solid;margin-right:8px;vertical-align:1px}
   .state.yes{border-color:var(--accent);color:var(--accent)}
   .state.no{border-color:var(--rule-2);color:var(--ink-3)}
@@ -206,7 +206,7 @@ REG_CSS = """
     font-size:.88rem;color:var(--ink-2);line-height:1.75;margin:0 0 34px}
   .split3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 var(--gut)}
   .split3 .b{border-top:1px solid var(--ink);padding:18px 0 28px}
-  .split3 .b .k{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.12em;
+  .split3 .b .k{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;
     text-transform:uppercase;display:block;margin-bottom:12px}
   .split3 .b.a .k{color:var(--accent)}
   .split3 .b.n .k{color:var(--bad)}

@@ -13,13 +13,13 @@ RES_CSS = """
   .res-row{display:grid;grid-template-columns:56px 1.1fr 1.4fr auto;gap:var(--gut);padding:30px 0;
     border-bottom:1px solid var(--rule);align-items:start;transition:background .18s}
   .res-row:hover{background:rgba(26,75,58,.035)}
-  .res-row .n{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  .res-row .n{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;
     color:var(--ink-3);padding-top:6px}
   .res-row h3{font-size:1.16rem;letter-spacing:-.022em;margin-bottom:8px}
-  .res-row .kind{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.12em;
+  .res-row .kind{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;
     text-transform:uppercase;color:var(--accent)}
   .res-row p{font-size:.93rem;color:var(--ink-2);line-height:1.72}
-  .res-row .go{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ink-3);
+  .res-row .go{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-3);
     white-space:nowrap;padding-top:6px}
   .res-row:hover .go{color:var(--accent)}
   @media (max-width:900px){.res-row{grid-template-columns:1fr;gap:10px}
@@ -86,7 +86,7 @@ RES_BODY = """<section class="phead">
 DOC_CSS = """
   .doc-wrap{display:grid;grid-template-columns:220px 1fr;gap:56px;align-items:start}
   .toc{position:sticky;top:96px;border-top:1px solid var(--ink);padding-top:16px}
-  .toc .k{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.14em;
+  .toc .k{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.14em;
     text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:14px}
   .toc a{display:block;font-size:.86rem;color:var(--ink-2);padding:7px 0;line-height:1.5}
   .toc a:hover{color:var(--accent)}
@@ -100,7 +100,7 @@ DOC_CSS = """
   .doc-body .q{border-left:2px solid var(--accent);padding:4px 0 4px 20px;margin:18px 0 20px}
   .doc-body .q .ask{font-size:.98rem;color:var(--ink);font-weight:500;margin-bottom:8px;line-height:1.7}
   .doc-body .q .good{font-size:.9rem;color:var(--ink-2);line-height:1.75}
-  .doc-body .q .good em{font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:.62rem;
+  .doc-body .q .good em{font-style:normal;font-family:var(--font-mono);font-size:.62rem;
     letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:5px}
   .chk{border-top:1px solid var(--rule);margin:20px 0}
   .chk li{list-style:none;display:grid;grid-template-columns:26px 1fr;gap:12px;padding:14px 0;

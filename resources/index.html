@@ -21,7 +21,7 @@
 <meta name="theme-color" content="#F6F4EF">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/site.css">
 <style>
 
@@ -29,13 +29,13 @@
   .res-row{display:grid;grid-template-columns:56px 1.1fr 1.4fr auto;gap:var(--gut);padding:30px 0;
     border-bottom:1px solid var(--rule);align-items:start;transition:background .18s}
   .res-row:hover{background:rgba(26,75,58,.035)}
-  .res-row .n{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;
+  .res-row .n{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;
     color:var(--ink-3);padding-top:6px}
   .res-row h3{font-size:1.16rem;letter-spacing:-.022em;margin-bottom:8px}
-  .res-row .kind{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.12em;
+  .res-row .kind{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;
     text-transform:uppercase;color:var(--accent)}
   .res-row p{font-size:.93rem;color:var(--ink-2);line-height:1.72}
-  .res-row .go{font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ink-3);
+  .res-row .go{font-family:var(--font-mono);font-size:.7rem;color:var(--ink-3);
     white-space:nowrap;padding-top:6px}
   .res-row:hover .go{color:var(--accent)}
   @media (max-width:900px){.res-row{grid-template-columns:1fr;gap:10px}

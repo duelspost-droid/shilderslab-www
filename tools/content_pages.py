@@ -16,7 +16,7 @@ ABOUT_CSS = """
   .tl{border-top:1px solid var(--ink)}
   .tl .item{display:grid;grid-template-columns:120px 1fr;gap:var(--gut);padding:22px 0;
     border-bottom:1px solid var(--rule)}
-  .tl time{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--accent);
+  .tl time{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;color:var(--accent);
     padding-top:4px}
   .tl h4{font-size:1rem;margin-bottom:6px}
   .tl p{font-size:.92rem;color:var(--ink-2);line-height:1.72;max-width:62ch}
@@ -184,7 +184,7 @@ ABOUT_BODY = """<section class="phead">
         </div>
       </div>
       <div class="item">
-        <time>진행 중</time>
+        <time class="ko">진행 중</time>
         <div>
           <h4>공개 자료 축적</h4>
           <p>담당자가 계약 없이도 바로 쓸 수 있는 점검 체크리스트와 진단 항목표를 자료실에 공개하고 있습니다.
@@ -221,11 +221,11 @@ METHOD_DESC = ("쉴더스랩이 실제로 쓰는 진단 방법론을 공개합�
 METHOD_CSS = """
   .phase{border-top:1px solid var(--ink);padding:26px 0 34px;display:grid;
     grid-template-columns:56px 1fr 1fr;gap:var(--gut)}
-  .phase .n{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;color:var(--accent);
+  .phase .n{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;color:var(--accent);
     padding-top:5px}
   .phase h3{font-size:1.18rem;margin-bottom:10px;letter-spacing:-.022em}
   .phase .what{font-size:.94rem;color:var(--ink-2);line-height:1.78;max-width:46ch}
-  .phase .out .k{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.12em;
+  .phase .out .k{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;
     text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;display:block}
   .phase .out ul{list-style:none;display:grid;gap:7px}
   .phase .out li{font-size:.88rem;color:var(--ink-2);padding-left:14px;position:relative;line-height:1.6}
@@ -475,9 +475,9 @@ BRAND_CSS = """
   .sw .chip{height:88px}
   .sw .i{padding:12px 0 22px}
   .sw .i b{display:block;font-size:.86rem;font-weight:500}
-  .sw .i code{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--ink-3)}
+  .sw .i code{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-3)}
   .rules{display:grid;grid-template-columns:1fr 1fr;gap:var(--gut)}
-  .rules h4{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  .rules h4{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;
     text-transform:uppercase;margin-bottom:16px;padding-top:18px;border-top:1px solid var(--ink)}
   .rules .yes h4{color:var(--accent)}
   .rules .no h4{color:var(--bad)}
@@ -487,7 +487,7 @@ BRAND_CSS = """
   /* ── 명함 ── */
   .cards{display:grid;gap:0 var(--gut);grid-template-columns:repeat(3,1fr)}
   .card-set{border-top:1px solid var(--ink);padding:20px 0 34px}
-  .card-set .n{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.12em;
+  .card-set .n{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.12em;
     color:var(--accent);display:block;margin-bottom:6px}
   .card-set h3{font-size:1.04rem;margin-bottom:6px}
   .card-set p{font-size:.86rem;color:var(--ink-2);line-height:1.68;margin-bottom:16px}
@@ -496,11 +496,11 @@ BRAND_CSS = """
   .card-shot img{width:100%;height:100%;object-fit:cover;display:block}
   .card-dl{display:flex;flex-wrap:wrap;gap:0 14px;padding-top:10px;border-top:1px solid var(--rule);
     margin-top:12px}
-  .card-dl a{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.06em;
+  .card-dl a{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;
     color:var(--ink-2);border-bottom:1px solid var(--rule-2);padding-bottom:1px;margin-bottom:6px}
   .card-dl a:hover{color:var(--accent);border-bottom-color:var(--accent)}
   .card-dl .sep{font-size:.66rem;color:var(--ink-3);width:100%;margin:2px 0 4px;
-    font-family:'IBM Plex Sans KR',sans-serif}
+    font-family:var(--font-sans)}
   @media (max-width:980px){.cards{grid-template-columns:1fr;gap:0}}
 """
 
@@ -597,7 +597,7 @@ BRAND_BODY = """<section class="phead">
 
     <div class="cards">
       <div class="card-set">
-        <span class="n">시안 A</span>
+        <span class="n ko">시안 A</span>
         <h3>에디토리얼</h3>
         <p>상단 액센트 바 + 좌측 정렬. 정보 위계가 가장 분명하고 어떤 직함에도 잘 맞습니다. 기본 권장안.</p>
         <div class="card-shot"><img src="/assets/ci/card/card-A-front@300.jpg" alt="시안 A 앞면" loading="lazy"></div>
@@ -617,7 +617,7 @@ BRAND_BODY = """<section class="phead">
       </div>
 
       <div class="card-set">
-        <span class="n">시안 B</span>
+        <span class="n ko">시안 B</span>
         <h3>여백형</h3>
         <p>심볼만 작게 두고 이름을 크게. 연락처는 우측 하단으로 몰아 여백을 최대한 남긴 안.</p>
         <div class="card-shot"><img src="/assets/ci/card/card-B-front@300.jpg" alt="시안 B 앞면" loading="lazy"></div>
@@ -637,7 +637,7 @@ BRAND_BODY = """<section class="phead">
       </div>
 
       <div class="card-set">
-        <span class="n">시안 C</span>
+        <span class="n ko">시안 C</span>
         <h3>역상 · 딥 파인</h3>
         <p>앞면 전체를 브랜드 컬러로. 인상은 가장 강하지만 잉크 사용량이 많아 단가가 올라갑니다.</p>
         <div class="card-shot"><img src="/assets/ci/card/card-C-front@300.jpg" alt="시안 C 앞면" loading="lazy"></div>
@@ -713,7 +713,7 @@ BRAND_BODY = """<section class="phead">
       </div>
       <div class="c6 start7">
         <pre style="background:var(--paper-3);border:1px solid var(--rule);padding:16px;overflow-x:auto;
-                    font-family:'IBM Plex Mono',monospace;font-size:.78rem;line-height:1.7">python3 tools/build-card.py \
+                    font-family:var(--font-mono);font-size:.78rem;line-height:1.7">python3 tools/build-card.py \
   --name 김보안 --title 보안컨설턴트 \
   --mobile 010-1234-5678 \
   --email kim@shilderslab.com</pre>

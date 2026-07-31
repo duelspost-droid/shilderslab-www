@@ -43,13 +43,26 @@
 
   --shell:1240px;
   --gut:28px;
+
+  /* ── 폰트 스택 ──────────────────────────────────────────────
+     IBM Plex Mono 와 Serif 에는 **한글 글리프가 없다.**
+     그래서 모노·세리프 스택의 두 번째 자리에 'IBM Plex Sans KR' 을 둔다.
+     이렇게 하면 라벨 안에 한글이 섞여도 시스템 폰트(Apple SD Gothic Neo 등)로
+     떨어지지 않고 사이트 자체 서체로 이어진다 — 한 줄 안에서 서체가 바뀌는
+     현상을 셀렉터 관리 없이 구조적으로 막는다.
+     ⚠ 새 컴포넌트는 반드시 이 변수를 쓴다. 스택을 직접 적지 말 것. */
+  --font-sans:'IBM Plex Sans KR','IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
+  --font-mono:'IBM Plex Mono','IBM Plex Sans KR',ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* IBM Plex Serif 는 요청에서 뺐다(위 shell.py 주석 참조 — 한글에 렌더되지 않아
+     내려받기만 하던 상태였다). 라틴은 시스템 Georgia, 한글은 Sans KR 이 받는다. */
+  --font-serif:Georgia,'IBM Plex Sans KR',serif;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{
   background:var(--paper); color:var(--ink);
-  font-family:'IBM Plex Sans KR','IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
+  font-family:var(--font-sans);
   font-size:17px; line-height:1.78; font-weight:400;
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   font-feature-settings:"tnum" 0;
@@ -70,11 +83,17 @@ h1,h2,h3,h4,h5{font-weight:600;line-height:1.18;letter-spacing:-.024em}
 .small{font-size:.875rem;line-height:1.7;color:var(--ink-2)}
 .tiny{font-size:.78rem;line-height:1.6;color:var(--ink-3)}
 
-.mono{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace}
-.lbl{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+/* 굵기는 600 이 이 시스템의 볼드 끝이다. <b>/<strong> 의 브라우저 기본값은 700 인데
+   700 페이스는 로드하지 않으므로 그대로 두면 브라우저가 **합성 볼드**(글자를 알고리즘으로
+   부풀린 가짜 굵기)를 그린다. 한글에서 특히 뭉개져 보이고, 같은 페이지의 진짜 600 과
+   굵기가 어긋나 "폰트가 튄다"는 인상을 준다. 전역으로 600 에 맞춘다. */
+b,strong{font-weight:600}
+
+.mono{font-family:var(--font-mono)}
+.lbl{font-family:var(--font-mono);
   font-size:.6875rem;font-weight:500;letter-spacing:.145em;text-transform:uppercase;color:var(--ink-3)}
 .lbl-a{color:var(--accent)}
-.serif{font-family:'IBM Plex Serif','IBM Plex Sans KR',Georgia,serif}
+.serif{font-family:var(--font-serif)}
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 
 /* ─────────────── 레이아웃 ─────────────── */
@@ -116,11 +135,11 @@ h1,h2,h3,h4,h5{font-weight:600;line-height:1.18;letter-spacing:-.024em}
 .masthead .bar{display:flex;align-items:center;justify-content:space-between;height:68px;gap:24px}
 .brand{display:flex;align-items:center;gap:12px;flex-shrink:0}
 .brand img{height:36px;width:auto;display:block}
-.brand .admin-tag{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;
+.brand .admin-tag{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.16em;
   color:var(--ink-3);border-left:1px solid var(--rule-2);padding-left:12px}
 @media (max-width:820px){.brand img{height:30px}}
 .nav{display:flex;align-items:center;gap:30px}
-.nav a{font-size:.9rem;font-weight:450;color:var(--ink-2);position:relative;padding:4px 0}
+.nav a{font-size:.9rem;font-weight:500;color:var(--ink-2);position:relative;padding:4px 0}
 .nav a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--ink);
   transition:right .28s cubic-bezier(.2,.7,.2,1)}
 .nav a:hover{color:var(--ink)}
@@ -165,7 +184,7 @@ h1,h2,h3,h4,h5{font-weight:600;line-height:1.18;letter-spacing:-.024em}
 .hero .acts{display:flex;gap:14px;flex-wrap:wrap;margin-top:38px}
 .hero-meta{border-left:1px solid var(--rule);padding-left:24px}
 .hero-meta dl{display:grid;gap:0}
-.hero-meta dt{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.14em;
+.hero-meta dt{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--ink-3);padding-top:16px}
 .hero-meta dd{font-size:.94rem;color:var(--ink);padding-bottom:16px;border-bottom:1px solid var(--rule);
   line-height:1.55}
@@ -173,7 +192,7 @@ h1,h2,h3,h4,h5{font-weight:600;line-height:1.18;letter-spacing:-.024em}
 
 /* 규제 태그 열 */
 .tagrow{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--rule);margin-top:56px}
-.tagrow span{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--ink-2);
+.tagrow span{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;color:var(--ink-2);
   padding:14px 22px 14px 0;border-right:1px solid var(--rule);margin-right:22px;white-space:nowrap}
 .tagrow span:last-child{border-right:0;margin-right:0;padding-right:0}
 
@@ -184,11 +203,11 @@ h1,h2,h3,h4,h5{font-weight:600;line-height:1.18;letter-spacing:-.024em}
 .cols-4{grid-template-columns:repeat(4,1fr)}
 .col-item{border-top:1px solid var(--ink);padding:20px 0 40px;display:flex;flex-direction:column;
   gap:12px;position:relative}
-.col-item .n{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;color:var(--ink-3)}
+.col-item .n{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;color:var(--ink-3)}
 .col-item h3{font-size:1.08rem;letter-spacing:-.018em}
 .col-item p{font-size:.9rem;color:var(--ink-2);line-height:1.7}
 .col-item .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
-.col-item .tags i{font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:.64rem;
+.col-item .tags i{font-style:normal;font-family:var(--font-mono);font-size:.64rem;
   letter-spacing:.08em;color:var(--ink-3);border:1px solid var(--rule);padding:3px 8px}
 .col-item .go{margin-top:auto;padding-top:14px}
 a.col-item{transition:border-color .2s}
@@ -202,12 +221,12 @@ a.col-item:hover h3{color:var(--accent)}
 .kv{border-top:1px solid var(--ink)}
 .kv .row{display:grid;grid-template-columns:180px 1fr;gap:24px;padding:16px 0;
   border-bottom:1px solid var(--rule)}
-.kv dt,.kv .k{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+.kv dt,.kv .k{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-3);padding-top:3px}
 .kv dd,.kv .v{font-size:.94rem;color:var(--ink);line-height:1.7}
 
 table.spec{width:100%;border-collapse:collapse;font-size:.9rem}
-table.spec caption{text-align:left;font-family:'IBM Plex Mono',monospace;font-size:.68rem;
+table.spec caption{text-align:left;font-family:var(--font-mono);font-size:.68rem;
   letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding-bottom:12px}
 table.spec th{text-align:left;font-weight:500;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink-3);padding:0 16px 10px 0;border-bottom:1px solid var(--ink);white-space:nowrap}
@@ -221,7 +240,7 @@ table.spec .num{font-variant-numeric:tabular-nums;color:var(--ink)}
 .flow{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--ink)}
 .flow .step{padding:22px 20px 34px 0;border-right:1px solid var(--rule);padding-right:20px}
 .flow .step:last-child{border-right:0}
-.flow .step .n{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+.flow .step .n{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;
   color:var(--accent);display:block;margin-bottom:12px}
 .flow .step h4{font-size:.98rem;margin-bottom:8px}
 .flow .step p{font-size:.85rem;color:var(--ink-2);line-height:1.66}
@@ -231,7 +250,7 @@ table.spec .num{font-variant-numeric:tabular-nums;color:var(--ink)}
 .ticks li{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:15px 0;
   border-bottom:1px solid var(--rule);font-size:.94rem;color:var(--ink-2);line-height:1.7}
 .ticks li b{color:var(--ink);font-weight:600}
-.ticks li::before{content:"—";color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:.8rem;
+.ticks li::before{content:"—";color:var(--accent);font-family:var(--font-mono);font-size:.8rem;
   padding-top:3px}
 .bullets{list-style:none;display:grid;gap:9px}
 .bullets li{display:grid;grid-template-columns:16px 1fr;gap:10px;font-size:.92rem;color:var(--ink-2);
@@ -240,9 +259,9 @@ table.spec .num{font-variant-numeric:tabular-nums;color:var(--ink)}
 
 /* ─────────────── 인용 ─────────────── */
 .pull{border-left:2px solid var(--accent);padding-left:26px;max-width:52ch}
-.pull p{font-family:'IBM Plex Serif','IBM Plex Sans KR',serif;font-size:clamp(1.2rem,1.9vw,1.5rem);
+.pull p{font-family:var(--font-serif);font-size:clamp(1.2rem,1.9vw,1.5rem);
   line-height:1.62;letter-spacing:-.014em;color:var(--ink)}
-.pull cite{display:block;margin-top:14px;font-style:normal;font-family:'IBM Plex Mono',monospace;
+.pull cite{display:block;margin-top:14px;font-style:normal;font-family:var(--font-mono);
   font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 
 /* ─────────────── 지표 ─────────────── */
@@ -258,11 +277,11 @@ table.spec .num{font-variant-numeric:tabular-nums;color:var(--ink)}
 .post{display:grid;grid-template-columns:150px 1fr 150px;gap:var(--gut);padding:26px 0;
   border-bottom:1px solid var(--rule);align-items:baseline;transition:background .18s}
 .post:hover{background:rgba(26,75,58,.035)}
-.post .meta{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;color:var(--ink-3);
+.post .meta{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;color:var(--ink-3);
   text-transform:uppercase}
 .post h3{font-size:1.14rem;letter-spacing:-.02em;margin-bottom:8px}
 .post p{font-size:.9rem;color:var(--ink-2);max-width:64ch}
-.post .go{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ink-3)}
+.post .go{text-align:right;font-family:var(--font-mono);font-size:.7rem;color:var(--ink-3)}
 .post:hover .go{color:var(--accent)}
 
 /* 본문(인사이트 상세) */
@@ -277,7 +296,7 @@ table.spec .num{font-variant-numeric:tabular-nums;color:var(--ink)}
 .article .body b{color:var(--ink);font-weight:600}
 .article .body a{color:var(--accent);border-bottom:1px solid var(--rule-2)}
 .article .body a:hover{border-bottom-color:var(--accent)}
-.article .body code{font-family:'IBM Plex Mono',monospace;font-size:.88em;background:var(--paper-2);
+.article .body code{font-family:var(--font-mono);font-size:.88em;background:var(--paper-2);
   padding:2px 6px}
 .article .body pre{background:var(--paper-2);border:1px solid var(--rule);padding:18px;overflow-x:auto;
   margin-bottom:18px}
@@ -286,7 +305,7 @@ table.spec .num{font-variant-numeric:tabular-nums;color:var(--ink)}
 
 /* ─────────────── 페이지 머리 ─────────────── */
 .phead{padding:64px 0 52px;border-bottom:1px solid var(--ink)}
-.phead .crumb{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+.phead .crumb{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-3);margin-bottom:26px}
 .phead .crumb a:hover{color:var(--accent)}
 .phead h1{max-width:20ch}
@@ -295,7 +314,7 @@ table.spec .num{font-variant-numeric:tabular-nums;color:var(--ink)}
 /* ─────────────── 폼 ─────────────── */
 .form{border-top:1px solid var(--ink);padding-top:8px}
 .field{padding:18px 0;border-bottom:1px solid var(--rule)}
-.field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.13em;
+.field label{display:block;font-family:var(--font-mono);font-size:.66rem;letter-spacing:.13em;
   text-transform:uppercase;color:var(--ink-3);margin-bottom:9px}
 .field label .req{color:var(--accent)}
 .field input,.field select,.field textarea{width:100%;background:transparent;border:0;
@@ -332,7 +351,7 @@ footer.site .top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:var(--gu
   padding-bottom:48px;border-bottom:1px solid var(--rule-inv)}
 footer.site .fbrand img{height:34px;width:auto;margin-bottom:20px}
 footer.site .fbrand p{font-size:.86rem;color:var(--ink-inv-2);max-width:34ch;line-height:1.72}
-footer.site h5{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.16em;
+footer.site h5{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.16em;
   text-transform:uppercase;color:#6E7570;margin-bottom:18px}
 footer.site .fcol a,footer.site .fcol span{display:block;font-size:.88rem;margin-bottom:11px;
   color:var(--ink-inv-2)}
@@ -365,13 +384,13 @@ footer.site .flinks a{font-size:.76rem}
 .faq summary{padding:20px 0;cursor:pointer;list-style:none;display:grid;
   grid-template-columns:1fr 24px;gap:16px;font-weight:500;font-size:1rem;align-items:start}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";font-family:'IBM Plex Mono',monospace;color:var(--ink-3);
+.faq summary::after{content:"+";font-family:var(--font-mono);color:var(--ink-3);
   font-size:1.1rem;line-height:1.4;text-align:right}
 .faq details[open] summary::after{content:"–";color:var(--accent)}
 .faq .ans{padding:0 60px 24px 0;font-size:.94rem;color:var(--ink-2);line-height:1.78;max-width:70ch}
 
 /* ─────────────── 배지 · 상태 ─────────────── */
-.badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.1em;
+.badge{display:inline-block;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.1em;
   text-transform:uppercase;padding:3px 9px;border:1px solid var(--rule-2);color:var(--ink-2)}
 .badge.new{border-color:var(--accent);color:var(--accent)}
 .badge.doing{border-color:var(--ochre);color:var(--ochre)}
@@ -383,7 +402,7 @@ footer.site .flinks a{font-size:.76rem}
 /* ─────────────── 표 (관리자) ─────────────── */
 .tbl-wrap{overflow-x:auto;border-top:1px solid var(--ink)}
 table.tbl{width:100%;border-collapse:collapse;font-size:.88rem;min-width:680px}
-table.tbl th{text-align:left;padding:12px 16px 12px 0;font-family:'IBM Plex Mono',monospace;
+table.tbl th{text-align:left;padding:12px 16px 12px 0;font-family:var(--font-mono);
   font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
   border-bottom:1px solid var(--rule-2);white-space:nowrap}
 table.tbl td{padding:14px 16px 14px 0;border-bottom:1px solid var(--rule);color:var(--ink-2);
@@ -398,7 +417,7 @@ table.tbl td.t-title{color:var(--ink);font-weight:500}
 .admin-who{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--ink-3)}
 .admin-who b{color:var(--ink-2);font-weight:500}
 .tabs{display:flex;gap:26px;flex-wrap:wrap;border-bottom:1px solid var(--rule);margin:28px 0 30px}
-.tabs button{background:none;border:0;padding:0 0 14px;font-size:.88rem;font-weight:450;color:var(--ink-3);
+.tabs button{background:none;border:0;padding:0 0 14px;font-size:.88rem;font-weight:500;color:var(--ink-3);
   cursor:pointer;position:relative;display:flex;align-items:center;gap:7px}
 .tabs button::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:transparent}
 .tabs button:hover{color:var(--ink)}
@@ -434,7 +453,7 @@ select.inp,input.inp{background:transparent;border:1px solid var(--rule-2);paddi
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:26px;flex-wrap:wrap}
 .detail-dl{display:grid;grid-template-columns:150px 1fr;gap:0 20px;font-size:.9rem;
   border-top:1px solid var(--rule)}
-.detail-dl dt{font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.12em;
+.detail-dl dt{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;
   text-transform:uppercase;color:var(--ink-3);padding:13px 0}
 .detail-dl dd{color:var(--ink-2);padding:13px 0;border-bottom:1px solid var(--rule);
   white-space:pre-wrap;word-break:break-word;line-height:1.7}
@@ -442,13 +461,13 @@ select.inp,input.inp{background:transparent;border:1px solid var(--rule-2);paddi
 .bars{display:flex;align-items:flex-end;gap:5px;height:110px;padding-top:12px}
 .bars .b{flex:1;background:var(--accent);min-height:2px;position:relative;opacity:.85}
 .bars .b span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);
-  font-family:'IBM Plex Mono',monospace;font-size:.58rem;color:var(--ink-3);white-space:nowrap}
+  font-family:var(--font-mono);font-size:.58rem;color:var(--ink-3);white-space:nowrap}
 .bars-wrap{border-top:1px solid var(--ink);padding:18px 0 34px}
 .toppages{list-style:none;border-top:1px solid var(--rule)}
 .toppages li{display:flex;justify-content:space-between;gap:14px;padding:9px 0;
   border-bottom:1px solid var(--rule);font-size:.84rem;color:var(--ink-2)}
 .toppages li:last-child{border-bottom:0}
-.toppages code{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--ink)}
+.toppages code{font-family:var(--font-mono);font-size:.78rem;color:var(--ink)}
 .two{display:grid;grid-template-columns:1.3fr .7fr;gap:var(--gut)}
 
 /* ─────────────── 반응형 ─────────────── */
@@ -513,28 +532,51 @@ select.inp,input.inp{background:transparent;border:1px solid var(--rule-2);paddi
    모노스페이스 + 대문자 + 넓은 자간은 라틴 알파벳 전용 조판이다.
    한글이 들어가는 라벨은 산세리프로 되돌리고 자간을 좁힌다.
    (라틴 전용 라벨 .lbl · 번호 .n · 코드값은 모노 유지)
+
+   ⚠ 아래 목록은 **셀렉터 단위**라, 같은 셀렉터에 한글과 라틴이 섞여 들어오는
+     자리(예: 연혁의 <time> = "2026" 과 "진행 중")는 목록으로 가를 수 없다.
+     그런 자리에는 마크업에 **`.ko` 유틸리티 클래스**를 직접 붙인다.
+     반대로 목록에 넣으면 라틴 쪽의 모노 숫자 조판까지 잃는다.
+     `.ko.ko` 로 두 번 적은 것은 오타가 아니라 특정도를 (0,2,0) 으로 올리기 위해서다.
+     페이지별 CSS 의 `.tl time`(0,1,1) 같은 규칙을 이겨야 실제로 적용된다.
+
+   ⚠ 셀렉터마다 `html ` 을 붙인 이유 — 이 파일(site.css)은 <head> 에서
+     페이지별 <style> 보다 **먼저** 로드된다. 따라서 특정도가 같으면
+     페이지 CSS 가 항상 이겨서 이 보정이 통째로 무시된다(실제로 그랬다).
+     `html ` 하나로 특정도에 요소 1 을 더해 (0,N,1) 로 만들면
+     페이지의 (0,N,0) 규칙을 이긴다. **지우지 말 것.**
+     같은 이유로 원본이 `.phead .crumb`(0,2,0) 처럼 더 강한 경우엔
+     그 셀렉터도 목록에 함께 적어야 한다.
    ══════════════════════════════════════════════════════════════ */
-.crumb,
-.kv .k, .kv dt,
-.hero-meta .k,
-.field label,
-.filters button,
-.post .meta,
-.jobs .jt span, .jobs .open,
-.nav-svc a,
-.detail-dl dt,
-.trust-kv .k,
-.toc .k,
-.split3 .b .k,
-.out-grid .o .k,
-.phase .out .k,
-.asset .meta span,
-table.spec th, table.spec caption,
-table.tbl th,
-.hero-rule span,
-.tagrow span,
-.mini-stat span{
-  font-family:'IBM Plex Sans KR','IBM Plex Sans',-apple-system,sans-serif;
+html .crumb,
+html .phead .crumb,
+html .pull cite,
+html .ko.ko,
+html .state,
+html .doc .rev,
+html .kv .k,
+html .kv dt,
+html .hero-meta .k,
+html .field label,
+html .filters button,
+html .post .meta,
+html .jobs .jt span,
+html .jobs .open,
+html .nav-svc a,
+html .detail-dl dt,
+html .trust-kv .k,
+html .toc .k,
+html .split3 .b .k,
+html .out-grid .o .k,
+html .phase .out .k,
+html .asset .meta span,
+html table.spec th,
+html table.spec caption,
+html table.tbl th,
+html .hero-rule span,
+html .tagrow span,
+html .mini-stat span{
+  font-family:var(--font-sans);
   letter-spacing:.005em;
   text-transform:none;
   font-weight:500;
@@ -580,7 +622,7 @@ table.spec caption{font-size:.78rem}
   table.spec td{border-bottom:0;padding:3px 0;line-height:1.7}
   table.spec td[data-l]::before{
     content:attr(data-l);display:block;
-    font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;
+    font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;
     text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
   table.spec td:first-child{font-weight:600;color:var(--ink);padding-top:0}
   table.spec caption{padding-bottom:14px}

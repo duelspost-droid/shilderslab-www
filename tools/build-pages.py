@@ -207,7 +207,7 @@ def build_insight_pages(posts):
         body = f"""<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · <a href="/insights/">인사이트</a></div>
-    <div class="lbl" style="margin-bottom:18px">{esc(cat)} &nbsp;·&nbsp; {esc(fmt_date(date))} &nbsp;·&nbsp; {esc(author)}</div>
+    <div class="lbl ko" style="margin-bottom:18px">{esc(cat)} &nbsp;·&nbsp; {esc(fmt_date(date))} &nbsp;·&nbsp; {esc(author)}</div>
     <h1 class="d2">{esc(title)}</h1>
     {f'<p class="lead" style="margin-top:20px;max-width:58ch">{esc(summary)}</p>' if summary else ""}
   </div>

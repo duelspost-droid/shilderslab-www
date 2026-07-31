@@ -15,7 +15,7 @@ INS_LD = ('{"@context":"https://schema.org","@type":"Blog","name":"쉴더스랩 
 INS_CSS = """
   .filters{display:flex;gap:0;flex-wrap:wrap;border-top:1px solid var(--rule);margin-bottom:0}
   .filters button{background:none;border:0;cursor:pointer;padding:14px 20px 14px 0;margin-right:20px;
-    font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+    font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
     color:var(--ink-3);border-bottom:1px solid transparent;position:relative;top:1px}
   .filters button:hover{color:var(--ink)}
   .filters button.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -206,7 +206,7 @@ VIEW_JS = """<script>
     setAttr('meta[property="og:description"]', "content", desc);
 
     headEl.innerHTML =
-      '<div class="lbl" style="margin-bottom:18px">' + SL.esc(p.category || "인사이트") +
+      '<div class="lbl ko" style="margin-bottom:18px">' + SL.esc(p.category || "인사이트") +
       ' &nbsp;·&nbsp; ' + SL.esc(SL.fmtDate(p.published_at)) +
       (p.author ? ' &nbsp;·&nbsp; ' + SL.esc(p.author) : "") + "</div>" +
       '<h1 class="d2">' + SL.esc(p.title) + "</h1>" +
@@ -233,9 +233,9 @@ CAR_CSS = """
     grid-template-columns:1fr auto;gap:20px;align-items:baseline}
   .jobs summary::-webkit-details-marker{display:none}
   .jobs .jt b{display:block;font-size:1.1rem;font-weight:600;letter-spacing:-.02em;margin-bottom:7px}
-  .jobs .jt span{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;
+  .jobs .jt span{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;
     color:var(--ink-3);text-transform:uppercase}
-  .jobs .open{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;
+  .jobs .open{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;
     color:var(--ink-3);text-transform:uppercase;white-space:nowrap}
   .jobs details[open] .open{color:var(--accent)}
   .jobs .jbody{padding:0 0 28px;white-space:pre-wrap;font-size:.94rem;color:var(--ink-2);
@@ -460,7 +460,7 @@ CON_CSS = """
   .steps{list-style:none;counter-reset:s;border-top:1px solid var(--rule)}
   .steps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:14px;padding:15px 0;
     border-bottom:1px solid var(--rule);font-size:.92rem;color:var(--ink-2);line-height:1.7}
-  .steps li::before{content:"0" counter(s);font-family:'IBM Plex Mono',monospace;font-size:.68rem;
+  .steps li::before{content:"0" counter(s);font-family:var(--font-mono);font-size:.68rem;
     letter-spacing:.1em;color:var(--accent);padding-top:5px}
   .steps li b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px}
 """

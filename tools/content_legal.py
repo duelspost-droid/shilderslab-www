@@ -24,7 +24,7 @@ CSS = """
     vertical-align:top;line-height:1.7}
   .doc td:first-child{color:var(--ink);font-weight:500}
   .doc td span{color:var(--ink-3)!important;font-size:.86em}
-  .doc .rev{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.06em;color:var(--ink-3);
+  .doc .rev{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.06em;color:var(--ink-3);
     margin-top:44px;padding-top:20px;border-top:1px solid var(--ink);line-height:1.9}
   @media (max-width:720px){
     .doc table,.doc thead,.doc tbody,.doc th,.doc td,.doc tr{display:block}
@@ -32,7 +32,7 @@ CSS = """
     .doc td{border-bottom:0;padding:3px 0}
     .doc td:first-child{padding-top:14px}
     .doc tr{border-bottom:1px solid var(--rule);padding:10px 0}
-    .doc td::before{content:attr(data-l) " — ";font-family:'IBM Plex Mono',monospace;font-size:.62rem;
+    .doc td::before{content:attr(data-l) " — ";font-family:var(--font-mono);font-size:.62rem;
       letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
     .doc td:first-child::before{content:none}
   }
