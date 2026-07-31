@@ -10,8 +10,8 @@
  *        대신 아래 WEBHOOK_SECRET 로 호출자를 검증한다.)
  *   2) Edge Functions → Secrets 에 등록
  *        RESEND_API_KEY   : https://resend.com 에서 발급 (무료 티어로 충분)
- *        NOTIFY_TO        : 알림 받을 주소 (예: contact@shielduslab.com)
- *        NOTIFY_FROM      : Resend 에서 인증한 발신 도메인 주소 (예: no-reply@shielduslab.com)
+ *        NOTIFY_TO        : 알림 받을 주소 (예: contact@shilderslab.com)
+ *        NOTIFY_FROM      : Resend 에서 인증한 발신 도메인 주소 (예: no-reply@shilderslab.com)
  *        WEBHOOK_SECRET   : 임의의 긴 랜덤 문자열
  *   3) Database → Webhooks → Create a new hook
  *        table: sl_inquiries (INSERT)  ·  type: Supabase Edge Functions  ·  function: notify-inquiry
@@ -77,7 +77,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     `· 접수 시각 : ${at}`,
     "",
     "상세 내용과 처리 상태 변경은 관리자 콘솔에서 확인하세요:",
-    "https://shielduslab.com/admin/",
+    "https://shilderslab.com/admin/",
   ].join("\n");
 
   const res = await fetch("https://api.resend.com/emails", {

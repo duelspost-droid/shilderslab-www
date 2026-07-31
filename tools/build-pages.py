@@ -201,8 +201,8 @@ def build_insight_pages(posts):
             "author": {"@type": "Organization", "name": author},
             "publisher": {"@type": "Organization", "name": "쉴더스랩",
                           "logo": {"@type": "ImageObject",
-                                   "url": "https://shielduslab.com/assets/ci/symbol.svg"}},
-            "mainEntityOfPage": f"https://shielduslab.com/insights/{slug}/",
+                                   "url": "https://shilderslab.com/assets/ci/symbol.svg"}},
+            "mainEntityOfPage": f"https://shilderslab.com/insights/{slug}/",
         }, ensure_ascii=False)
         body = f"""<section class="phead">
   <div class="shell">
@@ -242,7 +242,7 @@ def build_sitemap(rows_static, rows_posts):
         return v.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     body = "\n".join(
-        f"  <url><loc>https://shielduslab.com{x(loc)}</loc>"
+        f"  <url><loc>https://shilderslab.com{x(loc)}</loc>"
         f"<lastmod>{lm}</lastmod><priority>{pr}</priority></url>" for loc, lm, pr in rows)
     out = ('<?xml version="1.0" encoding="UTF-8"?>\n'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "\n</urlset>\n")

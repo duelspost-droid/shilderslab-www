@@ -80,7 +80,7 @@ FOOTER = """<footer class="site">
       </div>
       <div class="fcol">
         <h5>Contact</h5>
-        <a href="mailto:contact@shielduslab.com">contact@shielduslab.com</a>
+        <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
         <span data-setting="business_hours">평일 09:00 – 18:00</span>
         <a href="/contact/">상담 · 견적 요청 →</a>
       </div>
@@ -113,13 +113,13 @@ def head(title, desc, canonical, extra_css="", ld=""):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-<link rel="canonical" href="https://shielduslab.com{canonical}">
+<link rel="canonical" href="https://shilderslab.com{canonical}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="쉴더스랩">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
-<meta property="og:url" content="https://shielduslab.com{canonical}">
-<meta property="og:image" content="https://shielduslab.com/assets/ci/og-cover.png">
+<meta property="og:url" content="https://shilderslab.com{canonical}">
+<meta property="og:image" content="https://shilderslab.com/assets/ci/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/ci/favicon.svg" type="image/svg+xml">
 <link rel="mask-icon" href="/assets/ci/mask-icon.svg" color="#1A4B3A">

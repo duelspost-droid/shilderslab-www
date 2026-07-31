@@ -7,13 +7,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>채용 | 쉴더스랩 — 정보보호 컨설턴트 채용</title>
 <meta name="description" content="쉴더스랩 채용 공고와 지원 접수. 근거로 검증하는 정보보호 컨설턴트, 모의해킹, 클라우드 보안 인재를 찾습니다.">
-<link rel="canonical" href="https://shielduslab.com/careers/">
+<link rel="canonical" href="https://shilderslab.com/careers/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="쉴더스랩">
 <meta property="og:title" content="채용 | 쉴더스랩 — 정보보호 컨설턴트 채용">
 <meta property="og:description" content="쉴더스랩 채용 공고와 지원 접수. 근거로 검증하는 정보보호 컨설턴트, 모의해킹, 클라우드 보안 인재를 찾습니다.">
-<meta property="og:url" content="https://shielduslab.com/careers/">
-<meta property="og:image" content="https://shielduslab.com/assets/ci/og-cover.png">
+<meta property="og:url" content="https://shilderslab.com/careers/">
+<meta property="og:image" content="https://shilderslab.com/assets/ci/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/ci/favicon.svg" type="image/svg+xml">
 <link rel="mask-icon" href="/assets/ci/mask-icon.svg" color="#1A4B3A">
@@ -206,7 +206,7 @@
       </div>
       <div class="fcol">
         <h5>Contact</h5>
-        <a href="mailto:contact@shielduslab.com">contact@shielduslab.com</a>
+        <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
         <span data-setting="business_hours">평일 09:00 – 18:00</span>
         <a href="/contact/">상담 · 견적 요청 →</a>
       </div>
@@ -294,7 +294,7 @@
     if (!consent.checked) { show("bad", "개인정보 수집·이용 동의가 필요합니다."); return; }
 
     var c = SL.db();
-    if (!c) { show("bad", "지금은 접수를 처리할 수 없습니다. contact@shielduslab.com 으로 보내주세요."); return; }
+    if (!c) { show("bad", "지금은 접수를 처리할 수 없습니다. contact@shilderslab.com 으로 보내주세요."); return; }
 
     btn.disabled = true; btn.textContent = "제출 중…";
     c.rpc("sl_apply", {
@@ -309,7 +309,7 @@
       var m = (err && err.message) || "";
       show("bad", /too many|rate/i.test(m)
         ? "잠시 후 다시 시도해 주세요. (짧은 시간에 여러 번 제출됨)"
-        : "접수에 실패했습니다. contact@shielduslab.com 으로 보내주시면 확인하겠습니다.");
+        : "접수에 실패했습니다. contact@shilderslab.com 으로 보내주시면 확인하겠습니다.");
       btn.disabled = false; btn.textContent = "지원서 제출";
     });
   });

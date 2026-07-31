@@ -10,7 +10,7 @@ INS_TITLE = "인사이트 | 쉴더스랩 — 규제 변화와 진단 현장 기�
 INS_DESC = ("규제 변화와 진단 현장에서 반복적으로 확인되는 문제, 그리고 실제로 효과가 있었던 조치를 "
             "정리한 쉴더스랩의 보안 인사이트.")
 INS_LD = ('{"@context":"https://schema.org","@type":"Blog","name":"쉴더스랩 인사이트",'
-          '"url":"https://shielduslab.com/insights/"}')
+          '"url":"https://shilderslab.com/insights/"}')
 
 INS_CSS = """
   .filters{display:flex;gap:0;flex-wrap:wrap;border-top:1px solid var(--rule);margin-bottom:0}
@@ -194,7 +194,7 @@ VIEW_JS = """<script>
     }
     document.title = p.title + " | 쉴더스랩 인사이트";
     var desc = String(p.summary || "").slice(0, 150);
-    var canon = "https://shielduslab.com/insights/view.html?slug=" + encodeURIComponent(slug);
+    var canon = "https://shilderslab.com/insights/view.html?slug=" + encodeURIComponent(slug);
     function setAttr(sel, attr, val) {
       var el = document.querySelector(sel);
       if (el && val) el.setAttribute(attr, val);
@@ -425,7 +425,7 @@ CAR_JS = """<script>
     if (!consent.checked) { show("bad", "개인정보 수집·이용 동의가 필요합니다."); return; }
 
     var c = SL.db();
-    if (!c) { show("bad", "지금은 접수를 처리할 수 없습니다. contact@shielduslab.com 으로 보내주세요."); return; }
+    if (!c) { show("bad", "지금은 접수를 처리할 수 없습니다. contact@shilderslab.com 으로 보내주세요."); return; }
 
     btn.disabled = true; btn.textContent = "제출 중…";
     c.rpc("sl_apply", {
@@ -440,7 +440,7 @@ CAR_JS = """<script>
       var m = (err && err.message) || "";
       show("bad", /too many|rate/i.test(m)
         ? "잠시 후 다시 시도해 주세요. (짧은 시간에 여러 번 제출됨)"
-        : "접수에 실패했습니다. contact@shielduslab.com 으로 보내주시면 확인하겠습니다.");
+        : "접수에 실패했습니다. contact@shilderslab.com 으로 보내주시면 확인하겠습니다.");
       btn.disabled = false; btn.textContent = "지원서 제출";
     });
   });
@@ -454,7 +454,7 @@ CON_TITLE = "상담 · 견적 요청 | 쉴더스랩"
 CON_DESC = ("정보보호 컨설팅 상담·견적 요청. 범위 검토와 견적 산정까지는 비용이 발생하지 않으며, "
             "영업일 기준 24시간 내 초기 회신합니다.")
 CON_LD = ('{"@context":"https://schema.org","@type":"ContactPage","name":"상담 · 견적 요청 | 쉴더스랩",'
-          '"url":"https://shielduslab.com/contact/"}')
+          '"url":"https://shilderslab.com/contact/"}')
 
 CON_CSS = """
   .steps{list-style:none;counter-reset:s;border-top:1px solid var(--rule)}
@@ -545,7 +545,7 @@ CON_BODY = """<section class="phead">
     <aside class="c4 start9">
       <div class="kv">
         <div class="row"><div class="k">이메일</div>
-          <div class="v"><a href="mailto:contact@shielduslab.com" style="border-bottom:1px solid var(--rule-2)">contact@shielduslab.com</a></div></div>
+          <div class="v"><a href="mailto:contact@shilderslab.com" style="border-bottom:1px solid var(--rule-2)">contact@shilderslab.com</a></div></div>
         <div class="row"><div class="k">운영시간</div>
           <div class="v"><span data-setting="business_hours">평일 09:00 – 18:00</span><br>
             <span class="tiny">주말·공휴일 휴무</span></div></div>
@@ -609,7 +609,7 @@ CON_JS = """<script>
     if (!consent.checked) { show("bad", "개인정보 수집·이용 동의가 필요합니다."); return; }
 
     var c = SL.db();
-    if (!c) { show("bad", "지금은 접수를 처리할 수 없습니다. contact@shielduslab.com 으로 보내주세요."); return; }
+    if (!c) { show("bad", "지금은 접수를 처리할 수 없습니다. contact@shilderslab.com 으로 보내주세요."); return; }
 
     btn.disabled = true; btn.textContent = "전송 중…";
     c.rpc("sl_submit_inquiry", {
@@ -624,7 +624,7 @@ CON_JS = """<script>
       var m = (err && err.message) || "";
       show("bad", /too many|rate/i.test(m)
         ? "짧은 시간에 여러 번 접수되었습니다. 잠시 후 다시 시도해 주세요."
-        : "전송에 실패했습니다. contact@shielduslab.com 으로 보내주시면 확인하겠습니다.");
+        : "전송에 실패했습니다. contact@shilderslab.com 으로 보내주시면 확인하겠습니다.");
       btn.disabled = false; btn.textContent = "문의 보내기";
     });
   });

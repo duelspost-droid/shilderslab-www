@@ -783,7 +783,7 @@
     var pw = tempPassword();
     openModal("관리자 추가",
       '<div class="field"><label for="ac-email">이메일 *</label>' +
-      '<input id="ac-email" type="email" maxlength="160" placeholder="name@shielduslab.com"></div>' +
+      '<input id="ac-email" type="email" maxlength="160" placeholder="name@shilderslab.com"></div>' +
       '<div class="field"><label for="ac-role">역할</label><select id="ac-role">' +
       '<option value="editor">editor — 콘텐츠 · 문의 처리</option>' +
       '<option value="admin">admin — 계정 · 설정까지 전체</option></select></div>' +

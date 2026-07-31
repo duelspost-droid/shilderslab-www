@@ -10,7 +10,7 @@ ABOUT_TITLE = "회사소개 | 쉴더스랩 — 정보보호 컨설팅"
 ABOUT_DESC = ("쉴더스랩은 ISMS-P 인증 대응과 기술 진단을 한 계약 안에서 수행하는 정보보호 컨설팅 "
               "회사입니다. 조치를 확인하는 재점검까지를 과업 범위로 봅니다.")
 ABOUT_LD = ('{"@context":"https://schema.org","@type":"AboutPage","name":"회사소개 | 쉴더스랩",'
-            '"url":"https://shielduslab.com/about/"}')
+            '"url":"https://shilderslab.com/about/"}')
 
 ABOUT_CSS = """
   .tl{border-top:1px solid var(--ink)}
@@ -63,8 +63,8 @@ ABOUT_BODY = """<section class="phead">
         <div class="row"><div class="k">사업 분야</div><div class="v">정보보호 컨설팅 — 관리체계 인증, 모의해킹,
           취약점 진단, 개인정보 컴플라이언스, 클라우드 보안</div></div>
         <div class="row"><div class="k">문의</div>
-          <div class="v"><a href="mailto:contact@shielduslab.com" style="border-bottom:1px solid var(--rule-2)">contact@shielduslab.com</a></div></div>
-        <div class="row"><div class="k">웹사이트</div><div class="v">shielduslab.com</div></div>
+          <div class="v"><a href="mailto:contact@shilderslab.com" style="border-bottom:1px solid var(--rule-2)">contact@shilderslab.com</a></div></div>
+        <div class="row"><div class="k">웹사이트</div><div class="v">shilderslab.com</div></div>
       </div>
     </div>
   </div>
@@ -600,7 +600,7 @@ BRAND_BODY = """<section class="phead">
       <div class="body">
         <h2 class="d3">명함</h2>
         <p class="note-warn"><b>도메인 확보 전입니다 — 인쇄 발주를 보류하십시오.</b>
-           명함에는 <b>shielduslab.com</b> 이 새겨져 있으나 이 주소는 아직 확보되지 않았습니다.
+           명함에는 <b>전환 예정 도메인</b>이 새겨져 있고, 그 주소는 아직 확보되지 않았습니다.
            확보가 확정되기 전에 인쇄하면 명함의 웹 주소와 이메일이 닿지 않습니다.
            도메인이 손에 들어오고 사이트 전환이 끝난 뒤에 발주하십시오.</p>
         <p class="lead">세 가지 시안을 준비했습니다. 모두 <b>인쇄소에 그대로 넘길 수 있는 규격</b>으로 만들었습니다 —
@@ -751,7 +751,7 @@ BRAND_BODY = """<section class="phead">
                     font-family:var(--font-mono);font-size:.78rem;line-height:1.7">python3 tools/build-card.py \
   --name 김보안 --title 보안컨설턴트 \
   --mobile 010-1234-5678 \
-  --email kim@shielduslab.com</pre>
+  --email kim@shilderslab.com</pre>
         <p class="tiny" style="margin-top:12px">
           시안 3종 × 앞뒤 × 4포맷이 <code>assets/ci/card/</code> 에 생성됩니다.
           <code>--phone</code>(대표번호) · <code>--dept</code>(부서) · <code>--addr</code>(주소) 도 넣을 수 있습니다.

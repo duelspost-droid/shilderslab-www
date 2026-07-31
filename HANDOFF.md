@@ -439,6 +439,7 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-07-31 | **한글형(국문 우선·영문 병기) 추가** — CI 락업 6종 · 명함 `--ko` 30종(총 60개) · /brand/ 에 02 Korean lockup 섹션 신설 | — |
 | 2026-07-31 | 명함 도메인 **shielduslab.com** 으로 확정·60개 재생성(앞 커밋의 shilduslab 은 오기) | **사이트 도메인 전환** — CNAME·인증서·canonical·CSP·security.txt·JSON-LD |
 | 2026-07-31 | **도메인 정본 shielduslab.com 확정** — 코드·콘텐츠 244건 교체(`tools/set-domain.py` 신설) | **DNS 전환 대기**(11항 절차서) · 도메인 확보 후 실행 |
+| 2026-08-01 | **도메인 코드 원복(253건)** — `shielduslab.com` 이 제3자(Squarespace) 운영 중임을 실측하고, canonical·og·sitemap 이 남의 도메인을 정본으로 지목하던 상태를 해소 · `/brand/` 인쇄 보류 경고가 `set-domain.py` 에 뒤집힌 것 수정(도메인 리터럴 제거) | **도메인 확보 후 재전환**(11항) · CMS 8블록 DB 반영 |
 
 ---
 
@@ -541,18 +542,28 @@ Windows git 기본값 `core.autocrlf=true` 인데, PDF 는 앞부분에 NUL 바�
 
 ## 11. 도메인 전환 — shilderslab.com → shielduslab.com
 
-**정본은 `shielduslab.com`** (2026-07-31 오너 확정). 옛 도메인은 **보유하면서 301 리다이렉트**.
+**최종 정본은 `shielduslab.com`** (2026-07-31 오너 확정). 옛 도메인은 **보유하면서 301 리다이렉트**.
+**단, 도메인 확보 전까지 코드는 `shilderslab.com` 을 유지한다**(아래 현재 상태 참조).
 
-### 현재 상태
+### 현재 상태 (2026-08-01 갱신)
 | 항목 | 상태 |
 |---|---|
-| 코드·콘텐츠 | ✅ 전부 `shielduslab.com` (2026-07-31, `tools/set-domain.py` 로 244건 교체) |
-| `CNAME` | ⏳ 아직 `shilderslab.com` — **호스팅 바인딩이라 DNS 와 함께 움직인다** |
-| 도메인 확보 | ⏳ **미확보(확보는 확정)** — 손에 들어오기 전에는 아래를 실행하지 않는다 |
-| 명함 | 새 도메인으로 제작 완료. `/brand/` 에 **발주 보류 경고** 게재 중 |
+| 코드·콘텐츠 | ↩️ **`shilderslab.com` 으로 되돌림** (253건). 도메인 확보 전까지는 라이브 도메인을 정본으로 둔다 |
+| `CNAME` · Pages 바인딩 | `shilderslab.com` (인증서 approved · https 강제) — 그대로 |
+| 도메인 확보 | ⏳ **미확보.** `shielduslab.com` 은 **제3자(Squarespace)가 "곧 출시 예정" 페이지를 서비스 중**이다(2026-08-01 실측: 200, `Server: Squarespace`, 우리 자산 경로는 401) |
+| 명함 | 새 도메인(`shielduslab.com`)으로 제작 완료 — 60개. `/brand/` 에 **발주 보류 경고** 게재 중 |
 
-> ⚠ 지금은 canonical·sitemap 이 아직 서비스되지 않는 주소를 가리킨다.
-> 사이트가 새로 만들어져 색인이 거의 없으므로 손해는 작지만, **전환 창은 짧게 가져간다.**
+> 🚨 **되돌린 이유.** 코드 전환이 도메인 확보보다 먼저 나가 있었다. 그 상태에서는 라이브 사이트의
+> `canonical`·`og:url`·`sitemap`·JSON-LD 가 **남이 운영 중인 도메인을 정본으로 지목**한다.
+> 아무 데도 가리키지 않는 것보다 나쁘다 — 크롤러가 canonical 을 따르면 색인이 그쪽으로 넘어간다.
+> **도메인이 손에 들어온 뒤에 다시 전환한다:**
+> ```bash
+> python3 tools/set-domain.py --to shielduslab.com --apply && python3 tools/build-pages.py
+> ```
+>
+> ⚠ `set-domain.py` 는 **본문 산문의 도메인까지** 바꾼다. `/brand/` 인쇄 보류 경고가 실제로
+> 거꾸로 뒤집혀("명함에는 shilderslab.com 이 새겨져 있으나…") 한 번 사고가 났다.
+> 지금은 주소를 적지 않고 "전환 예정 도메인"으로 쓴다. 설명문에 도메인 리터럴을 넣지 말 것.
 
 ### 실행 순서 — 이 순서를 지킨다
 

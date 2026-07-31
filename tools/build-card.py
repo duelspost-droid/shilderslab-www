@@ -12,7 +12,7 @@
 사용
   python3 tools/build-card.py                                  # 예시 정보로 전체 생성
   python3 tools/build-card.py --name 홍길동 --title 대표 \
-      --mobile 010-1234-5678 --email hong@shielduslab.com
+      --mobile 010-1234-5678 --email hong@shilderslab.com
   python3 tools/build-card.py --list                           # 생성 목록만 확인
 
 필요
@@ -56,9 +56,9 @@ LOCK_CAP = 4.2     # 앞면 락업 워드마크 cap (3.1 → 4.2: 로고가 아�
 NAME_CAP = 4.8     # 성명 cap. 회사 워드마크보다 지나치게 크면 브랜드가 눌린다
 
 # 명함에 새길 도메인. 여기를 바꾸면 앞면 W 줄 · 이메일 기본값 · 뒷면 C 가 한꺼번에 따라간다.
-# ⚠ 웹사이트는 아직 shielduslab.com 에서 서비스 중이다(도메인 전환은 별도 작업).
-#   shielduslab.com 은 2026-07-28 등록 · Google Workspace MX 설정 확인됨.
-DOMAIN = "shielduslab.com"
+# ⚠ 웹사이트는 아직 shilderslab.com 에서 서비스 중이다(도메인 전환은 별도 작업).
+#   shilderslab.com 은 2026-07-28 등록 · Google Workspace MX 설정 확인됨.
+DOMAIN = "shilderslab.com"
 X0, Y0 = BLEED, BLEED                            # 재단 시작
 XS, YS = BLEED + SAFE, BLEED + SAFE              # 안전영역 시작
 XE, YE = BLEED + TRIM_W - SAFE, BLEED + TRIM_H - SAFE
@@ -377,7 +377,7 @@ def to_pdf(svg_path, pdf_path):
             w.add_page(page)
         w.add_metadata({
             "/Title": "SHIELDUS LAB 명함",
-            "/Creator": "shielduslab.com / tools/build-card.py",
+            "/Creator": "shilderslab.com / tools/build-card.py",
             "/Subject": f"trim {TRIM_W:.0f}x{TRIM_H:.0f}mm, bleed {BLEED:.0f}mm, fonts outlined",
         })
         with open(pdf_path, "wb") as f:
