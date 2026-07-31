@@ -37,7 +37,7 @@ BODY = """<section class="phead">
     <div class="crumb"><a href="/">홈</a> · 서비스</div>
     <h1 class="d1" data-content="services.hero_title">여섯 개 영역을<br>같은 위험도 표로 봅니다</h1>
     <p class="lead" data-content="services.hero_lead">관리체계와 기술진단을 다른 업체가 맡으면 보고서 두 개의 위험도 기준이 서로 다릅니다.
-       모든 발견 사항을 같은 위험도 기준과 우선순위로 정리해 전달합니다.</p>
+       쉴더스랩은 여섯 영역의 발견을 같은 등급 정의로 판정하고, 하나의 우선순위 목록으로 묶습니다.</p>
   </div>
 </section>
 

@@ -1,7 +1,4 @@
--- 생성: tools/sync-content.py --sql (2026-07-31 카피 정비 + 신생 프레임 제거)
--- 적용 후 반드시: python3 tools/build-pages.py → 커밋 → 푸시
--- 이미 적용했거나 오너가 콘솔에서 고친 문구는 0 rows 로 지나간다(안전).
--- 페이지 문구 동기화 (tools/sync-content.py 생성)
+﻿-- 페이지 문구 동기화 (tools/sync-content.py 생성)
 -- 각 UPDATE 는 '값이 아직 이전 상태일 때만' 적용된다 →
 -- 오너가 콘솔에서 이미 고친 문구는 건드리지 않는다(0 rows 로 지나감).
 begin;
@@ -45,7 +42,7 @@ update public.sl_content set value = '발견마다 담당자와
 update public.sl_content set value = 'ISMS-P 인증 대응과 기술 진단을 한 계약 안에서 수행하는 정보보호 컨설팅 회사입니다. 발견에는 재현 절차를, 종료에는 재점검을 붙입니다.'
  where key = 'footer.blurb' and value = '규제 대응과 공격자 관점의 기술 진단을 한 팀에서 수행하는 정보보호 컨설팅 조직입니다. 발견에는 재현 절차를, 종료에는 재점검을 붙입니다.';
 
-update public.sl_content set value = '관리체계와 기술진단을 다른 업체가 맡으면 보고서 두 개의 위험도 기준이 서로 다릅니다. 모든 발견 사항을 같은 위험도 기준과 우선순위로 정리해 전달합니다.'
+update public.sl_content set value = '관리체계와 기술진단을 다른 업체가 맡으면 보고서 두 개의 위험도 기준이 서로 다릅니다. 쉴더스랩은 여섯 영역의 발견을 같은 등급 정의로 판정하고, 하나의 우선순위 목록으로 묶습니다.'
  where key = 'services.hero_lead' and value = '관리체계·기술진단·개인정보·클라우드를 서로 다른 언어로 다루면 조치가 흩어집니다. 모든 발견 사항을 같은 위험도 기준과 우선순위로 정리해 전달합니다.';
 
 update public.sl_content set value = '여섯 개 영역을
