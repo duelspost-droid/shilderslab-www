@@ -135,6 +135,7 @@ def sym_path():
 
 
 SYM_RATIO = 2.35   # 락업에서 심볼 높이 = 워드마크 cap × 이 값
+KO_FORM = False    # True 면 국문 우선(한글형) 락업으로 그린다 — --ko 로 켠다
 SYMBOL = None  # lazy
 
 
@@ -169,6 +170,12 @@ def guide_overlay():
 # ══════════════════════════════════════════════════════════════════════
 # 시안
 # ══════════════════════════════════════════════════════════════════════
+def brand_lockup(x, y, cap, sym_fill, a_fill, b_fill):
+    """앞면에 들어가는 브랜드 조합. KO_FORM 에 따라 영문형/한글형을 고른다."""
+    return lockup_ko(x, y, cap, sym_fill, a_fill, b_fill) if KO_FORM \
+        else lockup(x, y, cap, sym_fill, b_fill, a_fill)
+
+
 def lockup(x, y, cap, sym_fill, ko_fill, en_fill, en_cap=None):
     """심볼 + SHIELDUS LAB + 쉴더스랩 조합 (좌측 정렬)"""
     en_cap = en_cap or cap
@@ -182,6 +189,19 @@ def lockup(x, y, cap, sym_fill, ko_fill, en_fill, en_cap=None):
     ko_d, _ = text_path("쉴더스랩 · 정보보호 컨설팅", en_cap * 0.50, tx + 0.1, y + cap * 2.08, 0.02, 500)
     return (s + f'<path d="{en_d}" fill="{en_fill}"/>'
             f'<path d="{ko_d}" fill="{ko_fill}"/>'), tx + en_w
+
+
+def lockup_ko(x, y, cap, sym_fill, ko_fill, en_fill):
+    """한글형 — 국문 사명이 주, 영문 병기. CI 의 lockup-ko-horizontal 과 같은 위계.
+       국문은 라틴보다 시각적으로 커 보이므로 cap 을 영문형의 0.93 배로 잡는다."""
+    ko_cap = cap * 0.93
+    sym_h = cap * SYM_RATIO
+    s = sym(x, y, sym_h, sym_fill)
+    tx = x + sym_h + cap * 0.55
+    ko_d, ko_w = text_path("쉴더스랩", ko_cap, tx, y + cap * 1.28, 0.01, 700)
+    en_d, en_w = text_path("SHIELDUS LAB", cap * 0.42, tx + 0.1, y + cap * 2.06, 0.16, 600)
+    return (s + f'<path d="{ko_d}" fill="{ko_fill}"/>'
+            f'<path d="{en_d}" fill="{en_fill}"/>'), tx + max(ko_w, en_w)
 
 
 def contact_block(p, x, y, gap, cap, label_fill, value_fill, align_right=False):
@@ -209,7 +229,7 @@ def contact_block(p, x, y, gap, cap, label_fill, value_fill, align_right=False):
 def dsn_a(p):
     """시안 A — 에디토리얼: 상단 액센트 바, 좌측 정렬, 하단 헤어라인 + 연락처"""
     b = [f'<rect x="0" y="0" width="{W}" height="{BLEED + 1.6}" fill="{ACCENT}"/>']
-    lk, _ = lockup(XS, YS + 1.5, LOCK_CAP, ACCENT, INK_3, INK)
+    lk, _ = brand_lockup(XS, YS + 1.5, LOCK_CAP, ACCENT, INK, INK_3)
     b.append(lk)
     name_d, name_w = text_path(p["name"], NAME_CAP, XS, YS + 21.8, -0.01, 600)
     b.append(f'<path d="{name_d}" fill="{INK}"/>')
@@ -227,12 +247,20 @@ def dsn_a(p):
 
 def dsn_a_back(p):
     b = [sym(W / 2 - 11, H / 2 - 16.9, 22, PAPER)]
-    d, w = text_path("SHIELDUS LAB", 3.2, 0, 0, 0.18, 700)
-    d, _ = text_path("SHIELDUS LAB", 3.2, W / 2 - w / 2, H / 2 + 11.5, 0.18, 700)
-    b.append(f'<path d="{d}" fill="{PAPER}"/>')
-    kd, kw = text_path("쉴더스랩", 2.2, 0, 0, 0.22, 500)
-    kd, _ = text_path("쉴더스랩", 2.2, W / 2 - kw / 2, H / 2 + 16.9, 0.22, 500)
-    b.append(f'<path d="{kd}" fill="#8FB3A2"/>')
+    if KO_FORM:
+        d, w = text_path("쉴더스랩", 3.6, 0, 0, 0.06, 700)
+        d, _ = text_path("쉴더스랩", 3.6, W / 2 - w / 2, H / 2 + 11.8, 0.06, 700)
+        b.append(f'<path d="{d}" fill="{PAPER}"/>')
+        kd, kw = text_path("SHIELDUS LAB", 1.9, 0, 0, 0.24, 600)
+        kd, _ = text_path("SHIELDUS LAB", 1.9, W / 2 - kw / 2, H / 2 + 17.2, 0.24, 600)
+        b.append(f'<path d="{kd}" fill="#8FB3A2"/>')
+    else:
+        d, w = text_path("SHIELDUS LAB", 3.2, 0, 0, 0.18, 700)
+        d, _ = text_path("SHIELDUS LAB", 3.2, W / 2 - w / 2, H / 2 + 11.5, 0.18, 700)
+        b.append(f'<path d="{d}" fill="{PAPER}"/>')
+        kd, kw = text_path("쉴더스랩", 2.2, 0, 0, 0.22, 500)
+        kd, _ = text_path("쉴더스랩", 2.2, W / 2 - kw / 2, H / 2 + 16.9, 0.22, 500)
+        b.append(f'<path d="{kd}" fill="#8FB3A2"/>')
     return "".join(b), ACCENT
 
 
@@ -240,10 +268,16 @@ def dsn_b(p):
     """시안 B — 여백형: 심볼만 작게, 이름 중심, 연락처 한 덩어리 우측 하단"""
     b = [sym(XS, YS, 10.6, ACCENT)]
     # 여백형이라 가로 락업 대신 심볼 아래 세로로 쌓는다. 회사명은 반드시 들어간다.
-    en_d, _ = text_path("SHIELDUS LAB", 2.7, XS, YS + 15.6, 0.05, 800)
-    b.append(f'<path d="{en_d}" fill="{INK}"/>')
-    ko_d, _ = text_path("쉴더스랩 · 정보보호 컨설팅", 1.75, XS + 0.1, YS + 19.4, 0.03, 500)
-    b.append(f'<path d="{ko_d}" fill="{INK_3}"/>')
+    if KO_FORM:
+        ko_d, _ = text_path("쉴더스랩", 3.0, XS, YS + 15.9, 0.01, 700)
+        b.append(f'<path d="{ko_d}" fill="{INK}"/>')
+        en_d, _ = text_path("SHIELDUS LAB", 1.55, XS + 0.1, YS + 19.6, 0.18, 600)
+        b.append(f'<path d="{en_d}" fill="{INK_3}"/>')
+    else:
+        en_d, _ = text_path("SHIELDUS LAB", 2.7, XS, YS + 15.6, 0.05, 800)
+        b.append(f'<path d="{en_d}" fill="{INK}"/>')
+        ko_d, _ = text_path("쉴더스랩 · 정보보호 컨설팅", 1.75, XS + 0.1, YS + 19.4, 0.03, 500)
+        b.append(f'<path d="{ko_d}" fill="{INK_3}"/>')
     name_d, name_w = text_path(p["name"], 5.4, XS, YS + 29.6, -0.012, 600)
     b.append(f'<path d="{name_d}" fill="{INK}"/>')
     if p.get("title"):
@@ -255,10 +289,10 @@ def dsn_b(p):
 
 
 def dsn_b_back(p):
-    lk, w = lockup(0, 0, 4.4, ACCENT, INK_3, INK)
+    lk, w = brand_lockup(0, 0, 4.4, ACCENT, INK, INK_3)
     # 중앙 배치를 위해 다시 그린다
     total = w
-    lk, _ = lockup((W - total) / 2, H / 2 - 8.0, 4.4, ACCENT, INK_3, INK)
+    lk, _ = brand_lockup((W - total) / 2, H / 2 - 8.0, 4.4, ACCENT, INK, INK_3)
     tag = "ISMS-P · 모의해킹 · 취약점 진단 · 클라우드 보안"
     td, tw = text_path(tag, 1.85, 0, 0, 0.02, 400)
     td, _ = text_path(tag, 1.85, (W - tw) / 2, H / 2 + 8.0, 0.02, 400)
@@ -267,7 +301,7 @@ def dsn_b_back(p):
 
 def dsn_c(p):
     """시안 C — 역상: 딥파인 전면, 페이퍼 텍스트"""
-    lk, _ = lockup(XS, YS + 1.5, LOCK_CAP, PAPER, "#8FB3A2", PAPER)
+    lk, _ = brand_lockup(XS, YS + 1.5, LOCK_CAP, PAPER, PAPER, "#8FB3A2")
     b = [lk]
     name_d, name_w = text_path(p["name"], NAME_CAP, XS, YS + 21.8, -0.01, 600)
     b.append(f'<path d="{name_d}" fill="{PAPER}"/>')
@@ -393,7 +427,11 @@ def main():
     ap.add_argument("--addr", default="")
     ap.add_argument("--out", default=os.path.join(ROOT, "assets/ci/card"))
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--ko", action="store_true",
+                    help="국문 우선(한글형) 락업으로 생성. 파일명에 -ko 가 붙는다")
     a = ap.parse_args()
+    global KO_FORM
+    KO_FORM = a.ko
 
     p = dict(name=a.name, title=a.title, dept=a.dept, mobile=a.mobile,
              phone=a.phone, email=a.email, web=a.web, addr=a.addr)
@@ -408,7 +446,7 @@ def main():
     for key, label, f_front, f_back in DESIGNS:
         for side, fn in (("front", f_front), ("back", f_back)):
             body, bg = fn(p)
-            base = f"card-{key}-{side}"
+            base = f"card-{key}{'-ko' if KO_FORM else ''}-{side}"
             sp = write(os.path.join(a.out, base + ".svg"), svg(body, bg))
             gp = write(os.path.join(a.out, base + "-guide.svg"), svg(body + guide_overlay(), bg))
             pdf = to_pdf(sp, os.path.join(a.out, base + ".pdf"))

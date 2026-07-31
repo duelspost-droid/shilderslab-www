@@ -193,6 +193,52 @@ def stacked(name, sym, en, ko, title):
 stacked("lockup-stacked-light.svg", ACCENT, INK, INK_3, "쉴더스랩 로고 · 세로형(밝은 배경)")
 stacked("lockup-stacked-dark.svg", ACCENT_3, PAPER, INK_3, "쉴더스랩 로고 · 세로형(어두운 배경)")
 
+# ─────────── 4-b) 한글형 락업 (국문 우선 · 영문 병기) ───────────
+#  국문 자료·계약서·국내 인쇄물에서는 국문 사명이 주가 되는 편이 자연스럽다.
+#  구조는 위 영문형과 같고 위계만 뒤집는다 — 쉴더스랩(큰 글자) / SHIELDUS LAB(작은 자간 넓은 글자).
+#  ⚠ 국문은 라틴보다 시각적으로 커 보이므로 cap 을 영문형(30)보다 약간 낮춘 28 로 잡았다.
+kh_ko_d, kh_ko_w, _ = text_path("쉴더스랩", NOTOKR, 700, 28, tracking=0.01, x0=TX, baseline=34.5)
+kh_en_d, kh_en_w, _ = text_path(NAME_EN, MANROPE, 600, 12.5, tracking=0.16, x0=TX + 1.2, baseline=56.0)
+LOCK_KO_W = round(TX + max(kh_ko_w, kh_en_w) + 2, 1)
+
+
+def lockup_ko(sym_fill, ko_fill, en_fill, title="쉴더스랩 로고 · 한글형"):
+    return svg(LOCK_KO_W, SY,
+               f'<title>{title}</title>\n'
+               f'<path d="{SYMBOL_COMPOUND}" fill="{sym_fill}" fill-rule="evenodd"/>\n'
+               f'<path d="{kh_ko_d}" fill="{ko_fill}"/>\n'
+               f'<path d="{kh_en_d}" fill="{en_fill}"/>')
+
+
+write("lockup-ko-horizontal-light.svg",
+      lockup_ko(ACCENT, INK, INK_3, "쉴더스랩 로고 · 한글형(밝은 배경)"))
+write("lockup-ko-horizontal-dark.svg",
+      lockup_ko(ACCENT_3, PAPER, INK_3, "쉴더스랩 로고 · 한글형(어두운 배경)"))
+write("lockup-ko-mono-black.svg", lockup_ko(INK, INK, INK, "쉴더스랩 로고 · 한글형 단색 black"))
+write("lockup-ko-mono-white.svg", lockup_ko(PAPER, PAPER, PAPER, "쉴더스랩 로고 · 한글형 단색 white"))
+
+# 세로형 한글 우선
+sk_ko_d, sk_ko_w, _ = text_path("쉴더스랩", NOTOKR, 700, 24, tracking=0.02, baseline=0)
+sk_en_d, sk_en_w, _ = text_path(NAME_EN, MANROPE, 600, 10.5, tracking=0.2, baseline=0)
+SKW = round(max(sk_ko_w, sk_en_w, 64) + 8, 1)
+SKH = 64 + 26 + 28 + 16
+sk_ko_d2, _, _ = text_path("쉴더스랩", NOTOKR, 700, 24, tracking=0.02,
+                           x0=(SKW - sk_ko_w) / 2, baseline=64 + 30)
+sk_en_d2, _, _ = text_path(NAME_EN, MANROPE, 600, 10.5, tracking=0.2,
+                           x0=(SKW - sk_en_w) / 2, baseline=64 + 30 + 21)
+
+
+def stacked_ko(name, sym, ko, en, title):
+    write(name, svg(SKW, SKH,
+          f'<title>{title}</title>\n'
+          f'<g transform="translate({round((SKW-64)/2,2)} 0)"><path d="{SYMBOL_COMPOUND}" '
+          f'fill="{sym}" fill-rule="evenodd"/></g>\n'
+          f'<path d="{sk_ko_d2}" fill="{ko}"/>\n<path d="{sk_en_d2}" fill="{en}"/>'))
+
+
+stacked_ko("lockup-ko-stacked-light.svg", ACCENT, INK, INK_3, "쉴더스랩 로고 · 한글형 세로(밝은 배경)")
+stacked_ko("lockup-ko-stacked-dark.svg", ACCENT_3, PAPER, INK_3, "쉴더스랩 로고 · 한글형 세로(어두운 배경)")
+
 # ─────────── 5) 파비콘 (16~32px 가독 최적화: 라운드 사각 + 실드 S) ───────────
 fav_s_d, _, fav_bb = text_path("S", MANROPE, 800, 19)
 fcx, fcy = (fav_bb[0] + fav_bb[2]) / 2, (fav_bb[1] + fav_bb[3]) / 2
