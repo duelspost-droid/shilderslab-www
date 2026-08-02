@@ -70,10 +70,39 @@ ABOUT_BODY = """<section class="phead">
   </div>
 </section>
 
+<section class="sec band">
+  <div class="shell g12">
+    <div class="c3">
+      <span class="lbl">02 / Name</span>
+    </div>
+    <div class="c8 start4">
+      <h2 class="d2" style="margin:0 0 30px" data-content="about.name_title">이름이 곧<br>하는 일입니다</h2>
+      <div class="lead cms-rich" data-content="about.name_body">
+        <p>
+          <b>SHIELD</b> 지킨다 · <b>US</b> 우리를 · <b>LAB</b> 연구한다.
+          사명은 이 세 낱말을 그대로 이어 붙인 것입니다.
+          국문 <b>쉴더스랩</b>은 ‘shield us’를 이어 읽은 음차이므로, 영문과 국문은 다른 이름이 아니라 같은 말입니다.
+        </p>
+        <p>
+          <b>US</b> 는 고객사를 가리키는 말이면서 저희를 포함하는 말입니다.
+          보안은 지켜 주는 쪽과 지킴받는 쪽으로 나뉘지 않습니다.
+          같은 위협 아래 있는 사람들이 같은 편에서 막는 일입니다.
+          그래서 저희는 진단을 넘겨주고 끝내지 않고, 조치가 닫힐 때까지 함께 봅니다.
+        </p>
+        <p>
+          <b>LAB</b> 은 연구를 뜻합니다. 저희에게 연구는 방법을 공개하는 일입니다.
+          진단 절차와 위험도 등급 정의, 보고서 구성을 계약 전에 공개하고, 발견마다 재현 절차를 붙입니다.
+          다시 확인할 수 없는 주장은 연구가 아니라고 봅니다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="sec">
   <div class="shell g12">
     <div class="c3">
-      <span class="lbl">02 / Message</span>
+      <span class="lbl">03 / Message</span>
     </div>
     <div class="c8 start4">
       <h2 class="d2" style="margin:0 0 30px" data-content="about.message_title">대표이사 인사말</h2>
@@ -110,7 +139,7 @@ ABOUT_BODY = """<section class="phead">
 <section class="sec band">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">03 / Principles</span></div>
+      <div class="idx"><span class="lbl">04 / Principles</span></div>
       <div class="body">
         <h2 class="d2">일하는 방식 세 가지</h2>
         <p class="lead">판단 근거를 공개하지 않으면 고객사가 결론을 검증할 방법이 없습니다.
@@ -143,7 +172,7 @@ ABOUT_BODY = """<section class="phead">
 <section class="sec">
   <div class="shell g12">
     <div class="c5">
-      <span class="lbl">04 / Capability</span>
+      <span class="lbl">05 / Capability</span>
       <h2 class="d2" style="margin:20px 0 24px">규제와 공격,<br>두 언어를 함께</h2>
       <p class="lead">인증 심사를 준비하는 언어와 침투 경로를 찾는 언어는 다릅니다.
          쉴더스랩은 두 가지를 같은 프로젝트 안에서 다루고, 발견을 하나의 우선순위 목록으로 합칩니다.</p>
@@ -479,10 +508,28 @@ BRAND_BODY = """<section class="phead">
   </div>
 </section>
 
+<section class="sec band">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">01 / Name</span></div>
+      <div class="body">
+        <h2 class="d3">사명의 뜻</h2>
+        <p class="lead" data-content="brand.name_summary">SHIELD 지킨다 · US 우리를 · LAB 연구한다 —
+           우리를 지키는 방법을 연구한다는 뜻입니다.
+           국문 쉴더스랩은 ‘shield us’를 이어 읽은 음차로, 영문과 국문은 같은 말입니다.
+           로고의 실드와 그 안의 각인도 이 뜻에서 나왔습니다.</p>
+        <p class="tiny" style="margin-top:14px">
+          자세한 설명은 <a href="/about/" style="border-bottom:1px solid var(--rule-2)">회사소개</a>에 있습니다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="sec">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">01 / Logo</span></div>
+      <div class="idx"><span class="lbl">02 / Logo</span></div>
       <div class="body"><h2 class="d3">로고 원본</h2>
         <p class="lead">용도에 맞는 파일을 사용하세요.</p></div>
     </div>
@@ -524,7 +571,7 @@ BRAND_BODY = """<section class="phead">
 <section class="sec band">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">02 / Korean lockup</span></div>
+      <div class="idx"><span class="lbl">03 / Korean lockup</span></div>
       <div class="body"><h2 class="d3">한글형 <span class="ko">(국문 우선 · 영문 병기)</span></h2>
         <p class="lead">국문 계약서·제안서·국내 인쇄물처럼 국문이 주가 되는 자리에 씁니다.
            구조는 기본형과 같고 위계만 뒤집혀 있습니다 — <b>쉴더스랩</b>이 크고 SHIELDUS LAB 이 아래에 병기됩니다.
@@ -576,7 +623,7 @@ BRAND_BODY = """<section class="phead">
 <section class="sec band">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">03 / Color</span></div>
+      <div class="idx"><span class="lbl">04 / Color</span></div>
       <div class="body"><h2 class="d3">브랜드 컬러</h2>
         <p class="lead">딥 파인 그린 하나를 액센트로 씁니다. 배경은 웜 오프화이트, 텍스트는 잉크입니다.</p></div>
     </div>
@@ -596,7 +643,7 @@ BRAND_BODY = """<section class="phead">
 <section class="sec">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">04 / Business card</span></div>
+      <div class="idx"><span class="lbl">05 / Business card</span></div>
       <div class="body">
         <h2 class="d3">명함</h2>
         <p class="note-warn"><b>도메인 확보 전입니다 — 인쇄 발주를 보류하십시오.</b>
@@ -703,7 +750,7 @@ BRAND_BODY = """<section class="phead">
 <section class="sec band">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">05 / Print spec</span></div>
+      <div class="idx"><span class="lbl">06 / Print spec</span></div>
       <div class="body">
         <h2 class="d3">인쇄 규격</h2>
         <p class="lead">인쇄소에 아래 표를 그대로 전달하시면 됩니다.</p>
@@ -764,7 +811,7 @@ BRAND_BODY = """<section class="phead">
 <section class="sec">
   <div class="shell">
     <div class="sec-head">
-      <div class="idx"><span class="lbl">06 / Usage</span></div>
+      <div class="idx"><span class="lbl">07 / Usage</span></div>
       <div class="body"><h2 class="d3">사용 규칙</h2>
         <p class="lead">최소 여백은 심볼 높이의 0.4배, 최소 크기는 심볼 20px / 가로형 락업 높이 24px 이상을 권장합니다.</p></div>
     </div>
