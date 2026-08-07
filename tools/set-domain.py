@@ -27,9 +27,14 @@ import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# 교체 대상. CNAME 은 의도적으로 제외한다(호스팅 바인딩 — DNS 전환 시 함께 바꾼다).
+# 교체 대상.
+#   · CNAME 제외 — 호스팅 바인딩이라 DNS 전환과 함께 움직인다.
+#   · tools/build-card.py 제외 — **명함 도메인은 사이트 도메인과 다른 변수다.**
+#     명함은 전환 예정 주소를 미리 새기므로 사이트보다 앞서 있는 것이 정상이다.
+#     여기에 넣으면 사이트를 되돌릴 때 명함까지 쓸려간다(2026-08-01 실제로 발생).
+#     명함 주소는 build-card.py 의 DOMAIN 상수를 직접 고친다.
 TARGETS = [
-    "tools/shell.py", "tools/build-pages.py", "tools/build-card.py",
+    "tools/shell.py", "tools/build-pages.py",
     "tools/content_home.py", "tools/content_pages.py", "tools/content_services.py",
     "tools/content_resources.py", "tools/content_trust.py", "tools/content_dynamic.py",
     "tools/content_legal.py", "tools/content_blocks.py",
