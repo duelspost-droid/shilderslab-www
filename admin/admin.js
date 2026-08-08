@@ -65,12 +65,30 @@
   modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
 
-  /** 관리자 행위 로깅 — 실패해도 화면 흐름을 막지 않는다. */
+  /** 관리자 행위 로깅 — 실패해도 화면 흐름을 막지 않는다.
+      ⚠ db.rpc() 가 돌려주는 PostgrestBuilder 는 **Promise 가 아니라 thenable** 이다.
+      then() 만 있고 catch() 는 없다(assets/vendor/supabase.min.js 실측:
+      typeof builder.catch === "undefined", builder instanceof Promise === false).
+      그래서 `db.rpc(...).catch(...)` 는 호출 즉시 TypeError 를 **동기적으로** 던졌고,
+      감사 실패를 흡수하려던 장치가 오히려 호출자 흐름을 끊고 있었다.
+
+      실제 피해(2026-08-08 적대적 검증에서 발견, 라이브에 나가 있던 코드):
+        · 로그인 직후 audit("login") 이 던져 loadDash()/loadInq()/loadApp() 이 실행되지 않음
+          → 콘솔이 빈 화면. 게다가 그 거부는 이미 숨겨진 로그인 화면의 알림칸으로 흘러가 무증상
+        · 로그아웃 버튼이 signOut() 에 도달하지 못함 → 세션이 localStorage 에 그대로 남음
+        · 비밀번호 변경은 서버에서 성공했는데 화면에는 실패로 표시(모달도 닫히지 않아 입력값 잔존)
+
+      Promise.resolve() 로 감싸면 thenable 이 진짜 Promise 가 되어 catch 가 붙는다.
+      혹시 모를 동기 예외까지 try 로 막아 이 함수는 **절대 던지지 않는다**. */
   function audit(action, entity, id, detail) {
-    return db.rpc("sl_log", {
-      p_action: action, p_entity: entity || null,
-      p_entity_id: id ? String(id) : null, p_detail: detail || {},
-    }).catch(function () { /* noop */ });
+    try {
+      return Promise.resolve(db.rpc("sl_log", {
+        p_action: action, p_entity: entity || null,
+        p_entity_id: id ? String(id) : null, p_detail: detail || {},
+      })).catch(function () { /* noop */ });
+    } catch (e) {
+      return Promise.resolve();
+    }
   }
 
   function val(id) { var e = document.getElementById(id); return e ? e.value : ""; }
@@ -180,9 +198,13 @@
   }
 
   document.getElementById("logout").addEventListener("click", function () {
-    audit("logout").then(function () {
-      return db.auth.signOut();
-    }).then(function () { location.reload(); });
+    /* 감사 로깅이나 signOut 이 실패해도 **반드시** 화면을 초기화한다.
+       로그아웃이 조용히 무동작으로 끝나면 세션이 localStorage 에 남아,
+       공용 PC 에서 다음 사람이 그대로 콘솔에 들어간다. */
+    audit("logout")
+      .then(function () { return db.auth.signOut(); })
+      .catch(function () { /* 세션 정리는 아래 reload 로라도 끊는다 */ })
+      .then(function () { location.reload(); });
   });
 
   /** 세션이 관리자 화이트리스트에 있는지 확인 후 콘솔 진입 */
