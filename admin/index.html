@@ -25,11 +25,40 @@
     .admin-who{width:100%;gap:10px}
     .admin-who #who{flex-basis:100%}
   }
+  /* 클릭 가능한 지표 카드 — 어디를 누를 수 있는지 보이게 한다 */
+  .mini-stat.clickable{cursor:pointer;transition:border-color .15s,background .15s}
+  .mini-stat.clickable:hover{border-color:var(--accent);background:rgba(26,75,58,.04)}
+  .mini-stat.clickable:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .mini-stat.clickable::after{content:"›";position:absolute;right:14px;top:12px;
+    color:var(--muted);font-size:1rem;line-height:1}
+  .mini-stat{position:relative}
   /* 페이지 문구 탭 — 섹션 구분선 */
   .cnt-sec{font-size:.86rem;letter-spacing:.02em;color:var(--accent);
     border-top:1px solid var(--rule);padding-top:16px;margin:30px 0 14px}
   .cnt-sec:first-child{border-top:none;padding-top:0;margin-top:0}
-  #panel-cnt textarea{line-height:1.7;resize:vertical}
+  #panel-cnt textarea{line-height:1.7;resize:vertical;white-space:pre-wrap}
+  /* 입력 가이드 */
+  .cnt-guide{border:1px solid var(--rule);border-left:3px solid var(--accent);
+    padding:16px 18px;margin:0 0 22px;max-width:74ch;background:rgba(26,75,58,.03)}
+  .cnt-guide p{font-size:.86rem;line-height:1.75;color:var(--ink-2);margin:0 0 10px}
+  .cnt-guide p:last-child{margin-bottom:0}
+  .cnt-legend{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px}
+  .cnt-legend li{font-size:.82rem;color:var(--ink-2)}
+  .kind-tag{display:inline-block;font-family:var(--font-mono);font-size:.62rem;font-weight:500;
+    letter-spacing:.04em;border:1px solid var(--rule-2);border-radius:2px;padding:1px 6px;
+    color:var(--ink-3);vertical-align:middle}
+  /* 필드별 표기 안내 */
+  .fmt{font-size:.78rem;line-height:1.7;color:var(--ink-3);margin-top:6px}
+  .fmt code{font-family:var(--font-mono);font-size:.74rem;background:rgba(0,0,0,.05);padding:1px 5px}
+  /* 미리보기 */
+  .prev-wrap{margin-top:10px;border:1px dashed var(--rule-2);padding:12px 14px}
+  .prev-head{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;color:var(--ink-3);
+    margin-bottom:8px}
+  .prev{font-size:.9rem;line-height:1.75;color:var(--ink-2);white-space:normal}
+  .prev-rich>p{margin:0 0 10px}
+  .prev-rich>p:last-child{margin-bottom:0}
+  .prev-rich>ul,.prev-rich>ol{margin:0 0 10px;padding-left:20px}
+  .prev-rich>blockquote{margin:0 0 10px;padding-left:12px;border-left:2px solid var(--rule-2)}
   @media (max-width:640px){#panel-cnt .panel-head{flex-wrap:wrap;gap:10px}}
 </style>
 </head>
@@ -214,12 +243,23 @@
         <button class="btn primary" id="cnt-save">전체 저장</button>
       </div>
       <div class="alert" id="cnt-alert" role="status"></div>
-      <p class="hint" style="margin:0 0 18px;max-width:74ch">
-        공개 페이지의 문구를 여기서 고칩니다. 저장하면 <b>방문자에게는 즉시</b> 반영되고,
-        다음 배포 때 정적 파일에도 구워집니다(검색엔진 대응).
-        <b>비워두면 사이트 기본 문구가 그대로 나옵니다</b> — 빈 화면이 되지 않습니다.
-        여러 문단짜리 칸은 <b>빈 줄로 문단을 나누고</b> <code>**굵게**</code> 를 쓸 수 있습니다.
-      </p>
+      <div class="cnt-guide">
+        <p><b>줄바꿈</b> — 입력칸에서 <b>Enter</b> 를 치면 그 자리에서 줄이 바뀝니다.
+           칸마다 <span class="kind-tag">한 문단</span> 또는 <span class="kind-tag">여러 문단</span> 이 붙어 있는데,
+           <b>여러 문단</b> 칸에서는 <b>Enter 를 두 번</b>(빈 줄) 쳐야 문단이 나뉩니다.
+           한 번만 치면 같은 문단 안에서 이어집니다.</p>
+        <p><b>표기</b> — 여러 문단 칸에서는 아래 표기를 쓸 수 있습니다. 한 문단 칸은 글자만 넣습니다.</p>
+        <ul class="cnt-legend">
+          <li><code>**굵게**</code> → <b>굵게</b></li>
+          <li><code>- 항목</code> → 글머리 목록</li>
+          <li><code>1. 항목</code> → 번호 목록</li>
+          <li><code>&gt; 인용</code> → 인용문</li>
+          <li><code>[링크](/services/)</code> → 사이트 안 링크</li>
+        </ul>
+        <p>입력칸 아래 <b>‘화면에 나오는 모습’</b> 에 실제 렌더 결과가 그대로 보입니다.
+           <b>비워 두면 사이트 기본 문구가 나옵니다</b> — 실수로 지워도 빈 화면이 되지 않습니다.
+           저장하면 방문자에게는 즉시 반영되고, 다음 배포 때 정적 파일에도 구워집니다.</p>
+      </div>
       <div id="cnt-body"><div class="empty">불러오는 중…</div></div>
     </section>
 

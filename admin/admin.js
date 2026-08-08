@@ -281,22 +281,126 @@
     if (g) goTab(g.getAttribute("data-goto"));
   });
 
+  /* ═══════════════ 방문 상세 ═══════════════
+     대시보드의 [오늘 방문] 카드를 누르면 열린다.
+     원본은 sl_audit 의 kind='visit' 행이다(sl_log_visit 가 적재, 동일 IP·경로 10분 중복 제외).
+     개인 식별을 늘리지 않기 위해 **개별 IP 는 보여주지 않고** 고유 IP 개수만 센다. */
+  function openVisitDetail() {
+    openModal("오늘 방문 상세", '<div class="empty">불러오는 중…</div>',
+              [{ label: "닫기", on: closeModal }]);
+    var since = new Date(); since.setHours(0, 0, 0, 0);
+
+    db.from("sl_audit").select("entity,ip,detail,created_at")
+      .eq("kind", "visit").gte("created_at", since.toISOString())
+      .order("created_at", { ascending: false }).limit(1000)
+      .then(function (r) {
+        var box = document.getElementById("modal-body");
+        if (!box) return;
+        if (r.error) {
+          box.innerHTML = emptyBox("방문 기록을 불러오지 못했습니다: " + r.error.message +
+            " (감사 로그 열람은 admin 역할만 가능합니다)");
+          return;
+        }
+        var rows = r.data || [];
+        if (!rows.length) {
+          box.innerHTML = emptyBox(
+            "오늘 기록된 방문이 없습니다. 관리자 화면은 집계에서 빠지므로(data-no-log) " +
+            "공개 페이지를 열어야 쌓입니다.");
+          return;
+        }
+        var byPage = {}, byHour = new Array(24).fill(0), byRef = {}, ips = {};
+        rows.forEach(function (v) {
+          var pg = v.entity || "/";
+          byPage[pg] = (byPage[pg] || 0) + 1;
+          byHour[new Date(v.created_at).getHours()]++;
+          if (v.ip) ips[v.ip] = 1;
+          var ref = (v.detail && v.detail.ref) || "";
+          var host = "직접 방문 · 북마크";
+          if (ref) { try { host = new URL(ref).hostname; } catch (e) { host = ref.slice(0, 40); } }
+          byRef[host] = (byRef[host] || 0) + 1;
+        });
+        var sort = function (o) {
+          return Object.keys(o).map(function (k) { return [k, o[k]]; })
+                       .sort(function (a, b) { return b[1] - a[1]; });
+        };
+        var maxH = Math.max.apply(null, byHour) || 1;
+
+        var html =
+          '<div class="mini-stats" style="margin-bottom:20px">' +
+            '<div class="mini-stat"><b>' + rows.length + "</b><span>오늘 방문</span></div>" +
+            '<div class="mini-stat"><b>' + Object.keys(ips).length + "</b><span>고유 방문자</span></div>" +
+            '<div class="mini-stat"><b>' + Object.keys(byPage).length + "</b><span>열린 페이지</span></div>" +
+          "</div>" +
+          '<h3 style="font-size:.92rem;margin:0 0 10px">시간대별</h3>' +
+          '<div class="bars" style="height:110px;margin-bottom:22px">' +
+            byHour.map(function (n, h) {
+              return '<div class="b" style="height:' + Math.max(3, Math.round((n / maxH) * 100)) +
+                '%" title="' + escA(h + "시 · " + n + "건") + '"><span>' +
+                (h % 3 === 0 ? h : "") + "</span></div>";
+            }).join("") +
+          "</div>" +
+          '<h3 style="font-size:.92rem;margin:0 0 10px">페이지별</h3>' +
+          '<ul class="toppages" style="margin-bottom:22px">' +
+            sort(byPage).slice(0, 15).map(function (p) {
+              return "<li><code>" + esc(p[0]) + "</code><b>" + p[1] + "</b></li>";
+            }).join("") +
+          "</ul>" +
+          '<h3 style="font-size:.92rem;margin:0 0 10px">유입 경로</h3>' +
+          '<ul class="toppages" style="margin-bottom:22px">' +
+            sort(byRef).slice(0, 10).map(function (p) {
+              return "<li><code>" + esc(p[0]) + "</code><b>" + p[1] + "</b></li>";
+            }).join("") +
+          "</ul>" +
+          '<h3 style="font-size:.92rem;margin:0 0 10px">최근 방문</h3>' +
+          '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>시각</th><th>페이지</th><th>유입</th></tr></thead><tbody>' +
+            rows.slice(0, 30).map(function (v) {
+              var ref = (v.detail && v.detail.ref) || "";
+              var host = "직접";
+              if (ref) { try { host = new URL(ref).hostname; } catch (e) { host = ref.slice(0, 30); } }
+              return "<tr><td>" + esc(SL.fmtDateTime(v.created_at)) + "</td><td><code>" +
+                esc(v.entity || "/") + "</code></td><td>" + esc(host) + "</td></tr>";
+            }).join("") +
+          "</tbody></table></div>" +
+          '<p class="tiny" style="margin-top:14px">동일 IP·경로는 10분 안에 중복으로 세지 않습니다. ' +
+          "관리자 화면은 집계에서 제외됩니다.</p>";
+        box.innerHTML = html;
+      });
+  }
+
+  document.addEventListener("click", function (e) {
+    var s = e.target.closest("[data-stat]");
+    if (s && s.getAttribute("data-stat") === "visit") openVisitDetail();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    var s = e.target.closest && e.target.closest("[data-stat]");
+    if (s && s.getAttribute("data-stat") === "visit") { e.preventDefault(); openVisitDetail(); }
+  });
+
   /* ═══════════════ 대시보드 ═══════════════ */
   function loadDash() {
     db.rpc("sl_stats").then(function (r) {
       if (r.error) throw r.error;
       var s = r.data || {};
+      /* 4번째 항목은 클릭 동작: 탭 이동(data-goto) 또는 상세 모달(data-stat) */
       var cards = [
-        ["새 문의", s.inq_new, "미확인 상태"],
-        ["문의 (7일)", s.inq_7d, "총 " + (s.inq_total || 0) + "건"],
-        ["새 지원서", s.app_new, "총 " + (s.app_total || 0) + "건"],
-        ["오늘 방문", s.visit_today, "7일 " + (s.visit_7d || 0) + " · 30일 " + (s.visit_30d || 0)],
-        ["인사이트", s.insight_pub, "전체 " + (s.insight_total || 0) + "건 중 공개"],
-        ["공개 공고", s.job_pub, "채용 페이지 노출"],
+        ["새 문의", s.inq_new, "미확인 상태", { goto: "inq" }],
+        ["문의 (7일)", s.inq_7d, "총 " + (s.inq_total || 0) + "건", { goto: "inq" }],
+        ["새 지원서", s.app_new, "총 " + (s.app_total || 0) + "건", { goto: "app" }],
+        ["오늘 방문", s.visit_today, "7일 " + (s.visit_7d || 0) + " · 30일 " + (s.visit_30d || 0),
+         { stat: "visit" }],
+        ["인사이트", s.insight_pub, "전체 " + (s.insight_total || 0) + "건 중 공개", { goto: "ins" }],
+        ["공개 공고", s.job_pub, "채용 페이지 노출", { goto: "job" }],
       ];
       document.getElementById("stats").innerHTML = cards.map(function (c) {
-        return '<div class="mini-stat"><b>' + esc(c[1] == null ? 0 : c[1]) + "</b><span>" +
-          esc(c[0]) + '</span><span style="color:var(--muted);opacity:.75">' + esc(c[2]) + "</span></div>";
+        var act = c[3] || {};
+        var attr = act.goto ? ' data-goto="' + act.goto + '"'
+                 : act.stat ? ' data-stat="' + act.stat + '"' : "";
+        var cls = "mini-stat" + (attr ? " clickable" : "");
+        var a11y = attr ? ' role="button" tabindex="0"' : "";
+        return '<div class="' + cls + '"' + attr + a11y + "><b>" + esc(c[1] == null ? 0 : c[1]) +
+          "</b><span>" + esc(c[0]) + '</span><span style="color:var(--muted);opacity:.75">' +
+          esc(c[2]) + "</span></div>";
       }).join("");
 
       var badgeInq = document.getElementById("badge-inq");
@@ -750,6 +854,21 @@
      그래서 공개 페이지에서 이스케이프 후 렌더해도 안전하다. */
   var cntRows = [];
 
+  /** 입력한 그대로가 화면에서 어떻게 보이는지 아래에 그려 준다.
+      공개 페이지와 **같은 렌더러**(SL.md / 이스케이프 후 줄바꿈→<br>)를 쓴다.
+      여기서 다르게 그리면 미리보기가 거짓말이 된다. */
+  function renderPreview(el, kind, i) {
+    var box = document.getElementById("cnt-f-" + i + "-prev");
+    if (!box) return;
+    var v = (el.value || "").trim();
+    if (!v) {
+      box.innerHTML = '<span style="color:var(--muted)">비워 두면 사이트 기본 문구가 그대로 나옵니다.</span>';
+      return;
+    }
+    if (kind === "rich" && window.SL && SL.md) box.innerHTML = SL.md(v);
+    else box.innerHTML = esc(v).replace(/\n/g, "<br>");
+  }
+
   function loadCnt() {
     db.from("sl_content").select("key,value,kind,section,label,hint,sort_order")
       .order("sort_order", { ascending: true })
@@ -776,22 +895,34 @@
           }
           var id = "cnt-f-" + i;
           var rich = row.kind === "rich";
-          var long = rich || (row.value || "").length > 90;
+          /* 줄바꿈을 쓰려면 한 줄짜리 입력칸이면 안 된다.
+             예전에는 값이 90자 미만이면 <input> 을 줘서 Enter 를 아예 칠 수 없었다. */
           html += '<div class="field">' +
-            '<label for="' + id + '">' + esc(row.label || row.key) + "</label>" +
-            (long
-              ? '<textarea id="' + id + '" rows="' + (rich ? 9 : 3) + '" maxlength="20000"></textarea>'
-              : '<input id="' + id + '" type="text" maxlength="20000">') +
+            '<label for="' + id + '">' + esc(row.label || row.key) +
+              ' <span class="kind-tag">' + (rich ? "여러 문단" : "한 문단") + "</span></label>" +
+            '<textarea id="' + id + '" rows="' + (rich ? 10 : 3) + '" maxlength="20000"></textarea>' +
+            '<div class="fmt">' + (rich
+              ? "<b>Enter 두 번</b>(빈 줄)으로 문단을 나눕니다. Enter 한 번은 같은 문단 안에서 이어집니다.<br>" +
+                "<code>**굵게**</code> · <code>- 목록</code> · <code>1. 번호</code> · " +
+                "<code>&gt; 인용</code> · <code>[링크](/services/)</code>"
+              : "<b>Enter</b> 를 치면 그 자리에서 화면의 줄이 바뀝니다. 제목은 보통 2줄까지가 보기 좋습니다.<br>" +
+                "<code>**굵게**</code> 는 여기서는 쓰지 않습니다. 글자만 넣어 주세요.") +
+            "</div>" +
             (row.hint ? '<div class="hint">' + esc(row.hint) + "</div>" : "") +
-            '<div class="hint mono" style="opacity:.7">' + esc(row.key) +
-              (rich ? " · 마크다운" : "") + "</div>" +
+            '<div class="prev-wrap"><div class="prev-head">화면에 나오는 모습</div>' +
+              '<div class="prev' + (rich ? " prev-rich" : "") + '" id="' + id + '-prev"></div></div>' +
+            '<div class="hint mono" style="opacity:.7">' + esc(row.key) + "</div>" +
             "</div>";
         });
         if (sec !== null) html += "</div>";
         box.innerHTML = html;
         cntRows.forEach(function (row, i) {
           var el = document.getElementById("cnt-f-" + i);
-          if (el) el.value = row.value || "";
+          if (!el) return;
+          el.value = row.value || "";
+          var draw = function () { renderPreview(el, row.kind, i); };
+          el.addEventListener("input", draw);
+          draw();
         });
       });
   }

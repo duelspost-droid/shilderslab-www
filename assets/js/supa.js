@@ -53,12 +53,18 @@
            String(d.getMinutes()).padStart(2, "0");
   }
 
-  /** 공개 방문 로깅(실패는 무시 — 사이트 동작에 영향 없어야 한다). */
+  /** 공개 방문 로깅(실패는 무시 — 사이트 동작에 영향 없어야 한다).
+      ⚠ PostgrestBuilder 는 **지연 실행**이다. `.rpc(...)` 를 부르기만 하면 요청이 나가지 않는다.
+      `.then()` 이 호출되는 순간에야 전송된다(thenable 이지 Promise 가 아니다).
+      예전 코드는 `c.rpc("sl_log_visit", …)` 로 끝나 **단 한 건도 기록되지 않았다**
+      (2026-08-08 확인: sl_audit 의 visit 행 0건). Promise.resolve 로 감싸 실행을 강제한다. */
   function logVisit() {
     var c = db();
     if (!c) return;
     var p = location.pathname || "/";
-    try { c.rpc("sl_log_visit", { p_page: p }); } catch (e) { /* noop */ }
+    try {
+      Promise.resolve(c.rpc("sl_log_visit", { p_page: p })).catch(function () { /* noop */ });
+    } catch (e) { /* noop */ }
   }
 
   /** 게시된 목록 조회. table=화이트리스트만 허용. */
