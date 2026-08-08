@@ -56,6 +56,7 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
 | 백엔드 보안 경계 | ✅ anon 경로 E2E 검증 통과 (아래 6항) |
 | 페이지 문구 CMS (`0005`) | ✅ **라이브 적용 완료** — **블록 49개**(2026-08-08 홈 본문 12블록 추가, 실측 확인) · 하이드레이션 E2E 검증 통과(6항) |
 | 관리자 콘솔 | ✅ 계정 관리 · 페이지 문구 · **비밀번호 변경** · **아이디 로그인** · 로그인 이후 흐름을 끊던 `audit()` 결함 수정(6항) — **오너 로그인 실검증은 아직**(비밀번호는 오너만) |
+| 계정 생성 · 비밀번호 재설정 (`0006` + Edge) | ✅ **적용·배포 완료** (2026-08-08) — 무인증 401 · preflight 200 실측. `pw_managed` 로 **이 사이트가 만든 계정만** 재설정 대상(12항) |
 | 영문 사명 표기 | ✅ `SHIELDUS LAB` — 페이지·CI·명함 전부 반영 |
 | 브랜드 자산 | ✅ CI 기본형 + **한글형(국문 우선·영문 병기) 6종** · 명함 **60개**(영문형 30 + 한글형 30) |
 | 명함 발주 | ⛔ **보류** — 명함에 전환 예정 도메인이 새겨져 있고 아직 확보 전(`/brand/` 경고 게재) |
@@ -540,7 +541,7 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-08-08 | **아이디 로그인**(`shieldusadmin` → 접미사 규칙으로 이메일 변환) · 적대적 검증에서 **`audit()` 가 콘솔 전체를 끊고 있던 high 결함 발견·수정**(6항) | 계정 주소 확정(도메인 소유 확인) · 오너 로그인 실검증 |
 | 2026-08-08 | **타이포 정비**(`.d1` 클래스 충돌·모노에 한글·합성 볼드 — 실측 0건까지) · **관리자 [페이지 문구] 커버리지 21→37블록**(홈 등 8페이지 앵커 추가) · **방문 로그가 한 건도 안 쌓이던 문제 수정**(PostgrestBuilder 지연 실행) · [오늘 방문] 상세 · 문구 입력 가이드/미리보기 · **홈 인트로(8초)** | 인트로 길이는 `intro.js` 의 TOTAL 한 줄로 조절 |
 | 2026-08-08 | 인트로 5초·입체 강화(22레이어 압출) · **명함 전부를 콘솔 [명함] 탭 하나로 통합**(60링크) · `/brand/` 를 인쇄 사양 대신 **CI 규정 8절**로 재구성 | — |
-| 2026-08-08 | **[인기 페이지]에 페이지 이름 병기**(경로 위에 이름, 상위 묶음까지 — 이름표는 빌드 생성물) · **콘솔에서 비밀번호 재설정**(0006 + Edge `set_password`) · Edge 가 자동 주입 service_role 로 폴백해 **Secret 입력이 없어짐** | 🔒 **0006 적용 + `sl-admin-user` 배포**를 해야 동작(12항) |
+| 2026-08-08 | **[인기 페이지]에 페이지 이름 병기**(경로 위에 이름, 상위 묶음까지 — 이름표는 빌드 생성물) · **콘솔에서 비밀번호 재설정**(0006 + Edge `set_password`) · Edge 가 자동 주입 service_role 로 폴백해 **Secret 입력이 없어짐** · ✅ **0006 적용 + `sl-admin-user` 배포·Verify JWT OFF 까지 완료, 401/200/CORS 실측 검증**(12항) | 적대적 검토에서 **화이트리스트가 경계가 아니었음**을 발견 → `pw_managed` 로 좁힘 |
 | 2026-08-08 | **홈 본문이 콘솔에 없던 문제 해결** — “규제와 공격, 양쪽에서 봅니다” 등 홈 6개 섹션 제목·리드 12블록 추가(**37→49**), `0005` 재적용·재빌드 | 🚨 이후 **`sync-content.py` 를 무턱대고 돌리지 말 것** — 코드와 다른 14블록은 오너 편집분(10항) |
 
 ---
@@ -725,26 +726,43 @@ gh api -X PUT repos/duelspost-droid/shilderslab-www/pages -f cname=shilderslab.c
 커스텀 SMTP 가 꺼져 있어 **시간당 2통**이고, `shilderslab.com` 에는 **MX 가 없어** 회사 주소로는
 아예 받지 못한다(6항 실측). 대시보드는 오너만 들어간다.
 
-### 전제 두 가지 — 둘 다 해야 동작한다
+### 전제 두 가지 — ✅ 둘 다 완료 (2026-08-08 실측 검증)
 
-**① 마이그레이션 `0006_shilderslab_admin_password.sql` 적용**
-```sql
-select proname from pg_proc where proname in ('sl_admin_pw_uid','sl_admin_pw_logged');  -- 2행
+**① 마이그레이션 `0006_shilderslab_admin_password.sql`** — ✅ **적용 완료**
+```
+sl_admin_mark_pw_managed · sl_admin_pw_logged · sl_admin_pw_uid   → 3행 확인
+anon 실행 권한 3개 모두 false · authenticated 는 true            → 확인
+sl_admins.pw_managed 컬럼 존재 · 백필됨(duels@jbfg.com = true)   → 확인
 ```
 
-**② Edge 함수 `sl-admin-user` 배포** — 대시보드 → Edge Functions → Deploy →
-이름 `sl-admin-user` → `supabase/functions/sl-admin-user/index.ts` 내용 붙여넣기 →
-**Verify JWT 토글 OFF**(브라우저 CORS preflight 에는 JWT 가 없어 401 이 된다. 대신 함수가
-호출자 토큰으로 `is_sl_owner()` 를 확인한다).
+**② Edge 함수 `sl-admin-user`** — ✅ **배포 완료 · Verify JWT OFF**
+```
+무인증 POST                      → 401
+OPTIONS preflight (Origin 지정)  → 200
+Allow-Origin  https://shilderslab.com
+Allow-Headers authorization, x-client-info, apikey, content-type
+```
+> 재배포할 일이 생기면: 대시보드 → Edge Functions → Deploy a new function → **Via Editor** →
+> 이름 `sl-admin-user` → `supabase/functions/sl-admin-user/index.ts` 붙여넣기 → Deploy.
+> 배포 직후 **Verify JWT 토글이 기본 ON 이다. 반드시 OFF 로 바꾸고 저장한다** —
+> 브라우저 CORS preflight(OPTIONS)에는 JWT 가 없어 401 이 되고, 콘솔에서는 "함수가
+> 배포되지 않았습니다" 와 구분되지 않는 증상으로 나타난다.
+> 인증은 함수가 호출자 토큰으로 `is_sl_owner()` 를 확인해 직접 한다(토글이 아니라 코드가 막는다).
 
 > 🔑 **Secret 을 넣을 필요가 없다.** `SUPABASE_SERVICE_ROLE_KEY` 는 Supabase 가 Edge 런타임에
 > 자동 주입한다. 예전 주석은 `SL_SERVICE_ROLE_KEY` 를 손으로 넣으라고 했으나, 그러면 오너가
 > service_role 키를 직접 복사해 옮겨야 했다. 이제 자동 주입값으로 폴백한다
 > (굳이 다른 키를 쓰고 싶을 때만 `SL_SERVICE_ROLE_KEY` 를 넣으면 그쪽이 우선한다).
 
-배포 전에는 버튼을 눌러도 "함수가 배포되지 않았습니다" 안내가 뜬다 — 조용히 실패하지 않는다.
+미배포 상태라면 버튼을 눌러도 "함수가 배포되지 않았습니다" 안내가 뜬다 — 조용히 실패하지 않는다.
 (미배포 프로젝트는 CORS preflight 단계에서 막혀 상태코드가 0 으로 오므로, 404 만 보면 이 안내를
 놓친다. `notDeployed()` 가 두 갈래를 모두 인정한다 — 실측으로 확인한 동작이다.)
+
+### 지금 상태에서 실제로 보이는 것
+관리자 목록에 **`duels@jbfg.com` 한 행뿐**이고 그건 본인 계정이라, [비밀번호 재설정] 버튼은
+아직 어디에도 뜨지 않는다(자기 비밀번호는 [내 비밀번호 변경] 으로). 두 번째 관리자를
+**콘솔에서 생성**하면 그 행에 버튼이 붙는다 — 콘솔이 만든 계정이라 `pw_managed` 가 켜지기 때문이다.
+반대로 [연결]로 갖다 붙인 계정에는 버튼이 붙지 않는다. 그게 의도한 동작이다.
 
 ### 안전 장치 (공유 프로젝트라 중요하다)
 비밀번호를 **누구에게** 바꿔도 되는지는 Edge 가 아니라 **DB 가 판정한다**(`sl_admin_pw_uid`).
