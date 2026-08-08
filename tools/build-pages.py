@@ -69,18 +69,19 @@ def short_title(title, canonical):
     return title.split("|")[0].strip() or title.strip()
 
 
-def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld="", body_attr=""):
+def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld="", body_attr="",
+         og_type="website"):
     PAGE_TITLES[canonical] = short_title(title, canonical)
     html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
-{shell.head(title, desc, canonical, extra_css, ld)}
+{shell.head(title, desc, canonical, extra_css, ld, og_type)}
 </head>
 <body{(' ' + body_attr) if body_attr else ''}>
 
 {shell.masthead()}
 
-<main>
+<main id="main">
 {body}
 </main>
 
@@ -254,7 +255,10 @@ def build_insight_pages(posts):
         ld = json.dumps({
             "@context": "https://schema.org", "@type": "Article",
             "headline": title, "description": summary[:160],
+            # Google 이 Article 리치결과에 권장하는 필드. 글별 대표 이미지가 없어 공용 OG 커버(1200x630)를 쓴다.
+            "image": "https://shilderslab.com/assets/ci/og-cover.png",
             "datePublished": str(date)[:10],
+            "dateModified": str(date)[:10],
             "author": {"@type": "Organization", "name": author},
             "publisher": {"@type": "Organization", "name": "쉴더스랩",
                           "logo": {"@type": "ImageObject",
@@ -285,7 +289,7 @@ def build_insight_pages(posts):
   </div>
 </section>"""
         page(f"insights/{slug}/index.html", f"{title} | 쉴더스랩 인사이트",
-             (summary or title)[:150], body, f"/insights/{slug}/", ld=ld)
+             (summary or title)[:150], body, f"/insights/{slug}/", ld=ld, og_type="article")
         made.append((f"/insights/{slug}/", str(date)[:10] or None))
     return made
 

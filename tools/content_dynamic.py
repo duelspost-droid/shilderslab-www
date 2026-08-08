@@ -194,7 +194,10 @@ VIEW_JS = """<script>
     }
     document.title = p.title + " | 쉴더스랩 인사이트";
     var desc = String(p.summary || "").slice(0, 150);
-    var canon = "https://shilderslab.com/insights/view.html?slug=" + encodeURIComponent(slug);
+    /* canonical 은 이 동적 뷰(?slug=)가 아니라 **정적 정본 경로**를 가리킨다.
+       빌드가 /insights/<slug>/ 를 정적 생성하므로, 쿼리스트링판은 그쪽으로 흡수돼
+       중복 콘텐츠로 색인되지 않는다. */
+    var canon = "https://shilderslab.com/insights/" + encodeURIComponent(slug) + "/";
     function setAttr(sel, attr, val) {
       var el = document.querySelector(sel);
       if (el && val) el.setAttribute(attr, val);
@@ -406,7 +409,22 @@ CAR_JS = """<script>
     alertEl.textContent = msg;
     alertEl.scrollIntoView({ behavior: "smooth", block: "center" });
   }
-  function markErr(el, bad) { var f = el.closest(".field"); if (f) f.classList.toggle("err", !!bad); }
+  function markErr(el, bad) {
+    var f = el.closest(".field"); if (f) f.classList.toggle("err", !!bad);
+    /* 시각(빨간 밑줄)만이 아니라 프로그램적으로도 오류를 알린다(WCAG 3.3.1·4.1.2).
+       오류 문구 .msg 를 aria-describedby 로 연결해 스크린리더가 필드에서 사유를 읽게 한다. */
+    el.setAttribute("aria-invalid", bad ? "true" : "false");
+    var msg = f && f.querySelector(".msg");
+    if (msg) {
+      if (!msg.id) msg.id = el.id + "-msg";
+      var d = (el.getAttribute("aria-describedby") || "").split(/\\s+/).filter(Boolean);
+      var i = d.indexOf(msg.id);
+      if (bad && i < 0) d.push(msg.id);
+      if (!bad && i >= 0) d.splice(i, 1);
+      if (d.length) el.setAttribute("aria-describedby", d.join(" "));
+      else el.removeAttribute("aria-describedby");
+    }
+  }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -424,14 +442,14 @@ CAR_JS = """<script>
     var link = document.getElementById("ap-link");
     var phone = document.getElementById("ap-phone");
 
-    var bad = false;
+    var bad = false, firstBad = null;
     [[name, !name.value.trim()],
      [email, !/^[^@\\s]+@[^@\\s.]+\\.[^@\\s]+$/.test(email.value.trim())],
      [pos, !pos.value],
      [summary, summary.value.trim().length < 10]].forEach(function (p) {
-      markErr(p[0], p[1]); if (p[1]) bad = true;
+      markErr(p[0], p[1]); if (p[1]) { bad = true; if (!firstBad) firstBad = p[0]; }
     });
-    if (bad) { show("bad", "입력값을 확인해 주세요."); return; }
+    if (bad) { show("bad", "입력값을 확인해 주세요."); if (firstBad) firstBad.focus(); return; }
     if (!consent.checked) { show("bad", "개인정보 수집·이용 동의가 필요합니다."); return; }
 
     var c = SL.db();
@@ -487,6 +505,7 @@ CON_BODY = """<section class="phead">
 <section class="sec">
   <div class="shell g12">
     <div class="c7">
+      <h2 class="sr-only">상담 신청서</h2>
       <form class="form" id="inq-form" novalidate>
         <div class="alert" id="inq-alert" role="status"></div>
         <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
@@ -564,7 +583,7 @@ CON_BODY = """<section class="phead">
             선의의 신고자에게 법적 조치를 취하지 않습니다.</div></div>
       </div>
 
-      <h3 class="d3" style="font-size:1.02rem;margin:44px 0 16px">진행 절차</h3>
+      <h2 class="d3" style="font-size:1.02rem;margin:44px 0 16px">진행 절차</h2>
       <ol class="steps">
         <li><b>문의 접수</b>영업일 기준 24시간 내 초기 회신</li>
         <li><b>사전 미팅</b>범위·목표 일정·제약 사항 확인 (온라인 가능)</li>
@@ -572,7 +591,7 @@ CON_BODY = """<section class="phead">
         <li><b>계약 · NDA</b>체결 후 착수</li>
       </ol>
 
-      <h3 class="d3" style="font-size:1.02rem;margin:44px 0 16px">미리 알려주시면 좋은 것</h3>
+      <h2 class="d3" style="font-size:1.02rem;margin:44px 0 16px">미리 알려주시면 좋은 것</h2>
       <ul class="bullets">
         <li>대상 시스템 수와 형태(웹·앱·내부망·클라우드)</li>
         <li>인증 심사일이나 감사 일정 등 고정된 날짜</li>
@@ -590,7 +609,22 @@ CON_JS = """<script>
   var btn = document.getElementById("inq-submit");
 
   function show(kind, msg) { alertEl.className = "alert on " + kind; alertEl.textContent = msg; }
-  function markErr(el, bad) { var f = el.closest(".field"); if (f) f.classList.toggle("err", !!bad); }
+  function markErr(el, bad) {
+    var f = el.closest(".field"); if (f) f.classList.toggle("err", !!bad);
+    /* 시각(빨간 밑줄)만이 아니라 프로그램적으로도 오류를 알린다(WCAG 3.3.1·4.1.2).
+       오류 문구 .msg 를 aria-describedby 로 연결해 스크린리더가 필드에서 사유를 읽게 한다. */
+    el.setAttribute("aria-invalid", bad ? "true" : "false");
+    var msg = f && f.querySelector(".msg");
+    if (msg) {
+      if (!msg.id) msg.id = el.id + "-msg";
+      var d = (el.getAttribute("aria-describedby") || "").split(/\\s+/).filter(Boolean);
+      var i = d.indexOf(msg.id);
+      if (bad && i < 0) d.push(msg.id);
+      if (!bad && i >= 0) d.splice(i, 1);
+      if (d.length) el.setAttribute("aria-describedby", d.join(" "));
+      else el.removeAttribute("aria-describedby");
+    }
+  }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -608,14 +642,14 @@ CON_JS = """<script>
     var message = document.getElementById("inq-message");
     var consent = document.getElementById("inq-consent");
 
-    var bad = false;
+    var bad = false, firstBad = null;
     [[company, !company.value.trim()], [name, !name.value.trim()],
      [email, !/^[^@\\s]+@[^@\\s.]+\\.[^@\\s]+$/.test(email.value.trim())],
      [service, !service.value],
      [message, message.value.trim().length < 5]].forEach(function (p) {
-      markErr(p[0], p[1]); if (p[1]) bad = true;
+      markErr(p[0], p[1]); if (p[1]) { bad = true; if (!firstBad) firstBad = p[0]; }
     });
-    if (bad) { show("bad", "입력값을 확인해 주세요."); return; }
+    if (bad) { show("bad", "입력값을 확인해 주세요."); if (firstBad) firstBad.focus(); return; }
     if (!consent.checked) { show("bad", "개인정보 수집·이용 동의가 필요합니다."); return; }
 
     var c = SL.db();

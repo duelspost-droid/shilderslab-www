@@ -20,18 +20,41 @@
   var burger = doc.getElementById("burger");
   var nav = doc.getElementById("nav");
   if (burger && nav) {
+    /* 열린 패널 뒤(본문)로 포커스가 새지 않게 main·footer 를 inert 로 만든다.
+       inert 미지원 브라우저는 무시된다(그 경우에도 visibility:hidden 이 닫힌 패널을 가린다). */
+    var behind = [doc.getElementById("main"), doc.querySelector("footer.site")];
+    function setBehindInert(on) {
+      behind.forEach(function (el) {
+        if (!el) return;
+        if (on) el.setAttribute("inert", "");
+        else el.removeAttribute("inert");
+      });
+    }
+    function closeNav(focusBurger) {
+      nav.classList.remove("open");
+      burger.classList.remove("on");
+      burger.setAttribute("aria-expanded", "false");
+      doc.documentElement.style.overflow = "";
+      setBehindInert(false);
+      if (focusBurger) burger.focus();
+    }
     burger.addEventListener("click", function () {
       var open = nav.classList.toggle("open");
       burger.classList.toggle("on", open);
       burger.setAttribute("aria-expanded", open ? "true" : "false");
       doc.documentElement.style.overflow = open ? "hidden" : "";
+      setBehindInert(open);
+      if (open) {
+        var first = nav.querySelector("a[href]");
+        if (first) first.focus();   /* 열면 첫 메뉴로 포커스 이동 */
+      }
     });
     nav.addEventListener("click", function (e) {
-      if (e.target.tagName === "A") {
-        nav.classList.remove("open");
-        burger.classList.remove("on");
-        doc.documentElement.style.overflow = "";
-      }
+      if (e.target.tagName === "A") closeNav(false);
+    });
+    /* Esc 로 닫고 버거로 포커스 복귀(열려 있을 때만) */
+    doc.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.classList.contains("open")) closeNav(true);
     });
   }
 
@@ -42,8 +65,11 @@
       var href = a.getAttribute("href") || "";
       if (href.charAt(0) === "#" || /^https?:/i.test(href) || a.classList.contains("cta")) return;
       var norm = href.replace(/index\.html$/, "").replace(/\/+$/, "") || "/";
-      if (norm !== "/" && path.indexOf(norm) === 0) a.classList.add("on");
-      else if (norm === "/" && path === "/") a.classList.add("on");
+      var active = (norm !== "/" && path.indexOf(norm) === 0) || (norm === "/" && path === "/");
+      if (active) {
+        a.classList.add("on");
+        a.setAttribute("aria-current", "page");   /* 스크린리더에 현재 위치 알림 */
+      }
     });
   }
 

@@ -38,7 +38,8 @@ CTA = ("상담 요청", "/contact/")
 def masthead():
     links = "\n".join(
         f'      <a href="{href}">{label}</a>' for label, href in NAV)
-    return f"""<header class="masthead" id="masthead">
+    return f"""<a class="skip-link" href="#main">본문 바로가기</a>
+<header class="masthead" id="masthead">
   <div class="shell bar">
     <a class="brand" href="/" aria-label="쉴더스랩 홈">
       <img src="/assets/ci/lockup-horizontal-light.svg" alt="쉴더스랩 SHIELDUS LAB" height="36">
@@ -61,7 +62,7 @@ FOOTER = """<footer class="site">
            발견에는 재현 절차를, 종료에는 재점검을 붙입니다.</p>
       </div>
       <div class="fcol">
-        <h5>Services</h5>
+        <h2>Services</h2>
         <a href="/services/isms-p/">ISMS-P 인증 컨설팅</a>
         <a href="/services/pentest/">모의해킹 · 침투테스트</a>
         <a href="/services/assessment/">취약점 진단</a>
@@ -70,7 +71,7 @@ FOOTER = """<footer class="site">
         <a href="/services/governance/">거버넌스 · 교육</a>
       </div>
       <div class="fcol">
-        <h5>Company</h5>
+        <h2>Company</h2>
         <a href="/about/">회사소개</a>
         <a href="/method/">진단 방법론</a>
         <a href="/regulations/">규제 가이드</a>
@@ -79,7 +80,7 @@ FOOTER = """<footer class="site">
         <a href="/brand/">브랜드 · CI</a>
       </div>
       <div class="fcol">
-        <h5>Contact</h5>
+        <h2>Contact</h2>
         <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
         <span data-setting="business_hours">평일 09:00 – 18:00</span>
         <a href="/contact/">상담 · 견적 요청 →</a>
@@ -104,7 +105,7 @@ SCRIPTS = """<script src="/config.js"></script>
 <script src="/assets/js/site.js"></script>"""
 
 
-def head(title, desc, canonical, extra_css="", ld=""):
+def head(title, desc, canonical, extra_css="", ld="", og_type="website"):
     css = f"\n<style>\n{extra_css}\n</style>" if extra_css else ""
     ldb = f'\n<script type="application/ld+json">\n{ld}\n</script>' if ld else ""
     return f"""<meta charset="UTF-8">
@@ -114,7 +115,7 @@ def head(title, desc, canonical, extra_css="", ld=""):
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="https://shilderslab.com{canonical}">
-<meta property="og:type" content="website">
+<meta property="og:type" content="{og_type}">
 <meta property="og:site_name" content="쉴더스랩">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
@@ -122,6 +123,7 @@ def head(title, desc, canonical, extra_css="", ld=""):
 <meta property="og:image" content="https://shilderslab.com/assets/ci/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/ci/favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/ci/favicon-32.png">
 <link rel="mask-icon" href="/assets/ci/mask-icon.svg" color="#1A4B3A">
 <link rel="apple-touch-icon" href="/assets/ci/apple-touch-icon.png">
 <meta name="theme-color" content="#F6F4EF">

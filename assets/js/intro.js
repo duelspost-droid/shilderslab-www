@@ -516,7 +516,8 @@
       document.removeEventListener("keydown", onKey, true);
     }
     function onKey(e) {
-      if (e.key === "Tab") return;   // 접근성 — 탭 이동까지 가로채지 않는다
+      // 아무 키나(Tab 포함) 인트로를 닫는다. Tab 은 기본 동작(다음 요소로 포커스)을 막지 않되
+      // 인트로도 함께 닫아, 인트로가 떠 있는 채로 뒤 콘텐츠에 포커스가 가 있는 상태를 없앤다.
       close();
     }
     el.addEventListener("click", close);

@@ -272,6 +272,25 @@ privacyOfficer: "",   // 개인정보 보호책임자
 - **P2** Supabase 리전 확인 후 개인정보처리방침 국외이전 항목에 정확한 국가·리전 명시
   (현재 "미국(Supabase, Inc.)" 으로 기재).
 - **P3** 팀·자격 보유 현황 섹션(회사소개)에 실제 인력·자격 정보 추가.
+
+### 접근성·성능 감사 (2026-08-09) — 확정 20건 중 17건 반영, 3건 보류
+5개 차원 감사 → 적대적 검증(35 에이전트, 확정 20·반증 10). ✅ 반영:
+- **접근성**: 전 페이지 skip-to-content(`shell.py` `.skip-link` + `<main id="main">`), 폼 오류를
+  `aria-invalid`+`aria-describedby`(동적, `markErr`)로 연결 + 첫 실패 필드 포커스(contact·careers),
+  contact 제목 위계 h1→h2 복원, 푸터 열 제목 h5→**h2**, 모바일 nav Esc 닫기·열 때 첫 링크 포커스·
+  본문 `inert`·닫힌 패널 `visibility:hidden`, nav 현재 항목 `aria-current`, 인트로 Tab 시 닫힘.
+- **색 대비(WCAG AA)**: `--ink-3` #7C838A→**#5F666C**(paper 5.30·paper-2 4.94·paper-3 4.59),
+  placeholder #A9AEA6(2.06)→`var(--ink-3)`, 푸터 회색 #6E7570/#5C625E→#9BA09C/#8A8F8B(6.77/5.47).
+  전부 브라우저 computed 값으로 4.5:1↑ 실측.
+- **SEO/메타**: 인사이트 상세 canonical 을 정적 정본(`/insights/<slug>/`)으로(중복 콘텐츠 해소),
+  인사이트 og:type=article, Article JSON-LD 에 image·dateModified, favicon-32 링크.
+
+⏳ **보류(별도 태스크로 스핀오프, 회귀 위험/디자인 결정)**:
+- **supabase-js(137KB)를 전 페이지 로드** — DB 쓰는 페이지만 로드하도록 SCRIPTS 분리 필요.
+  방문 로깅·하이드레이션이 얽혀 있어 신중한 리팩터.
+- **CSP `script-src 'unsafe-inline'`** — 6개 페이지 인라인 `_JS` 를 외부 파일로 빼야 제거 가능.
+- **admin 전용 CSS 가 공용 site.css 에 포함** — `admin.css` 분리 시 공개 페이지 CSS 축소.
+- **입력창 평상시 경계 없음(1.4.11)** — v2 미니멀 디자인 의도(라벨 상시표시)와 얽혀 **오너 판단 영역**.
 - ~~**P3** `sl_audit_purge()` 자동 실행~~ — ✅ **이미 동작 중(2026-08-09 실측 확인)**. pg_cron 설치돼 있고
   `cron.job` 에 `sl_purge_daily`(jobid 4, `20 3 * * *` = UTC 03:20)가 **`sl_purge_all()`**(감사 로그
   `sl_audit_purge` + 문의·지원자 PII `sl_pii_purge` 묶음)을 매일 실행한다. `cron.job_run_details` 최근

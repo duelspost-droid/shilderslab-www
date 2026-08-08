@@ -16,6 +16,7 @@
 <meta property="og:image" content="https://shilderslab.com/assets/ci/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="/assets/ci/favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/ci/favicon-32.png">
 <link rel="mask-icon" href="/assets/ci/mask-icon.svg" color="#1A4B3A">
 <link rel="apple-touch-icon" href="/assets/ci/apple-touch-icon.png">
 <meta name="theme-color" content="#F6F4EF">
@@ -39,6 +40,7 @@
 </head>
 <body>
 
+<a class="skip-link" href="#main">본문 바로가기</a>
 <header class="masthead" id="masthead">
   <div class="shell bar">
     <a class="brand" href="/" aria-label="쉴더스랩 홈">
@@ -56,7 +58,7 @@
   </div>
 </header>
 
-<main>
+<main id="main">
 <section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 상담 요청</div>
@@ -68,6 +70,7 @@
 <section class="sec">
   <div class="shell g12">
     <div class="c7">
+      <h2 class="sr-only">상담 신청서</h2>
       <form class="form" id="inq-form" novalidate>
         <div class="alert" id="inq-alert" role="status"></div>
         <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
@@ -145,7 +148,7 @@
             선의의 신고자에게 법적 조치를 취하지 않습니다.</div></div>
       </div>
 
-      <h3 class="d3" style="font-size:1.02rem;margin:44px 0 16px">진행 절차</h3>
+      <h2 class="d3" style="font-size:1.02rem;margin:44px 0 16px">진행 절차</h2>
       <ol class="steps">
         <li><b>문의 접수</b>영업일 기준 24시간 내 초기 회신</li>
         <li><b>사전 미팅</b>범위·목표 일정·제약 사항 확인 (온라인 가능)</li>
@@ -153,7 +156,7 @@
         <li><b>계약 · NDA</b>체결 후 착수</li>
       </ol>
 
-      <h3 class="d3" style="font-size:1.02rem;margin:44px 0 16px">미리 알려주시면 좋은 것</h3>
+      <h2 class="d3" style="font-size:1.02rem;margin:44px 0 16px">미리 알려주시면 좋은 것</h2>
       <ul class="bullets">
         <li>대상 시스템 수와 형태(웹·앱·내부망·클라우드)</li>
         <li>인증 심사일이나 감사 일정 등 고정된 날짜</li>
@@ -173,7 +176,7 @@
         <p data-content="footer.blurb">ISMS-P 인증 대응과 기술 진단을 한 계약 안에서 수행하는 정보보호 컨설팅 회사입니다. 발견에는 재현 절차를, 종료에는 재점검을 붙입니다.</p>
       </div>
       <div class="fcol">
-        <h5>Services</h5>
+        <h2>Services</h2>
         <a href="/services/isms-p/">ISMS-P 인증 컨설팅</a>
         <a href="/services/pentest/">모의해킹 · 침투테스트</a>
         <a href="/services/assessment/">취약점 진단</a>
@@ -182,7 +185,7 @@
         <a href="/services/governance/">거버넌스 · 교육</a>
       </div>
       <div class="fcol">
-        <h5>Company</h5>
+        <h2>Company</h2>
         <a href="/about/">회사소개</a>
         <a href="/method/">진단 방법론</a>
         <a href="/regulations/">규제 가이드</a>
@@ -191,7 +194,7 @@
         <a href="/brand/">브랜드 · CI</a>
       </div>
       <div class="fcol">
-        <h5>Contact</h5>
+        <h2>Contact</h2>
         <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
         <span data-setting="business_hours">평일 09:00 – 18:00</span>
         <a href="/contact/">상담 · 견적 요청 →</a>
@@ -221,7 +224,22 @@
   var btn = document.getElementById("inq-submit");
 
   function show(kind, msg) { alertEl.className = "alert on " + kind; alertEl.textContent = msg; }
-  function markErr(el, bad) { var f = el.closest(".field"); if (f) f.classList.toggle("err", !!bad); }
+  function markErr(el, bad) {
+    var f = el.closest(".field"); if (f) f.classList.toggle("err", !!bad);
+    /* 시각(빨간 밑줄)만이 아니라 프로그램적으로도 오류를 알린다(WCAG 3.3.1·4.1.2).
+       오류 문구 .msg 를 aria-describedby 로 연결해 스크린리더가 필드에서 사유를 읽게 한다. */
+    el.setAttribute("aria-invalid", bad ? "true" : "false");
+    var msg = f && f.querySelector(".msg");
+    if (msg) {
+      if (!msg.id) msg.id = el.id + "-msg";
+      var d = (el.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+      var i = d.indexOf(msg.id);
+      if (bad && i < 0) d.push(msg.id);
+      if (!bad && i >= 0) d.splice(i, 1);
+      if (d.length) el.setAttribute("aria-describedby", d.join(" "));
+      else el.removeAttribute("aria-describedby");
+    }
+  }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -239,14 +257,14 @@
     var message = document.getElementById("inq-message");
     var consent = document.getElementById("inq-consent");
 
-    var bad = false;
+    var bad = false, firstBad = null;
     [[company, !company.value.trim()], [name, !name.value.trim()],
      [email, !/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email.value.trim())],
      [service, !service.value],
      [message, message.value.trim().length < 5]].forEach(function (p) {
-      markErr(p[0], p[1]); if (p[1]) bad = true;
+      markErr(p[0], p[1]); if (p[1]) { bad = true; if (!firstBad) firstBad = p[0]; }
     });
-    if (bad) { show("bad", "입력값을 확인해 주세요."); return; }
+    if (bad) { show("bad", "입력값을 확인해 주세요."); if (firstBad) firstBad.focus(); return; }
     if (!consent.checked) { show("bad", "개인정보 수집·이용 동의가 필요합니다."); return; }
 
     var c = SL.db();
