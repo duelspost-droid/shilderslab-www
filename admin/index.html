@@ -45,8 +45,11 @@
     <form class="form" id="login-form" novalidate>
       <div class="alert" id="login-alert" role="status"></div>
       <div class="field">
-        <label for="lg-email">이메일</label>
-        <input id="lg-email" type="email" autocomplete="username" required placeholder="admin@shilderslab.com">
+        <label for="lg-email">아이디</label>
+        <!-- type=text 다. type=email 이면 브라우저 검증이 아이디 입력을 막는다. -->
+        <input id="lg-email" type="text" autocomplete="username" required
+               autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="shieldusadmin">
+        <div class="hint">이메일 주소를 그대로 넣어도 됩니다.</div>
       </div>
       <div class="field">
         <label for="lg-pw">비밀번호</label>

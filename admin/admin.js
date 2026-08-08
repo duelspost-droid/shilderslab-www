@@ -76,21 +76,43 @@
   function val(id) { var e = document.getElementById(id); return e ? e.value : ""; }
   function checked(id) { var e = document.getElementById(id); return !!(e && e.checked); }
 
-  /* ═══════════════ 인증 ═══════════════ */
+  /* ═══════════════ 인증 ═══════════════
+     Supabase 인증에는 사용자명 provider 가 없다 — 식별자는 반드시 이메일 형식이어야 한다.
+     그래서 화면에서만 아이디를 받고, 여기서 고정 도메인을 붙여 이메일로 바꾼다.
+     `shieldusadmin` → `shieldusadmin@<LOGIN_DOMAIN>`
+
+     조회 테이블을 두지 않고 **접미사 규칙**으로 푸는 이유:
+     아이디→이메일 매핑을 공개 경로에 두면 아이디를 아는 사람이 연결된 주소를 알아낼 수 있다.
+     계정 주소를 회사 도메인으로 고정하면 알아내도 잃을 것이 없다.
+     개인 주소(예: 개인 메일)를 계정 이메일로 쓰면 그 주소가 로그인 화면에서 드러난다 —
+     그 조합은 피한다.
+
+     ⚠ LOGIN_DOMAIN 은 **실제 계정 이메일의 도메인과 같아야** 아이디 로그인이 동작한다.
+     계정 주소를 바꾸면 여기도 함께 바꾼다. @ 를 포함해 입력하면 규칙을 건너뛰므로,
+     도메인이 어긋나 있어도 이메일 전체를 넣어 로그인할 수 있다(잠김 방지). */
+  var LOGIN_DOMAIN = "shielduslab.com";
+
+  function toLoginEmail(input) {
+    var s = (input || "").trim();
+    if (!s) return "";
+    return s.indexOf("@") >= 0 ? s : s.toLowerCase() + "@" + LOGIN_DOMAIN;
+  }
+
   var loginForm = document.getElementById("login-form");
   loginForm.addEventListener("submit", function (e) {
     e.preventDefault();
     var btn = document.getElementById("lg-submit");
-    var email = val("lg-email").trim(), pw = val("lg-pw");
-    if (!email || !pw) { show("login-alert", "bad", "이메일과 비밀번호를 입력해 주세요."); return; }
+    var email = toLoginEmail(val("lg-email")), pw = val("lg-pw");
+    if (!email || !pw) { show("login-alert", "bad", "아이디와 비밀번호를 입력해 주세요."); return; }
     btn.disabled = true; btn.textContent = "확인 중…";
     db.auth.signInWithPassword({ email: email, password: pw }).then(function (r) {
       if (r.error) throw r.error;
       return gate();
     }).catch(function (err) {
       var m = (err && err.message) || "";
+      /* 아이디가 존재하는지 여부는 알려주지 않는다 — 열거를 막기 위해 문구를 하나로 둔다. */
       show("login-alert", "bad", /Invalid login/i.test(m)
-        ? "이메일 또는 비밀번호가 올바르지 않습니다."
+        ? "아이디 또는 비밀번호가 올바르지 않습니다."
         : "로그인에 실패했습니다: " + m);
       btn.disabled = false; btn.textContent = "로그인";
     });
