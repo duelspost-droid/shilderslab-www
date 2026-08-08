@@ -17,6 +17,14 @@
   /* 관리자 전용 보정 — 공용 디자인 시스템 토큰을 그대로 쓴다 */
   .two{display:grid;grid-template-columns:1.3fr .7fr;gap:var(--gut)}
   @media (max-width:900px){.two{grid-template-columns:1fr}}
+  /* 헤더 우측(계정·버튼) — 좁은 화면에서 .bar 가 폭을 나눠 갖는 바람에
+     버튼 라벨이 두세 줄로 접혔다. 한 줄로 고정하고 아래로 내려 폭을 다 쓰게 한다. */
+  .admin-who .btn{white-space:nowrap}
+  @media (max-width:720px){
+    .admin-top .bar{flex-wrap:wrap;row-gap:12px}
+    .admin-who{width:100%;gap:10px}
+    .admin-who #who{flex-basis:100%}
+  }
   /* 페이지 문구 탭 — 섹션 구분선 */
   .cnt-sec{font-size:.86rem;letter-spacing:.02em;color:var(--accent);
     border-top:1px solid var(--rule);padding-top:16px;margin:30px 0 14px}
@@ -62,6 +70,7 @@
       <div class="admin-who">
         <span id="who"></span>
         <a class="lnk" href="/" target="_blank" rel="noopener">사이트 열기 ↗</a>
+        <button class="btn btn-line btn-sm" id="pw-change">비밀번호 변경</button>
         <button class="btn btn-line btn-sm" id="logout">로그아웃</button>
       </div>
     </div>

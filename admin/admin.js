@@ -96,6 +96,67 @@
     });
   });
 
+  /* ═══════════════ 비밀번호 변경 (본인) ═══════════════
+     임시 비밀번호로 처음 들어온 관리자가 콘솔 안에서 바로 바꿀 수 있게 한다.
+     이 화면이 없으면 Supabase 대시보드에 들어가야 하고, 대시보드 접근 권한이 없는
+     editor 는 비밀번호를 스스로 바꿀 방법이 아예 없다.
+
+     · 입력값은 모달 안에만 두고 닫을 때 DOM 에서 지운다(closeModal 이 비운다).
+     · 감사 로그에는 **행위만** 남긴다. 비밀번호도, 길이도 남기지 않는다.
+     · 프로젝트에 'Secure password change' 가 켜져 있으면 서버가 재인증(nonce)을 요구한다.
+       그 경우는 사용자에게 재로그인을 안내한다 — 콘솔에서 처리하지 않는다. */
+  var PW_MIN = 10;
+
+  document.getElementById("pw-change").addEventListener("click", function () {
+    openModal("비밀번호 변경",
+      '<div class="form">' +
+      '<div class="field"><label for="pw-new">새 비밀번호</label>' +
+      '<input id="pw-new" type="password" autocomplete="new-password" maxlength="72">' +
+      '<div class="hint">' + PW_MIN + '자 이상. 다른 서비스에서 쓰지 않는 것으로 정하세요.</div></div>' +
+      '<div class="field"><label for="pw-new2">새 비밀번호 확인</label>' +
+      '<input id="pw-new2" type="password" autocomplete="new-password" maxlength="72"></div>' +
+      '<div class="alert" id="pw-alert" role="status"></div>' +
+      '</div>',
+      [{ label: "취소", on: closeModal },
+       { label: "변경", cls: "primary", on: doChangePassword }]);
+    var f = document.getElementById("pw-new");
+    if (f) f.focus();
+  });
+
+  function doChangePassword() {
+    var a = val("pw-new"), b = val("pw-new2");
+    if (a.length < PW_MIN) {
+      show("pw-alert", "bad", "비밀번호는 " + PW_MIN + "자 이상이어야 합니다."); return;
+    }
+    if (a !== b) { show("pw-alert", "bad", "두 입력이 서로 다릅니다."); return; }
+
+    show("pw-alert", "ok", "변경하는 중…");
+    db.auth.updateUser({ password: a }).then(function (r) {
+      if (r.error) {
+        var m = String(r.error.message || "");
+        if (/reauthenticat/i.test(m)) {
+          show("pw-alert", "bad",
+               "보안 설정 때문에 재인증이 필요합니다. 로그아웃 후 다시 로그인한 뒤 시도해 주세요.");
+        } else if (/same as the old|should be different/i.test(m)) {
+          show("pw-alert", "bad", "지금 쓰고 있는 비밀번호와 같습니다. 다른 값으로 정해 주세요.");
+        } else if (/weak|pwned|password/i.test(m)) {
+          show("pw-alert", "bad", "이 비밀번호는 사용할 수 없습니다: " + m);
+        } else {
+          show("pw-alert", "bad", "변경하지 못했습니다: " + m);
+        }
+        return;
+      }
+      /* 비밀번호·길이 등 값은 로그에 남기지 않는다. */
+      audit("change_password", "auth.users", null, {});
+      show("pw-alert", "ok", "변경되었습니다. 다음 로그인부터 새 비밀번호를 쓰세요.");
+      setTimeout(closeModal, 1600);
+    }).catch(function (e) {
+      /* 네트워크 단절 등 — 여기서 잡지 않으면 "변경하는 중…" 에서 멈춘 것처럼 보인다. */
+      show("pw-alert", "bad", "요청이 실패했습니다. 연결을 확인하고 다시 시도해 주세요."
+           + (e && e.message ? " (" + e.message + ")" : ""));
+    });
+  }
+
   document.getElementById("logout").addEventListener("click", function () {
     audit("logout").then(function () {
       return db.auth.signOut();
