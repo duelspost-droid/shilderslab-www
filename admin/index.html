@@ -59,6 +59,16 @@
   .prev-rich>p:last-child{margin-bottom:0}
   .prev-rich>ul,.prev-rich>ol{margin:0 0 10px;padding-left:20px}
   .prev-rich>blockquote{margin:0 0 10px;padding-left:12px;border-left:2px solid var(--rule-2)}
+  /* 줄바꿈·문단 표시 — 표시용 기호다. 사이트에는 나가지 않는다.
+     ¶ 는 HTML 을 건드리지 않으려고 CSS ::after 로 붙인다. */
+  .brk{color:var(--accent);opacity:.55;font-size:.78em;padding:0 3px;user-select:none}
+  .prev-rich>p::after,.prev-rich>blockquote::after{content:"¶";color:var(--accent);opacity:.45;
+    font-size:.78em;margin-left:5px;user-select:none}
+  .prev-rich>ul::after,.prev-rich>ol::after{content:"¶ 목록 끝";display:block;color:var(--accent);
+    opacity:.45;font-size:.72em;margin-top:2px;user-select:none}
+  .brk-legend{float:right;font-family:var(--font-sans);letter-spacing:0;color:var(--accent);
+    opacity:.6;font-size:.68rem}
+  @media (max-width:520px){.brk-legend{float:none;display:block;margin-top:4px}}
   @media (max-width:640px){#panel-cnt .panel-head{flex-wrap:wrap;gap:10px}}
 </style>
 </head>
@@ -245,9 +255,9 @@
       <div class="alert" id="cnt-alert" role="status"></div>
       <div class="cnt-guide">
         <p><b>줄바꿈</b> — 입력칸에서 <b>Enter</b> 를 치면 그 자리에서 줄이 바뀝니다.
-           칸마다 <span class="kind-tag">한 문단</span> 또는 <span class="kind-tag">여러 문단</span> 이 붙어 있는데,
-           <b>여러 문단</b> 칸에서는 <b>Enter 를 두 번</b>(빈 줄) 쳐야 문단이 나뉩니다.
-           한 번만 치면 같은 문단 안에서 이어집니다.</p>
+           칸마다 <span class="kind-tag">한 문단</span> 또는 <span class="kind-tag">여러 문단</span> 이 붙어 있습니다.
+           <b>한 문단</b> 칸에서는 Enter 가 <b>그대로 줄바꿈</b>이 되고,
+           <b>여러 문단</b> 칸에서는 Enter 가 <b>문단 나눔</b>이 됩니다(한 번이든 두 번이든 같습니다).</p>
         <p><b>표기</b> — 여러 문단 칸에서는 아래 표기를 쓸 수 있습니다. 한 문단 칸은 글자만 넣습니다.</p>
         <ul class="cnt-legend">
           <li><code>**굵게**</code> → <b>굵게</b></li>
@@ -257,6 +267,8 @@
           <li><code>[링크](/services/)</code> → 사이트 안 링크</li>
         </ul>
         <p>입력칸 아래 <b>‘화면에 나오는 모습’</b> 에 실제 렌더 결과가 그대로 보입니다.
+           그 안에서 <span class="brk">↵</span> 는 줄바꿈, <span class="brk">¶</span> 는 문단이 끝나는 자리입니다.
+           <b>이 두 기호는 표시용이라 사이트에는 나오지 않습니다.</b>
            <b>비워 두면 사이트 기본 문구가 나옵니다</b> — 실수로 지워도 빈 화면이 되지 않습니다.
            저장하면 방문자에게는 즉시 반영되고, 다음 배포 때 정적 파일에도 구워집니다.</p>
       </div>

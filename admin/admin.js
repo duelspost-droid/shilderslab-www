@@ -865,8 +865,13 @@
       box.innerHTML = '<span style="color:var(--muted)">비워 두면 사이트 기본 문구가 그대로 나옵니다.</span>';
       return;
     }
-    if (kind === "rich" && window.SL && SL.md) box.innerHTML = SL.md(v);
-    else box.innerHTML = esc(v).replace(/\n/g, "<br>");
+    if (kind === "rich" && window.SL && SL.md) {
+      /* 문단 끝 표시(¶)는 CSS 의 .prev-rich>p::after 가 붙인다 — HTML 을 건드리지 않는다. */
+      box.innerHTML = SL.md(v);
+    } else {
+      /* 줄바꿈 자리에 ↵ 를 눈에 보이게 찍는다. 실제 출력은 <br> 하나뿐이다. */
+      box.innerHTML = esc(v).replace(/\n/g, '<span class="brk">↵</span><br>');
+    }
   }
 
   function loadCnt() {
@@ -902,14 +907,16 @@
               ' <span class="kind-tag">' + (rich ? "여러 문단" : "한 문단") + "</span></label>" +
             '<textarea id="' + id + '" rows="' + (rich ? 10 : 3) + '" maxlength="20000"></textarea>' +
             '<div class="fmt">' + (rich
-              ? "<b>Enter 두 번</b>(빈 줄)으로 문단을 나눕니다. Enter 한 번은 같은 문단 안에서 이어집니다.<br>" +
+              ? "<b>Enter 를 치면 문단이 나뉩니다.</b> 한 번이든 두 번이든 결과는 같습니다" +
+                "(읽기 편하게 빈 줄을 넣으셔도 됩니다). 한 문단 안에서 줄만 바꾸는 방법은 없습니다.<br>" +
                 "<code>**굵게**</code> · <code>- 목록</code> · <code>1. 번호</code> · " +
                 "<code>&gt; 인용</code> · <code>[링크](/services/)</code>"
               : "<b>Enter</b> 를 치면 그 자리에서 화면의 줄이 바뀝니다. 제목은 보통 2줄까지가 보기 좋습니다.<br>" +
-                "<code>**굵게**</code> 는 여기서는 쓰지 않습니다. 글자만 넣어 주세요.") +
+                "<code>**굵게**</code> 같은 표기는 여기서 쓰지 않습니다. 글자만 넣어 주세요.") +
             "</div>" +
             (row.hint ? '<div class="hint">' + esc(row.hint) + "</div>" : "") +
-            '<div class="prev-wrap"><div class="prev-head">화면에 나오는 모습</div>' +
+            '<div class="prev-wrap"><div class="prev-head">화면에 나오는 모습' +
+              '<span class="brk-legend">' + (rich ? "¶ 문단 끝" : "↵ 줄바꿈") + "</span></div>" +
               '<div class="prev' + (rich ? " prev-rich" : "") + '" id="' + id + '-prev"></div></div>' +
             '<div class="hint mono" style="opacity:.7">' + esc(row.key) + "</div>" +
             "</div>";
