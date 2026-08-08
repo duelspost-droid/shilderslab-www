@@ -168,6 +168,43 @@ select a.email, a.role, (a.user_id is not null) as bound,
 **비밀번호를 모를 때** — Supabase 대시보드 → Authentication → Users → 해당 계정 → `⋯`
 → *Send password recovery* 또는 *Reset password*. **비밀번호 입력·설정은 오너가 직접 한다.**
 
+**비밀번호 변경** — 콘솔 헤더 **[비밀번호 변경]**(2026-08-08 추가). 로그인한 본인 계정을 바꾼다.
+이 화면이 생기기 전에는 Supabase 대시보드까지 가야 했고, 대시보드 권한이 없는 `editor` 는
+스스로 바꿀 방법이 아예 없었다. 임시 비밀번호로 처음 들어와 바로 교체하는 흐름을 여기서 끝낸다.
+
+### ⑧ 관리자 주소 교체 절차 (예: `shieldusadmin@…` 으로 바꿀 때)
+
+> **전제 — 새 주소는 메일을 받을 수 있어야 한다.** 확인 메일·비밀번호 재설정 링크가 그리로 간다.
+> 실측(2026-08-08): `shilderslab.com` 은 **MX 레코드가 없어 메일을 받지 못한다.**
+> 이 도메인으로 관리자 주소를 만들면 비밀번호를 잊는 순간 복구 경로가 사라진다. 쓰지 말 것.
+> `shielduslab.com` 은 Google Workspace(`smtp.google.com`) 가 걸려 있고, `jbfg.com` 도 정상이다.
+
+**순서를 지킨다. 뒤집으면 잠긴다.**
+
+1. **(오너) 계정 생성** — Supabase 대시보드 → Authentication → Users → **Add user**
+   → 새 이메일 + 임시 비밀번호 + **Auto Confirm User 켜기**.
+   *(콘솔 [계정 관리] 탭의 '새 관리자' 로도 만들 수 있지만 Edge 함수 `sl-admin-user` 가 배포돼 있어야 한다. 미배포다.)*
+2. **(오너/Claude) 화이트리스트 결속** — 콘솔 [계정 관리] → 추가 후 **연결**, 또는 SQL 1문장:
+   ```sql
+   insert into public.sl_admins (email, role, note, user_id)
+   select lower(u.email), 'admin', '관리자 교체', u.id
+     from auth.users u
+    where lower(u.email) = lower('새_관리자_이메일')
+      and u.email_confirmed_at is not null
+   on conflict (lower(email))
+   do update set user_id = excluded.user_id, role = 'admin';
+   ```
+   화이트리스트에 **이메일만 있고 `user_id` 가 없으면 권한이 전혀 없다**(0004 설계).
+3. **(오너) 새 계정으로 `/admin/` 로그인** → 헤더 **[비밀번호 변경]** 으로 임시 비밀번호를 교체한다.
+4. **(오너) 새 계정으로 로그인한 상태에서** [계정 관리] → 기존 계정 삭제.
+
+`0004` 에 잠김 방지 장치가 있어 순서를 어기면 **막힌다**(설계된 동작이다):
+- `자신을 삭제할 수 없습니다` — 로그인한 본인 계정은 못 지운다 → 3번을 먼저 해야 한다
+- `로그인 가능한 admin 이 한 명뿐입니다` — 마지막 admin 은 못 지운다 → 2번이 끝나야 한다
+
+⚠ 이 Supabase 프로젝트는 **다른 서비스와 공유**한다. Authentication → Users 목록에는 이 사이트와
+무관한 계정도 있다. 지울 때 대상을 반드시 확인한다.
+
 ### ③ ~~가비아 DNS~~ ✅ 완료 (2026-07-30)
 가비아 DNS 관리에 아래 5개 레코드 등록 완료(TTL 600). 권위 네임서버(ns.gabia.co.kr)와 공용 리졸버(8.8.8.8) 양쪽에서 응답 확인.
 
@@ -468,6 +505,7 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-08-01 | **사명의 뜻 섹션 신설** — `/about/` 02 Name(SHIELD·US·LAB 3문단) · `/brand/` 01 Name(요약) · CMS 블록 3개 추가(18→21), `0005` 재적용 | — |
 | 2026-08-01 | 관리자 로그인 절차 확인·문서화(3항 ②) — 계정 결속·이메일 확인·마지막 로그인 이력 실측 | **오너가 한 번 로그인해 저장 경로 확인**(6항 미검증) |
 | 2026-08-01 | 세션 상태 동기화 · **명함 도메인 불일치 복구**(원복이 `build-card.py` 까지 쓸어갔으나 산출물은 미재생성 → 코드를 파일에 맞춤) · `set-domain.py` 교체 대상에서 명함 빌더 분리 | 도메인 확보 → 11항 · 법인 정보 입력 · /team/ |
+| 2026-08-08 | 콘솔에 **비밀번호 변경** 추가(헤더 → 모달 → `auth.updateUser`) · 헤더 모바일 정비 · **관리자 주소 교체 절차** 정리(3항 ⑧) · `shilderslab.com` **MX 없음** 실측 | **새 관리자 주소 확정 필요**(메일 수신 가능한 도메인) · 도메인 소유 확인 |
 
 ---
 
