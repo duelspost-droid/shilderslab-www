@@ -87,8 +87,8 @@ BODY = """<section class="home-hero">
     <div class="sec-head">
       <div class="idx"><span class="lbl">01 / Services</span></div>
       <div class="body">
-        <h2 class="d2">규제와 공격,<br>양쪽에서 봅니다</h2>
-        <p class="lead">인증 심사 대응과 기술 진단을 서로 다른 업체에 나눠 맡기면 어떻게 될까요?
+        <h2 class="d2" data-content="home.services_title">규제와 공격,<br>양쪽에서 봅니다</h2>
+        <p class="lead" data-content="home.services_lead">인증 심사 대응과 기술 진단을 서로 다른 업체에 나눠 맡기면 어떻게 될까요?
            같은 자산을 두 번 조사하고도, 심사에서 지적된 결함과 실제 침해 경로는 끝내 어긋난 채 남습니다.
            그 둘을 맞춰 보는 일이 결국 담당자 몫이 되기 때문에, 저희는 두 영역을 하나의 범위 정의서 안에서 설계합니다.</p>
       </div>
@@ -139,8 +139,8 @@ BODY = """<section class="home-hero">
     <div class="sec-head">
       <div class="idx"><span class="lbl">02 / Method</span></div>
       <div class="body">
-        <h2 class="d2">모든 과업은<br>같은 다섯 단계를 거칩니다</h2>
-        <p class="lead">단계마다 나가는 산출물은 계약서에 문서명 단위로 적힙니다. 마지막 재점검이 끝나기 전에는 종료로 처리하지 않습니다.</p>
+        <h2 class="d2" data-content="home.method_title">모든 과업은<br>같은 다섯 단계를 거칩니다</h2>
+        <p class="lead" data-content="home.method_lead">단계마다 나가는 산출물은 계약서에 문서명 단위로 적힙니다. 마지막 재점검이 끝나기 전에는 종료로 처리하지 않습니다.</p>
       </div>
     </div>
     <div class="flow">
@@ -164,8 +164,8 @@ BODY = """<section class="home-hero">
     <div class="sec-head">
       <div class="idx"><span class="lbl">03 / Why us</span></div>
       <div class="body">
-        <h2 class="d2">판단 기준을<br>먼저 공개합니다</h2>
-        <p class="lead">제안서를 나란히 놓고 보면 문장은 다들 비슷한데, 정작 누가 무엇을 어떻게 하겠다는 것인지는 잘 드러나지 않습니다.
+        <h2 class="d2" data-content="home.why_title">판단 기준을<br>먼저 공개합니다</h2>
+        <p class="lead" data-content="home.why_lead">제안서를 나란히 놓고 보면 문장은 다들 비슷한데, 정작 누가 무엇을 어떻게 하겠다는 것인지는 잘 드러나지 않습니다.
            그래서 위험도 산정 기준과 산출물 목록, 맡지 않는 과업까지 계약 전에 공개합니다.
            저희 제안서에만 쓰시라고 올린 자료는 아닙니다.</p>
       </div>
@@ -219,8 +219,8 @@ BODY = """<section class="home-hero">
     <div class="sec-head">
       <div class="idx"><span class="lbl">04 / Resources</span></div>
       <div class="body">
-        <h2 class="d2">로그인 없이<br>바로 쓰실 수 있습니다</h2>
-        <p class="lead">진단 현장에 실제로 들고 나가는 체크리스트입니다.
+        <h2 class="d2" data-content="home.resources_title">로그인 없이<br>바로 쓰실 수 있습니다</h2>
+        <p class="lead" data-content="home.resources_lead">진단 현장에 실제로 들고 나가는 체크리스트입니다.
            이메일을 남기실 필요는 없습니다. 다른 업체와 진행 중이셔도 활용하시는 데 문제없습니다.</p>
       </div>
     </div>
@@ -249,8 +249,8 @@ BODY = """<section class="home-hero">
     <div class="sec-head">
       <div class="idx"><span class="lbl">05 / Insights</span></div>
       <div class="body">
-        <h2 class="d2">현장에서 반복되는 것들</h2>
-        <p class="lead">같은 질문을 여러 번 받으면 글로 정리합니다. 규제 해석이 엇갈리는 대목, 조치가 번번이 멈추는 지점을 다룹니다.</p>
+        <h2 class="d2" data-content="home.insights_title">현장에서 반복되는 것들</h2>
+        <p class="lead" data-content="home.insights_lead">같은 질문을 여러 번 받으면 글로 정리합니다. 규제 해석이 엇갈리는 대목, 조치가 번번이 멈추는 지점을 다룹니다.</p>
       </div>
     </div>
     <div class="posts" id="home-insights"><div class="empty">불러오는 중…</div></div>
@@ -262,8 +262,8 @@ BODY = """<section class="home-hero">
   <div class="shell g12">
     <div class="c7">
       <span class="lbl">Contact</span>
-      <h2 class="d2" style="margin:18px 0 18px">지금 상태를<br>확인하는 것부터</h2>
-      <p class="lead">어디부터 봐야 할지 모르시겠다면 진단 대상과 목표 일정, 이 두 가지만 알려 주시면
+      <h2 class="d2" style="margin:18px 0 18px" data-content="home.cta_title">지금 상태를<br>확인하는 것부터</h2>
+      <p class="lead" data-content="home.cta_lead">어디부터 봐야 할지 모르시겠다면 진단 대상과 목표 일정, 이 두 가지만 알려 주시면
          필요한 점검 항목과 예상 기간을 정리해 보내 드립니다.
          범위 검토와 견적 산정에는 비용이 붙지 않습니다.</p>
     </div>
