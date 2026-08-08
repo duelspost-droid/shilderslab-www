@@ -272,8 +272,11 @@ privacyOfficer: "",   // 개인정보 보호책임자
 - **P2** Supabase 리전 확인 후 개인정보처리방침 국외이전 항목에 정확한 국가·리전 명시
   (현재 "미국(Supabase, Inc.)" 으로 기재).
 - **P3** 팀·자격 보유 현황 섹션(회사소개)에 실제 인력·자격 정보 추가.
-- **P3** `sl_audit_purge()` 자동 실행: pg_cron 설치 시 일 1회 스케줄 등록
-  (`select cron.schedule('sl_audit_purge_daily','20 3 * * *', $$ select public.sl_audit_purge(); $$);`).
+- ~~**P3** `sl_audit_purge()` 자동 실행~~ — ✅ **이미 동작 중(2026-08-09 실측 확인)**. pg_cron 설치돼 있고
+  `cron.job` 에 `sl_purge_daily`(jobid 4, `20 3 * * *` = UTC 03:20)가 **`sl_purge_all()`**(감사 로그
+  `sl_audit_purge` + 문의·지원자 PII `sl_pii_purge` 묶음)을 매일 실행한다. `cron.job_run_details` 최근
+  6일(8/3~8/8) 전부 `succeeded`. 즉 감사 로그(방문 90일·관리 365일)와 지원자/문의(6개월/1년) 파기가
+  개인정보처리방침대로 자동 이행된다. **재등록·중복 스케줄 금지** — 이미 있다.
 
 ---
 
