@@ -493,6 +493,11 @@ select.inp,input.inp{background:transparent;border:1px solid var(--rule-2);paddi
 .pg code{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pg-group{color:var(--muted);font-weight:400}
+/* 비밀번호 입력 + [다시 생성] 한 줄. input 이 남는 폭을 먹고 버튼은 제 크기를 지킨다.
+   min-width:0 이 없으면 모노폰트 긴 값이 버튼을 모달 밖으로 밀어낸다. */
+.pw-row{display:flex;gap:8px;align-items:stretch}
+.pw-row input{flex:1;min-width:0}
+.pw-row .btn{flex:none;white-space:nowrap}
 .toppages > li > b{flex:none;font-variant-numeric:tabular-nums}
 .two{display:grid;grid-template-columns:1.3fr .7fr;gap:var(--gut)}
 

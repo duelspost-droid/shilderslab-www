@@ -1104,13 +1104,47 @@
 
 
   /* ═══════════════ 계정 관리 (admin 역할 전용) ═══════════════ */
-  function tempPassword() {
-    /* 혼동하기 쉬운 문자(0/O, 1/l/I)를 뺀 안전한 문자셋 */
-    var A = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*-_";
-    var out = "", buf = new Uint32Array(20);
-    (window.crypto || window.msCrypto).getRandomValues(buf);
-    for (var i = 0; i < 20; i++) out += A[buf[i] % A.length];
-    return out;
+  function tempPassword(len) {
+    /* 혼동하기 쉬운 문자(0/O, 1/l/I)를 뺀 문자군들. */
+    len = len || 20;
+    var UP = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    var LO = "abcdefghijkmnopqrstuvwxyz";
+    var NU = "23456789";
+    var SY = "!@#$%^&*-_";
+    var ALL = UP + LO + NU + SY;
+    var crypto = window.crypto || window.msCrypto;
+    var buf = new Uint32Array(len);
+    crypto.getRandomValues(buf);
+    /* 각 문자군을 **최소 한 개씩** 넣는다 — Supabase 에 "대/소/숫자/기호 필수" 정책이
+       켜져 있어도 통과하도록. (예전엔 순수 무작위라 이따금 한 군이 빠져 거부됐다.) */
+    var out = [UP[buf[0] % UP.length], LO[buf[1] % LO.length],
+               NU[buf[2] % NU.length], SY[buf[3] % SY.length]];
+    for (var i = 4; i < len; i++) out.push(ALL[buf[i] % ALL.length]);
+    /* Fisher–Yates 셔플 — 앞 네 자리가 늘 대·소·숫·기호로 고정되지 않게. */
+    var sh = new Uint32Array(len);
+    crypto.getRandomValues(sh);
+    for (var j = len - 1; j > 0; j--) {
+      var k = sh[j] % (j + 1), t = out[j]; out[j] = out[k]; out[k] = t;
+    }
+    return out.join("");
+  }
+
+  var PW_TEMP_MIN = 12;   // Edge(service_role)가 요구하는 최소 길이와 같아야 한다.
+
+  /** 편집 가능한 비밀번호 칸 + [다시 생성] 버튼.
+      계정 생성·비밀번호 재설정 모달이 **같은 UI** 를 쓰도록 공용화했다.
+      자동값을 그대로 써도 되고, 지우고 직접 정해도 된다. */
+  function pwFieldHtml(id, pw, labelText, hintText) {
+    return '<div class="field">' +
+      '<label for="' + id + '">' + esc(labelText) + "</label>" +
+      '<div class="pw-row">' +
+        '<input id="' + id + '" type="text" maxlength="72" value="' + escA(pw) + '" ' +
+        'autocomplete="off" spellcheck="false" ' +
+        "style=\"font-family:'IBM Plex Mono',monospace\">" +
+        '<button type="button" class="btn btn-line btn-sm" data-pw-regen="' + id +
+        '">다시 생성</button>' +
+      "</div>" +
+      '<div class="hint">' + esc(hintText) + "</div></div>";
   }
 
   /** Edge 함수 실패에서 **서버가 보낸 한국어 사유**를 꺼내 cb(메시지, 상태코드) 로 넘긴다.
@@ -1209,12 +1243,11 @@
       '<label class="consent"><input type="checkbox" id="ac-login" checked>' +
       "<span><b>로그인 계정을 함께 생성</b>합니다(권장). 체크를 해제하면 <b>이미 존재하는 확인된 계정</b>에만 " +
       "권한을 붙입니다 — 계정이 없으면 등록이 거부됩니다.</span></label>" +
-      '<div class="field" id="ac-pw-wrap" style="display:none">' +
-      '<label for="ac-pw">임시 비밀번호 (한 번만 표시됩니다)</label>' +
-      '<input id="ac-pw" type="text" value="' + escA(pw) + '" readonly ' +
-      'style="font-family:\'IBM Plex Mono\',monospace">' +
-      '<div class="hint">이 값을 안전한 경로로 전달하고, 첫 로그인 후 변경하도록 안내하세요. ' +
-      "이 창을 닫으면 다시 볼 수 없습니다.</div></div>" +
+      '<div id="ac-pw-wrap" style="display:none">' +
+      pwFieldHtml("ac-pw", pw, "초기 비밀번호 (직접 정해도 됩니다)",
+        PW_TEMP_MIN + "자 이상. 자동값을 그대로 써도 되고 원하는 값으로 바꿔도 됩니다. " +
+        "안전한 경로로 전달하고 첫 로그인 후 변경하도록 안내하세요. 창을 닫으면 다시 볼 수 없습니다.") +
+      "</div>" +
       '<div class="alert" id="md-alert"></div>',
       [
         { label: "취소", on: closeModal },
@@ -1225,6 +1258,9 @@
             var withLogin = checked("ac-login");
             if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email)) {
               show("md-alert", "bad", "이메일 형식을 확인해 주세요."); return;
+            }
+            if (withLogin && val("ac-pw").length < PW_TEMP_MIN) {
+              show("md-alert", "bad", "초기 비밀번호는 " + PW_TEMP_MIN + "자 이상이어야 합니다."); return;
             }
             if (!withLogin) {
               db.rpc("sl_admin_add", { p_email: email, p_role: role, p_note: note })
@@ -1264,6 +1300,14 @@
   });
 
   document.addEventListener("click", function (e) {
+    /* [다시 생성] — 어느 모달이든 pwFieldHtml 로 만든 칸이면 이 버튼이 값을 새로 채운다. */
+    var rg = e.target.closest("[data-pw-regen]");
+    if (rg) {
+      var f = document.getElementById(rg.getAttribute("data-pw-regen"));
+      if (f) { f.value = tempPassword(); f.focus(); f.select(); }
+      return;
+    }
+
     var lk = e.target.closest("[data-acct-link]");
     if (lk) {
       var lem = lk.getAttribute("data-acct-link");
@@ -1307,18 +1351,17 @@
       openModal("비밀번호 재설정",
         "<p style='color:var(--ink-2);line-height:1.7'><b>" + esc(pem) + "</b> 의 비밀번호를 " +
         "아래 값으로 바꿉니다. 본인이 쓰던 비밀번호는 즉시 무효가 됩니다.</p>" +
-        '<div class="field" style="margin-top:14px">' +
-        '<label for="pr-pw">임시 비밀번호 (한 번만 표시됩니다)</label>' +
-        '<input id="pr-pw" type="text" maxlength="72" value="' + escA(tmp) + '" ' +
-        'style="font-family:\'IBM Plex Mono\',monospace">' +
-        '<div class="hint">그대로 써도 되고, 직접 정해도 됩니다(12자 이상). ' +
-        "안전한 경로로 전달하고 첫 로그인 후 바꾸도록 안내하세요.</div></div>" +
+        '<div style="margin-top:14px">' +
+        pwFieldHtml("pr-pw", tmp, "새 비밀번호 (직접 정해도 됩니다)",
+          PW_TEMP_MIN + "자 이상. 자동값을 그대로 써도 되고 원하는 값으로 바꿔도 됩니다. " +
+          "안전한 경로로 전달하고 첫 로그인 후 바꾸도록 안내하세요.") +
+        "</div>" +
         '<div class="alert" id="md-alert"></div>',
         [{ label: "취소", on: closeModal },
          { label: "재설정", cls: "", on: function () {
              var np = val("pr-pw");
-             if (np.length < 12) {
-               show("md-alert", "bad", "임시 비밀번호는 12자 이상이어야 합니다."); return;
+             if (np.length < PW_TEMP_MIN) {
+               show("md-alert", "bad", "새 비밀번호는 " + PW_TEMP_MIN + "자 이상이어야 합니다."); return;
              }
              show("md-alert", "info", "재설정하는 중…");
              /* 값을 화면 밖으로 내보내기 전에 복사해 둘 기회를 준다 — 성공해도 모달은 바로 닫지 않는다. */
