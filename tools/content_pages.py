@@ -151,13 +151,13 @@ ABOUT_BODY = """<section class="phead">
         <p>발견마다 재현 절차와 확인 근거가 붙습니다. 판단이 서지 않는 항목은 추정으로 적지 않고
            “확인 필요”로 분리합니다. 무엇을 더 받으면 확정되는지도 그 자리에 밝혀 드립니다.</p>
       </div>
-      <div class="col-item rv d1">
+      <div class="col-item rv rv-d1">
         <span class="n">02</span>
         <h3>월요일에 바로 손댈 수 있게</h3>
         <p>위험도 하나로 순서가 정해지지는 않습니다. 고치는 데 걸리는 시간을 나란히 놓고 봐야
            다음 주에 실제로 착수할 항목이 추려집니다.</p>
       </div>
-      <div class="col-item rv d2">
+      <div class="col-item rv rv-d2">
         <span class="n">03</span>
         <h3>알게 된 것은 밖으로 나가지 않습니다</h3>
         <p>착수 전 NDA를 먼저 쓰고, 진단 데이터는 합의된 경로로만 주고받으며, 보관 기간이 끝나면
@@ -234,8 +234,8 @@ METHOD_CSS = """
 METHOD_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 진단 방법론</div>
-    <h1 class="d1">계약 전에<br>먼저 공개합니다</h1>
-    <p class="lead">제안서를 여러 곳에서 받아 놓고도 무엇을 기준으로 비교해야 할지 막막할 때가 있습니다.
+    <h1 class="d1" data-content="method.hero_title">계약 전에<br>먼저 공개합니다</h1>
+    <p class="lead" data-content="method.hero_lead">제안서를 여러 곳에서 받아 놓고도 무엇을 기준으로 비교해야 할지 막막할 때가 있습니다.
        쉴더스랩은 그래서 실제로 쓰는 5단계 절차와 위험도 산정 기준, 산출물 규격을 계약 전에 공개합니다.
        감추면 비교가 안 되니까요.</p>
   </div>
@@ -474,8 +474,10 @@ BRAND_CSS = """
   .sw .i b{display:block;font-size:.86rem;font-weight:500}
   .sw .i code{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-3)}
   .rules{display:grid;grid-template-columns:1fr 1fr;gap:var(--gut)}
-  .rules h4{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;
-    text-transform:uppercase;margin-bottom:16px;padding-top:18px;border-top:1px solid var(--ink)}
+  /* 내용이 한글("권장"/"금지")이라 모노를 쓰면 폴백된다. 산세리프로 되돌리고
+     두께도 500 으로 명시한다 — h4 는 전역 규칙에서 600 을 받는데 모노는 600 을 안 싣는다. */
+  .rules h4{font-family:var(--font-sans);font-size:.72rem;letter-spacing:.02em;font-weight:500;
+    margin-bottom:16px;padding-top:18px;border-top:1px solid var(--ink)}
   .rules .yes h4{color:var(--accent)}
   .rules .no h4{color:var(--bad)}
   @media (max-width:900px){.assets{grid-template-columns:repeat(2,1fr)}.sw{grid-template-columns:repeat(2,1fr)}}

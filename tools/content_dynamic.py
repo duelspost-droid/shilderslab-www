@@ -24,8 +24,8 @@ INS_CSS = """
 INS_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 인사이트</div>
-    <h1 class="d1">현장에서<br>반복되는 것들</h1>
-    <p class="lead">진단을 나가면 조직은 달라도 같은 문제가 반복됩니다.
+    <h1 class="d1" data-content="insights.hero_title">현장에서<br>반복되는 것들</h1>
+    <p class="lead" data-content="insights.hero_lead">진단을 나가면 조직은 달라도 같은 문제가 반복됩니다.
        규제 해석이 갈리는 지점, 조치가 자주 미끄러지는 지점, 그리고 실제로 통했던 방법을 기록합니다.</p>
   </div>
 </section>
@@ -245,8 +245,8 @@ CAR_CSS = """
 CAR_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 채용</div>
-    <h1 class="d1">근거로 말하는<br>사람을 찾습니다</h1>
-    <p class="lead">“아마 취약할 것 같다”가 아니라 “이렇게 재현된다”로 말하는 사람과 일합니다.
+    <h1 class="d1" data-content="careers.hero_title">근거로 말하는<br>사람을 찾습니다</h1>
+    <p class="lead" data-content="careers.hero_lead">“아마 취약할 것 같다”가 아니라 “이렇게 재현된다”로 말하는 사람과 일합니다.
        경력의 길이보다 검증하는 습관을 봅니다.</p>
   </div>
 </section>
@@ -273,12 +273,12 @@ CAR_BODY = """<section class="phead">
         <h3>결과보다 근거</h3>
         <p>발견을 주장하려면 재현이 필요합니다. 내부 리뷰에서도 “왜 그렇게 판단했는가”를 먼저 확인합니다.</p>
       </div>
-      <div class="col-item rv d1">
+      <div class="col-item rv rv-d1">
         <span class="n">02</span>
         <h3>혼자 결론내지 않음</h3>
         <p>위험도 산정과 보고서 논조는 교차 검토를 거칩니다. 신입도 시니어 판단에 이견을 낼 수 있어야 합니다.</p>
       </div>
-      <div class="col-item rv d2">
+      <div class="col-item rv rv-d2">
         <span class="n">03</span>
         <h3>배운 것은 문서로</h3>
         <p>프로젝트에서 얻은 패턴은 체크리스트와 인사이트로 남깁니다. 같은 실수를 조직이 반복하지 않게 합니다.</p>
@@ -468,8 +468,8 @@ CON_CSS = """
 CON_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 상담 요청</div>
-    <h1 class="d1">범위부터<br>같이 정리합니다</h1>
-    <p class="lead">무엇이 필요한지 확정되지 않아도 괜찮습니다. 현재 상황만 알려주시면 필요한 진단과
+    <h1 class="d1" data-content="contact.hero_title">범위부터<br>같이 정리합니다</h1>
+    <p class="lead" data-content="contact.hero_lead">무엇이 필요한지 확정되지 않아도 괜찮습니다. 현재 상황만 알려주시면 필요한 진단과
        우선순위, 예상 일정을 정리해 회신드립니다. <b>범위 검토와 견적 산정에는 비용이 발생하지 않습니다.</b></p>
   </div>
 </section>

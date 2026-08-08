@@ -32,8 +32,8 @@ TRUST_CSS = """
 TRUST_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 신뢰 센터</div>
-    <h1 class="d1">우리에게 맡긴 것이<br>어떻게 다뤄지는지</h1>
-    <p class="lead">진단이 끝나도 구성도와 계정 체계, 취약점 목록은 저희 쪽에 남기 때문에
+    <h1 class="d1" data-content="trust.hero_title">우리에게 맡긴 것이<br>어떻게 다뤄지는지</h1>
+    <p class="lead" data-content="trust.hero_lead">진단이 끝나도 구성도와 계정 체계, 취약점 목록은 저희 쪽에 남기 때문에
        그 자료를 어디에 두는지, 얼마나 갖고 있다가 어떻게 없애는지를 아래에 적었습니다.
        계약 전에 미리 보셔도 됩니다.</p>
   </div>
@@ -225,8 +225,8 @@ REG_CSS = """
 REG_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 규제 가이드</div>
-    <h1 class="d1">무엇이 우리에게<br>해당되는가</h1>
-    <p class="lead">제도 이름은 익숙한데 우리 회사가 어디에 걸리는지는 애매하실 겁니다.
+    <h1 class="d1" data-content="regulations.hero_title">무엇이 우리에게<br>해당되는가</h1>
+    <p class="lead" data-content="regulations.hero_lead">제도 이름은 익숙한데 우리 회사가 어디에 걸리는지는 애매하실 겁니다.
        그래서 국내 정보보호 제도를 근거 법령과 대상, 주기로 나란히 놓고 정리했습니다.
        다만 수치와 해석은 원문으로 최종 확인하시는 편이 안전합니다.</p>
   </div>

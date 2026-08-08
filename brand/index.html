@@ -42,8 +42,10 @@
   .sw .i b{display:block;font-size:.86rem;font-weight:500}
   .sw .i code{font-family:var(--font-mono);font-size:.74rem;color:var(--ink-3)}
   .rules{display:grid;grid-template-columns:1fr 1fr;gap:var(--gut)}
-  .rules h4{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.12em;
-    text-transform:uppercase;margin-bottom:16px;padding-top:18px;border-top:1px solid var(--ink)}
+  /* 내용이 한글("권장"/"금지")이라 모노를 쓰면 폴백된다. 산세리프로 되돌리고
+     두께도 500 으로 명시한다 — h4 는 전역 규칙에서 600 을 받는데 모노는 600 을 안 싣는다. */
+  .rules h4{font-family:var(--font-sans);font-size:.72rem;letter-spacing:.02em;font-weight:500;
+    margin-bottom:16px;padding-top:18px;border-top:1px solid var(--ink)}
   .rules .yes h4{color:var(--accent)}
   .rules .no h4{color:var(--bad)}
   @media (max-width:900px){.assets{grid-template-columns:repeat(2,1fr)}.sw{grid-template-columns:repeat(2,1fr)}}

@@ -29,8 +29,10 @@ import sys
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# data-content 앵커가 들어갈 수 있는 파일 **전부**. 빠뜨리면 그 페이지 블록이 조용히 무시된다
+# — content_resources.py 가 빠져 있어 자료실 블록이 동기화 대상에서 누락됐다(2026-08-08).
 SRC_FILES = ["content_pages.py", "content_home.py", "content_services.py",
-             "content_trust.py", "content_dynamic.py", "shell.py"]
+             "content_resources.py", "content_trust.py", "content_dynamic.py", "shell.py"]
 
 # data-content 요소의 여는 태그 / 키 / 안쪽 / 닫는 태그
 ANCHOR = re.compile(r'<(\w+)\b[^>]*\bdata-content="([^"]+)"[^>]*>(.*?)</\1>', re.S)
