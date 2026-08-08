@@ -122,6 +122,43 @@ def fetch_insights():
         return []
 
 
+def fetch_jobs():
+    """공개 채용공고(빌드 시점) — careers 페이지에 정적으로 굽는다. 실패해도 빌드는 계속한다.
+       클라이언트(CAR_JS)가 로드되면 최신본으로 갱신하므로, 여기서 굽는 것은 크롤러·SNS·
+       JS 없는 환경을 위한 것이다."""
+    try:
+        return _rest("sl_jobs?select=title,team,employment_type,location,summary,body,closes_at"
+                     "&published=eq.true&order=sort_order.asc&limit=30")
+    except Exception as e:
+        print(f"  ! 채용공고 조회 실패({e.__class__.__name__}) — 목록은 클라이언트가 채웁니다")
+        return None
+
+
+def render_jobs(jobs):
+    """CAR_JS 의 card() 와 **같은 구조**를 만든다. 두 렌더러가 어긋나면 하이드레이션 때
+       화면이 튄다 — 한쪽을 고치면 다른 쪽도 고칠 것. 본문은 esc 만 한다(마크다운 아님,
+       .jbody 가 white-space:pre-wrap 으로 줄바꿈을 살린다)."""
+    empty = ('<div class="empty">현재 공개된 공고가 없습니다. '
+             '상시 지원은 아래 양식을 이용해 주세요.</div>')
+    if jobs is None:      # 조회 실패 — 마커를 비워 두면 CAR_JS 가 채운다
+        return ""
+    if not jobs:
+        return empty
+    out = []
+    for j in jobs:
+        metas = " · ".join(esc(x) for x in
+                           [j.get("team"), j.get("employment_type"), j.get("location")] if x)
+        closes = (" · 마감 " + esc(fmt_date(j["closes_at"]))) if j.get("closes_at") else " · 채용 시 마감"
+        body = esc(j.get("body") or j.get("summary") or "")
+        out.append(
+            '<details><summary><span class="jt"><b>' + esc(j.get("title")) + "</b><span>" +
+            metas + closes + '</span></span><span class="open">상세 +</span></summary>'
+            '<div class="jbody">' + body +
+            '<div style="margin-top:22px"><a class="btn btn-sm" href="#apply">이 포지션 지원하기</a>'
+            "</div></div></details>")
+    return "\n".join(out)
+
+
 def fetch_content():
     """관리자가 고친 문구를 빌드 시점에 구워 넣기 위해 읽는다.
        0005 미적용이거나 네트워크가 없으면 조용히 비운다 — 그 경우 코드 기본 문구로 빌드된다."""
@@ -342,7 +379,8 @@ def main():
 
     add("insights/index.html", "0.8", D.INS_TITLE, D.INS_DESC, D.INS_BODY, "/insights/",
         D.INS_CSS, D.INS_JS, D.INS_LD)
-    add("careers/index.html", "0.6", D.CAR_TITLE, D.CAR_DESC, D.CAR_BODY, "/careers/", D.CAR_CSS, D.CAR_JS)
+    car_body = D.CAR_BODY.replace("<!--SL_JOBS-->", render_jobs(fetch_jobs()))
+    add("careers/index.html", "0.6", D.CAR_TITLE, D.CAR_DESC, car_body, "/careers/", D.CAR_CSS, D.CAR_JS)
     add("contact/index.html", "0.9", D.CON_TITLE, D.CON_DESC, D.CON_BODY, "/contact/",
         D.CON_CSS, D.CON_JS, D.CON_LD)
 

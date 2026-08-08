@@ -257,7 +257,10 @@ CAR_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">01 / Open positions</span></div>
       <div class="body"><h2 class="d3">채용 중인 포지션</h2></div>
     </div>
-    <div class="jobs" id="job-list"><div class="empty">공고를 불러오는 중…</div></div>
+    <!-- 공고 목록은 빌드가 정적으로 굽고(크롤러·JS 없는 환경), 로드되면 CAR_JS 가 최신으로 갱신한다.
+         build-pages.py 가 아래 div 안의 SL_JOBS 마커를 sl_jobs 공개분으로 치환한다. 빌드를
+         안 거치면 비어 있고 CAR_JS 가 채운다(기존 동작 유지). 마커 리터럴은 여기 한 곳에만 둘 것. -->
+    <div class="jobs" id="job-list"><!--SL_JOBS--></div>
   </div>
 </section>
 
@@ -362,30 +365,37 @@ CAR_BODY = """<section class="phead">
 CAR_JS = """<script>
 (function () {
   var listEl = document.getElementById("job-list");
-  if (!window.SL || !SL.db()) {
-    listEl.innerHTML = '<div class="empty">현재 공개된 공고가 없습니다. 상시 지원은 아래 양식을 이용해 주세요.</div>';
-  } else {
-    SL.listPublished("sl_jobs", {
-      columns: "title,team,employment_type,location,summary,body,closes_at",
-      order: { col: "sort_order", asc: true }, limit: 30
-    }).then(function (r) {
-      var rows = (r && r.data) || [];
-      if (!rows.length) {
-        listEl.innerHTML = '<div class="empty">현재 공개된 공고가 없습니다. 상시 지원은 아래 양식을 이용해 주세요.</div>';
-        return;
-      }
-      listEl.innerHTML = rows.map(function (j) {
-        var metas = [j.team, j.employment_type, j.location].filter(Boolean).map(SL.esc).join(" · ");
-        return '<details><summary><span class="jt"><b>' + SL.esc(j.title) + "</b><span>" + metas +
-          (j.closes_at ? " · 마감 " + SL.esc(SL.fmtDate(j.closes_at)) : " · 채용 시 마감") +
-          '</span></span><span class="open">상세 +</span></summary>' +
-          '<div class="jbody">' + SL.esc(j.body || j.summary || "") +
-          '<div style="margin-top:22px"><a class="btn btn-sm" href="#apply">이 포지션 지원하기</a></div></div></details>';
-      }).join("");
-    }).catch(function () {
-      listEl.innerHTML = '<div class="empty">공고를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>';
-    });
+  /* 빌드가 이미 공고를 정적으로 구워 뒀는지 — <details> 가 있으면 그렇다.
+     그러면 백엔드 미설정·조회 실패 시에도 그 목록을 지우지 않는다(크롤러가 본 것과 같은 화면). */
+  var hasStatic = !!listEl.querySelector("details");
+  var EMPTY = '<div class="empty">현재 공개된 공고가 없습니다. 상시 지원은 아래 양식을 이용해 주세요.</div>';
+
+  function card(j) {
+    var metas = [j.team, j.employment_type, j.location].filter(Boolean).map(SL.esc).join(" · ");
+    return '<details><summary><span class="jt"><b>' + SL.esc(j.title) + "</b><span>" + metas +
+      (j.closes_at ? " · 마감 " + SL.esc(SL.fmtDate(j.closes_at)) : " · 채용 시 마감") +
+      '</span></span><span class="open">상세 +</span></summary>' +
+      '<div class="jbody">' + SL.esc(j.body || j.summary || "") +
+      '<div style="margin-top:22px"><a class="btn btn-sm" href="#apply">이 포지션 지원하기</a></div></div></details>';
   }
+
+  if (!window.SL || !SL.db()) {
+    /* 백엔드 미설정 — 빌드가 구운 정적 목록을 그대로 둔다. 정적도 없으면(빌드 전) 안내. */
+    if (!hasStatic) listEl.innerHTML = EMPTY;
+    return;
+  }
+  SL.listPublished("sl_jobs", {
+    columns: "title,team,employment_type,location,summary,body,closes_at",
+    order: { col: "sort_order", asc: true }, limit: 30
+  }).then(function (r) {
+    /* 조회 실패면 정적 목록을 남긴다(DB 가 아니라 네트워크 문제일 수 있다). */
+    if (r && r.error) { if (!hasStatic) listEl.innerHTML = EMPTY; return; }
+    var rows = (r && r.data) || [];
+    /* DB 가 정본이다 — 성공 응답이면 0개라도 정적 목록을 최신 상태로 맞춘다. */
+    listEl.innerHTML = rows.length ? rows.map(card).join("") : EMPTY;
+  }).catch(function () {
+    if (!hasStatic) listEl.innerHTML = '<div class="empty">공고를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>';
+  });
 
   var form = document.getElementById("apply-form");
   var alertEl = document.getElementById("ap-alert");

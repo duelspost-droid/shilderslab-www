@@ -75,7 +75,48 @@
       <div class="idx"><span class="lbl">01 / Open positions</span></div>
       <div class="body"><h2 class="d3">채용 중인 포지션</h2></div>
     </div>
-    <div class="jobs" id="job-list"><div class="empty">공고를 불러오는 중…</div></div>
+    <!-- 공고 목록은 빌드가 정적으로 굽고(크롤러·JS 없는 환경), 로드되면 CAR_JS 가 최신으로 갱신한다.
+         build-pages.py 가 아래 div 안의 SL_JOBS 마커를 sl_jobs 공개분으로 치환한다. 빌드를
+         안 거치면 비어 있고 CAR_JS 가 채운다(기존 동작 유지). 마커 리터럴은 여기 한 곳에만 둘 것. -->
+    <div class="jobs" id="job-list"><details><summary><span class="jt"><b>정보보호 컨설턴트 (관리체계 · ISMS-P)</b><span>컨설팅팀 · 정규직 · 서울 (프로젝트에 따라 고객사 상주) · 채용 시 마감</span></span><span class="open">상세 +</span></summary><div class="jbody">[담당 업무]
+- ISMS-P 인증 취득·사후심사 컨설팅 (GAP 분석, 정책·지침 정비, 위험평가, 심사 대응)
+- 개인정보 처리 흐름 진단 및 안전성 확보조치 이행 점검
+- 진단 결과 보고서 작성 및 고객사 조치 이행 지원
+
+[자격 요건]
+- 정보보호 컨설팅 또는 기업 보안 담당 경험
+- ISMS-P 인증기준에 대한 이해
+- 문서로 근거를 남기는 습관
+
+[우대 사항]
+- ISMS-P 인증심사원, CISSP, CISA, CPPG 등 관련 자격
+- 개인정보 영향평가(PIA) 수행 경험
+- 금융·의료 등 규제 산업 프로젝트 경험
+
+[전형 절차]
+서류 검토 → 실무 인터뷰 → 최종 인터뷰 → 처우 협의
+
+※ 상세 처우와 근무 조건은 인터뷰 단계에서 안내합니다.<div style="margin-top:22px"><a class="btn btn-sm" href="#apply">이 포지션 지원하기</a></div></div></details>
+<details><summary><span class="jt"><b>모의해킹 · 취약점 진단 엔지니어</b><span>기술진단팀 · 정규직 · 서울 · 채용 시 마감</span></span><span class="open">상세 +</span></summary><div class="jbody">[담당 업무]
+- 웹·API·모바일 애플리케이션 모의해킹 및 시나리오 기반 침투테스트
+- 서버·네트워크·DB 등 인프라 취약점 진단
+- 발견 사항의 재현 절차 작성, 위험도 산정, 조치 가이드 제공
+- 조치 후 재점검 수행
+
+[자격 요건]
+- 모의해킹 또는 취약점 진단 수행 경험
+- 웹 취약점(인증·인가·주입·업무논리)에 대한 실무 이해
+- 발견 사항을 재현 가능한 형태로 문서화할 수 있는 역량
+
+[우대 사항]
+- CVE 등록, 버그바운티, CTF 입상 이력
+- 클라우드 환경(AWS·Azure·GCP) 진단 경험
+- 소스코드 진단 및 시큐어코딩 컨설팅 경험
+
+[전형 절차]
+서류 검토 → 기술 인터뷰(실기 포함 가능) → 최종 인터뷰 → 처우 협의
+
+※ 진단 업무는 사전 서면 승인 범위 안에서만 수행합니다.<div style="margin-top:22px"><a class="btn btn-sm" href="#apply">이 포지션 지원하기</a></div></div></details></div>
   </div>
 </section>
 
@@ -230,30 +271,37 @@
 <script>
 (function () {
   var listEl = document.getElementById("job-list");
-  if (!window.SL || !SL.db()) {
-    listEl.innerHTML = '<div class="empty">현재 공개된 공고가 없습니다. 상시 지원은 아래 양식을 이용해 주세요.</div>';
-  } else {
-    SL.listPublished("sl_jobs", {
-      columns: "title,team,employment_type,location,summary,body,closes_at",
-      order: { col: "sort_order", asc: true }, limit: 30
-    }).then(function (r) {
-      var rows = (r && r.data) || [];
-      if (!rows.length) {
-        listEl.innerHTML = '<div class="empty">현재 공개된 공고가 없습니다. 상시 지원은 아래 양식을 이용해 주세요.</div>';
-        return;
-      }
-      listEl.innerHTML = rows.map(function (j) {
-        var metas = [j.team, j.employment_type, j.location].filter(Boolean).map(SL.esc).join(" · ");
-        return '<details><summary><span class="jt"><b>' + SL.esc(j.title) + "</b><span>" + metas +
-          (j.closes_at ? " · 마감 " + SL.esc(SL.fmtDate(j.closes_at)) : " · 채용 시 마감") +
-          '</span></span><span class="open">상세 +</span></summary>' +
-          '<div class="jbody">' + SL.esc(j.body || j.summary || "") +
-          '<div style="margin-top:22px"><a class="btn btn-sm" href="#apply">이 포지션 지원하기</a></div></div></details>';
-      }).join("");
-    }).catch(function () {
-      listEl.innerHTML = '<div class="empty">공고를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>';
-    });
+  /* 빌드가 이미 공고를 정적으로 구워 뒀는지 — <details> 가 있으면 그렇다.
+     그러면 백엔드 미설정·조회 실패 시에도 그 목록을 지우지 않는다(크롤러가 본 것과 같은 화면). */
+  var hasStatic = !!listEl.querySelector("details");
+  var EMPTY = '<div class="empty">현재 공개된 공고가 없습니다. 상시 지원은 아래 양식을 이용해 주세요.</div>';
+
+  function card(j) {
+    var metas = [j.team, j.employment_type, j.location].filter(Boolean).map(SL.esc).join(" · ");
+    return '<details><summary><span class="jt"><b>' + SL.esc(j.title) + "</b><span>" + metas +
+      (j.closes_at ? " · 마감 " + SL.esc(SL.fmtDate(j.closes_at)) : " · 채용 시 마감") +
+      '</span></span><span class="open">상세 +</span></summary>' +
+      '<div class="jbody">' + SL.esc(j.body || j.summary || "") +
+      '<div style="margin-top:22px"><a class="btn btn-sm" href="#apply">이 포지션 지원하기</a></div></div></details>';
   }
+
+  if (!window.SL || !SL.db()) {
+    /* 백엔드 미설정 — 빌드가 구운 정적 목록을 그대로 둔다. 정적도 없으면(빌드 전) 안내. */
+    if (!hasStatic) listEl.innerHTML = EMPTY;
+    return;
+  }
+  SL.listPublished("sl_jobs", {
+    columns: "title,team,employment_type,location,summary,body,closes_at",
+    order: { col: "sort_order", asc: true }, limit: 30
+  }).then(function (r) {
+    /* 조회 실패면 정적 목록을 남긴다(DB 가 아니라 네트워크 문제일 수 있다). */
+    if (r && r.error) { if (!hasStatic) listEl.innerHTML = EMPTY; return; }
+    var rows = (r && r.data) || [];
+    /* DB 가 정본이다 — 성공 응답이면 0개라도 정적 목록을 최신 상태로 맞춘다. */
+    listEl.innerHTML = rows.length ? rows.map(card).join("") : EMPTY;
+  }).catch(function () {
+    if (!hasStatic) listEl.innerHTML = '<div class="empty">공고를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>';
+  });
 
   var form = document.getElementById("apply-form");
   var alertEl = document.getElementById("ap-alert");
