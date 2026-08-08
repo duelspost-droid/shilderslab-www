@@ -14,15 +14,18 @@
  *      → 이 파일 내용을 붙여넣고 Deploy.
  *      ⚠ **Verify JWT 토글 OFF** — 브라우저 CORS preflight(OPTIONS)에는 JWT 가 없어 401 이 된다.
  *        대신 이 코드가 호출자 토큰으로 `is_sl_owner()` 를 확인한다.
- *   2) Edge Functions → Secrets (값 입력은 오너가 직접)
- *        SL_SERVICE_ROLE_KEY : Project Settings → API Keys → service_role
- *        (SUPABASE_URL / SUPABASE_ANON_KEY 는 런타임이 자동 주입)
+ *   2) Secret 입력은 **필요 없다.** SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY
+ *      셋 다 런타임이 자동 주입한다. (다른 키를 쓰고 싶을 때만 SL_SERVICE_ROLE_KEY 를 넣으면 우선한다.)
  *   3) 검증: 무인증 POST → 401 · OPTIONS → 200 · 비-admin 토큰 → 403
  *
  * 계약
  *   POST { action: "create", email, password, role?, note? }
  *        → Auth 계정 생성(email_confirm) → sl_admin_add 로 화이트리스트 등록
  *          화이트리스트 등록이 실패하면 **생성한 계정을 되돌린다**(고아 계정 방지)
+ *   POST { action: "set_password", email, password }
+ *        → sl_admin_pw_uid(email) 로 DB 가 대상 uid 를 판정한 경우에만 비밀번호 교체
+ *          (목록 밖 계정 · 로그인 없는 슬롯 · 자기 계정은 DB 가 거부)
+ *          교체 성공 후 sl_admin_pw_logged 로 감사 로그를 남긴다
  *   POST { action: "delete_login", email }
  *        → sl_admin_login_uid(email) 로 DB 가 대상 uid 를 판정한 경우에만 삭제
  *          (우리 화이트리스트에 없는 계정, 자기 계정, 마지막 admin 은 DB 가 거부)
@@ -49,9 +52,15 @@ function json(body: unknown, status = 200) {
   });
 }
 
-type RpcResult = { ok: true; value: unknown } | { ok: false; status: number };
+type RpcResult =
+  | { ok: true; value: unknown }
+  | { ok: false; status: number; message?: string };
 
-/** 호출자 토큰으로 RPC 호출. 실패와 false 를 구분한다(fail-closed 를 위해 필수). */
+/** 호출자 토큰으로 RPC 호출. 실패와 false 를 구분한다(fail-closed 를 위해 필수).
+ *
+ *  실패하면 PostgREST 가 준 **한국어 사유**(RPC 의 raise exception 메시지)를 함께 돌려준다.
+ *  이걸 버리면 "이 사이트가 만든 계정이 아닙니다" 같은 판정 사유가 화면에 닿지 못하고
+ *  관리자는 영문 상태코드만 보게 된다 — 왜 막혔는지 알 수 없다. */
 async function rpc(
   url: string, anon: string, token: string, fn: string, args: unknown = {},
 ): Promise<RpcResult> {
@@ -60,7 +69,14 @@ async function rpc(
     headers: { apikey: anon, authorization: `Bearer ${token}`, "content-type": "application/json" },
     body: JSON.stringify(args),
   });
-  if (!r.ok) return { ok: false, status: r.status };
+  if (!r.ok) {
+    let message: string | undefined;
+    try {
+      const e = JSON.parse(await r.text());
+      message = typeof e?.message === "string" ? e.message : undefined;
+    } catch { /* 본문이 없거나 JSON 이 아니면 상태코드만 쓴다 */ }
+    return { ok: false, status: r.status, message };
+  }
   const text = await r.text();
   try {
     return { ok: true, value: text === "" ? null : JSON.parse(text) };
@@ -75,7 +91,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   const url = Deno.env.get("SUPABASE_URL") ?? "";
   const anon = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
-  const service = Deno.env.get("SL_SERVICE_ROLE_KEY") ?? "";
+  // SUPABASE_SERVICE_ROLE_KEY 는 Supabase 가 Edge 런타임에 자동 주입한다.
+  // 즉 **오너가 키를 복사해 넣지 않아도 배포만 하면 동작한다** — 크리덴셜을 손으로 옮길 일이 없다.
+  // SL_SERVICE_ROLE_KEY 는 굳이 다른 키를 쓰고 싶을 때만 넣는 선택지로 남긴다(있으면 우선).
+  const service = Deno.env.get("SL_SERVICE_ROLE_KEY") ||
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
   if (!url || !anon || !service) {
     console.error("config missing", { url: !!url, anon: !!anon, service: !!service });
     return json({ error: "server_not_configured" }, 500);
@@ -157,7 +177,56 @@ Deno.serve(async (req: Request): Promise<Response> => {
       }, 500);
     }
 
-    return json({ ok: true, email, role });
+    // 이 계정은 **우리가 만들었다** — 나중에 콘솔에서 비밀번호를 재설정할 수 있는 유일한 조건이다.
+    // (기존 계정을 sl_admin_link 로 갖다 붙인 행은 이 표시가 없어 재설정 대상이 되지 않는다.)
+    const mark = await rpc(url, anon, token, "sl_admin_mark_pw_managed", { p_email: email });
+    if (!mark.ok) console.error("mark_pw_managed failed", mark.status);
+
+    return json({ ok: true, email, role, pw_managed: mark.ok });
+  }
+
+  // ══════════════ 비밀번호 재설정 ══════════════
+  // 담당자가 비밀번호를 잊었을 때 admin 이 임시 비밀번호를 발급한다.
+  // 대상 판정은 DB(sl_admin_pw_uid)가 한다 — 화이트리스트 밖 계정, 로그인 없는 슬롯,
+  // 자기 계정은 거기서 걸러진다. 여기서는 DB 가 uid 를 돌려준 경우에만 움직인다.
+  if (action === "set_password") {
+    const password = String(body.password ?? "");
+    if (password.length < 12) return json({ error: "weak_password" }, 400);
+
+    const target = await rpc(url, anon, token, "sl_admin_pw_uid", { p_email: email });
+    if (!target.ok) {
+      console.error("pw_uid check failed", target.status);
+      // DB 가 한국어로 사유를 말해 준다(자기 계정 · 로그인 없음 · 우리가 만든 계정 아님).
+      return json({
+        error: "target_check_failed",
+        status: target.status,
+        message: target.message ?? "대상 계정을 확인하지 못했습니다.",
+      }, 400);
+    }
+    const uid = target.value;
+    if (!uid || typeof uid !== "string") {
+      return json({
+        error: "not_resettable",
+        message: "이 사이트의 관리자 목록에 있는 계정이 아닙니다. 다른 계정의 비밀번호는 바꾸지 않습니다.",
+      }, 404);
+    }
+
+    const pr = await fetch(`${url}/auth/v1/admin/users/${uid}`, {
+      method: "PUT",
+      headers: svc,
+      body: JSON.stringify({ password }),
+    });
+    if (!pr.ok) {
+      // 본문에 비밀번호가 섞일 수 있으므로 로그에는 상태 코드만 남긴다.
+      console.error("setPassword failed", pr.status);
+      return json({ error: "set_password_failed", status: pr.status }, 400);
+    }
+
+    // 실제로 바뀐 뒤에만 기록한다. 실패해도 재설정 자체는 이미 끝났으므로 성공으로 응답한다.
+    const lg = await rpc(url, anon, token, "sl_admin_pw_logged", { p_email: email });
+    if (!lg.ok) console.error("pw audit log failed", lg.status);
+
+    return json({ ok: true, email, logged: lg.ok });
   }
 
   // ══════════════ 로그인 계정 삭제 ══════════════

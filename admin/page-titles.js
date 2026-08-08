@@ -1,0 +1,31 @@
+/* 생성 파일 — 손으로 고치지 마라. tools/build-pages.py 가 만든다.
+   관리자 콘솔 [인기 페이지]가 경로와 함께 보여줄 사람이 읽는 이름. */
+window.SL_PAGE_TITLES = {
+  "/": "홈",
+  "/404.html": "페이지를 찾을 수 없습니다",
+  "/about/": "회사소개",
+  "/brand/": "브랜드 · CI",
+  "/careers/": "채용",
+  "/contact/": "상담 · 견적 요청",
+  "/insights/": "인사이트",
+  "/insights/cloud-misconfigurations-we-find-most/": "클라우드 계정에서 가장 자주 발견되는 구성 다섯 가지",
+  "/insights/isms-p-first-certification-preparation/": "ISMS-P 최초 인증, 준비 기간을 좌우하는 네 가지",
+  "/insights/reading-a-penetration-test-proposal/": "모의해킹 견적서를 받았다면 확인해야 할 다섯 가지",
+  "/insights/view.html": "인사이트 (글 보기)",
+  "/legal/privacy.html": "개인정보처리방침",
+  "/legal/terms.html": "이용약관",
+  "/method/": "진단 방법론",
+  "/regulations/": "규제 가이드",
+  "/resources/": "자료실",
+  "/resources/isms-p-readiness/": "ISMS-P 착수 전 자가점검",
+  "/resources/pentest-rfp/": "모의해킹 제안서 비교 체크리스트",
+  "/resources/report-anatomy/": "진단 보고서 구성 샘플",
+  "/services/": "서비스",
+  "/services/assessment/": "취약점 진단",
+  "/services/cloud/": "클라우드 보안 진단",
+  "/services/governance/": "보안 거버넌스 · 교육",
+  "/services/isms-p/": "ISMS-P 인증 컨설팅",
+  "/services/pentest/": "모의해킹 · 침투테스트",
+  "/services/privacy/": "개인정보 컴플라이언스",
+  "/trust/": "신뢰 센터"
+};

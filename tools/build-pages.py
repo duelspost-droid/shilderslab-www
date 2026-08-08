@@ -50,7 +50,27 @@ def apply_content(html):
     return _CONTENT_RE.sub(rep, html)
 
 
+# 경로 → 사람이 읽는 페이지 이름. page() 가 지날 때마다 채워진다.
+# 관리자 콘솔 [인기 페이지]가 `/services/cloud/` 대신 "클라우드 보안 진단" 을 함께 보여주는 데 쓴다.
+# **손으로 관리하지 않는다** — 페이지를 추가하면 여기에도 저절로 들어온다(표류 없음).
+PAGE_TITLES = {}
+
+# <title> 은 "이름 | 쉴더스랩 — 부연" 꼴이다. 목록에 넣을 짧은 이름만 남긴다.
+# 예외 둘:
+#   "/"                  앞부분이 사명이라 규칙이 안 통한다.
+#   "/insights/view.html" 제목이 목록 페이지와 똑같아 방문 목록에서 둘을 구분할 수 없다.
+#                        (?slug= 는 로깅되지 않아 동적 보기 방문이 전부 이 한 줄로 뭉친다)
+_TITLE_OVERRIDE = {"/": "홈", "/insights/view.html": "인사이트 (글 보기)"}
+
+
+def short_title(title, canonical):
+    if canonical in _TITLE_OVERRIDE:
+        return _TITLE_OVERRIDE[canonical]
+    return title.split("|")[0].strip() or title.strip()
+
+
 def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld="", body_attr=""):
+    PAGE_TITLES[canonical] = short_title(title, canonical)
     html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -233,6 +253,30 @@ def build_insight_pages(posts):
     return made
 
 
+def build_page_titles():
+    """admin/page-titles.js 를 만든다 — 관리자 콘솔이 경로 대신 페이지 이름을 보여주게.
+
+    왜 생성물인가
+      손으로 적은 표는 페이지가 늘어나는 순간 조용히 낡는다. 콘솔에는 여전히 경로만 뜨는데
+      아무도 그 사실을 모른다. 그래서 **빌드가 실제로 만든 페이지**에서 그대로 뽑는다.
+    인사이트 상세처럼 콘솔에서 글을 추가해 새로 생기는 경로도 여기 들어온다
+      (fetch_insights 로 만든 페이지들도 page() 를 지나기 때문).
+      단, 빌드 이후에 발행된 글은 다음 빌드까지 경로로만 보인다 — 콘솔이 그때는 DB 제목으로 메운다.
+    """
+    items = sorted(PAGE_TITLES.items())
+    lines = ",\n".join(
+        f'  {json.dumps(k, ensure_ascii=False)}: {json.dumps(v, ensure_ascii=False)}'
+        for k, v in items)
+    out = (
+        "/* 생성 파일 — 손으로 고치지 마라. tools/build-pages.py 가 만든다.\n"
+        "   관리자 콘솔 [인기 페이지]가 경로와 함께 보여줄 사람이 읽는 이름. */\n"
+        "window.SL_PAGE_TITLES = {\n" + lines + "\n};\n")
+    with open(os.path.join(ROOT, "admin", "page-titles.js"), "w",
+              encoding="utf-8", newline="\n") as f:
+        f.write(out)
+    print(f"  ✓ admin/page-titles.js{'':<18} {len(items):>3}개")
+
+
 def build_sitemap(rows_static, rows_posts):
     today = datetime.date.today().isoformat()
     rows = [(p, today, pr) for p, pr in rows_static]
@@ -320,6 +364,9 @@ def main():
 
     print("사이트맵:")
     build_sitemap(static, made)
+
+    print("페이지 이름표:")
+    build_page_titles()
     print("완료.")
 
 

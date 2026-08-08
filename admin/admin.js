@@ -42,7 +42,16 @@
   }
   function emptyBox(msg) { return '<div class="empty">' + esc(msg) + "</div>"; }
 
+  /* 모달 세대 번호. #modal-body 는 모든 모달이 **공유하는 하나의 엘리먼트**라,
+     느린 조회가 끝나고 돌아왔을 때 그 사이 열린 다른 모달의 내용을 덮어쓸 수 있다.
+     (실제 사고 경로: [오늘 방문]을 열어 두고 닫은 뒤 [비밀번호 재설정]을 열면,
+      뒤늦게 도착한 방문 목록이 임시 비밀번호가 적힌 화면을 지워 버린다.)
+     "모달이 열려 있는가" 로는 못 막는다 — 다른 모달도 열려 있는 상태이기 때문이다.
+     요청 시점의 번호를 들고 있다가 돌아와서 같은지 확인한다. */
+  var modalSeq = 0;
+
   function openModal(title, bodyHtml, actions) {
+    modalSeq++;
     document.getElementById("modal-title").textContent = title;
     document.getElementById("modal-body").innerHTML = bodyHtml;
     var wrap = document.getElementById("modal-actions");
@@ -57,6 +66,7 @@
     modal.classList.add("on");
   }
   function closeModal() {
+    modalSeq++;
     modal.classList.remove("on");
     /* 임시 비밀번호 등 민감값이 DOM 에 남지 않게 비운다 */
     document.getElementById("modal-body").innerHTML = "";
@@ -93,6 +103,69 @@
 
   function val(id) { var e = document.getElementById(id); return e ? e.value : ""; }
   function checked(id) { var e = document.getElementById(id); return !!(e && e.checked); }
+
+  /* ═══════════════ 경로 → 페이지 이름 ═══════════════
+     방문 로그에는 `/services/cloud/` 같은 경로만 남는다. 목록에서 경로만 보면
+     어느 화면인지 매번 머릿속으로 옮겨야 해서, 사람이 읽는 이름을 함께 보여준다.
+
+     이름표(admin/page-titles.js)는 **빌드 생성물**이다 — 페이지를 추가하면 저절로 따라온다.
+     다만 빌드 이후 콘솔에서 발행한 인사이트는 아직 그 안에 없다. 그런 경로만
+     withPageTitles() 가 DB 제목으로 메운다(못 메워도 경로로는 보인다). */
+  var PAGE_TITLES = window.SL_PAGE_TITLES || {};
+
+  function normPath(p) {
+    var s = String(p || "/").split("#")[0].split("?")[0];
+    if (!s) return "/";
+    if (s.charAt(0) !== "/") s = "/" + s;
+    /* `/about` 과 `/about/` 이 따로 집계되지 않게 맞춘다. 파일 경로(.html)는 그대로 둔다. */
+    if (s.length > 1 && s.slice(-1) !== "/" && s.indexOf(".") === -1) s += "/";
+    return s;
+  }
+
+  function pageName(p) { return PAGE_TITLES[normPath(p)] || ""; }
+
+  /** 상위 묶음 이름. `/services/cloud/` → "서비스" (한 칸 위 경로의 이름)
+      최상위 페이지의 부모는 "/"(홈)인데, 그걸 묶음으로 붙이면 `홈 › 회사소개` 처럼
+      모든 줄에 "홈" 이 달려 오히려 읽기 나빠진다. 그래서 "/" 는 묶음으로 치지 않는다. */
+  function pageGroup(p) {
+    var s = normPath(p), up = s.replace(/[^/]+\/$/, "");
+    if (!up || up === s || up === "/") return "";
+    return PAGE_TITLES[up] || "";
+  }
+
+  /** 목록 한 칸 — 이름을 위에, 경로를 아래에. 이름을 모르면 경로만 크게 보인다.
+
+      경로는 **로그에 남은 원본 그대로** 보여 준다. 집계(sl_stats)는 원본 문자열로 묶는데
+      화면에만 정규화한 값을 쓰면, `/about` 과 `/about/` 이 서로 다른 두 줄로 집계돼 놓고
+      화면에는 똑같은 `/about/` 이 두 번 뜬다 — 무엇이 실제로 요청된 경로인지 알 수 없게 된다.
+      정규화는 **이름을 찾을 때만** 쓴다. */
+  function pageCell(p) {
+    var raw = String(p == null || p === "" ? "/" : p);
+    var sp = normPath(raw), nm = pageName(sp), gp = pageGroup(sp);
+    if (!nm) return '<span class="pg"><b class="pg-name">' + esc(raw) + "</b></span>";
+    return '<span class="pg"><b class="pg-name">' +
+      (gp ? '<span class="pg-group">' + esc(gp) + " › </span>" : "") + esc(nm) +
+      "</b><code>" + esc(raw) + "</code></span>";
+  }
+
+  /** 이름을 모르는 인사이트 경로만 DB 에서 제목을 채운 뒤 cb 를 부른다. */
+  function withPageTitles(paths, cb) {
+    var want = [];
+    (paths || []).forEach(function (p) {
+      var s = normPath(p), m = /^\/insights\/([^/]+)\/$/.exec(s);
+      if (m && !PAGE_TITLES[s] && want.indexOf(m[1]) === -1) want.push(m[1]);
+    });
+    if (!want.length) { cb(); return; }
+    /* ⚠ .in() 이 돌려주는 것도 PostgrestBuilder(지연 thenable)다 — Promise 로 감싼다. */
+    Promise.resolve(db.from("sl_insights").select("slug,title").in("slug", want))
+      .then(function (r) {
+        ((r && r.data) || []).forEach(function (x) {
+          if (x && x.slug) PAGE_TITLES["/insights/" + x.slug + "/"] = x.title || "";
+        });
+      })
+      .catch(function () { /* 이름을 못 채워도 경로로는 보인다 */ })
+      .then(cb, cb);
+  }
 
   /* ═══════════════ 인증 ═══════════════
      Supabase 인증에는 사용자명 provider 가 없다 — 식별자는 반드시 이메일 형식이어야 한다.
@@ -147,7 +220,7 @@
        그 경우는 사용자에게 재로그인을 안내한다 — 콘솔에서 처리하지 않는다. */
   var PW_MIN = 10;
 
-  document.getElementById("pw-change").addEventListener("click", function () {
+  function openSelfPasswordModal() {
     openModal("비밀번호 변경",
       '<div class="form">' +
       '<div class="field"><label for="pw-new">새 비밀번호</label>' +
@@ -161,7 +234,10 @@
        { label: "변경", cls: "primary", on: doChangePassword }]);
     var f = document.getElementById("pw-new");
     if (f) f.focus();
-  });
+  }
+
+  /* 헤더에서도, [계정 관리] 내 계정 행에서도 같은 모달을 연다. */
+  document.getElementById("pw-change").addEventListener("click", openSelfPasswordModal);
 
   function doChangePassword() {
     var a = val("pw-new"), b = val("pw-new2");
@@ -288,12 +364,14 @@
   function openVisitDetail() {
     openModal("오늘 방문 상세", '<div class="empty">불러오는 중…</div>',
               [{ label: "닫기", on: closeModal }]);
+    var seq = modalSeq;   /* 돌아왔을 때 아직 '이' 모달인지 확인하는 표 */
     var since = new Date(); since.setHours(0, 0, 0, 0);
 
     db.from("sl_audit").select("entity,ip,detail,created_at")
       .eq("kind", "visit").gte("created_at", since.toISOString())
       .order("created_at", { ascending: false }).limit(1000)
       .then(function (r) {
+        if (modalSeq !== seq) return;   /* 그 사이 다른 모달이 열렸다 — 남의 화면을 건드리지 않는다 */
         var box = document.getElementById("modal-body");
         if (!box) return;
         if (r.error) {
@@ -325,6 +403,11 @@
         };
         var maxH = Math.max.apply(null, byHour) || 1;
 
+        withPageTitles(Object.keys(byPage), function () {
+        /* 제목 조회 중에 다른 모달이 열렸을 수 있다. 세대가 다르면 손대지 않는다. */
+        if (modalSeq !== seq) return;
+        box = document.getElementById("modal-body");
+        if (!box) return;
         var html =
           '<div class="mini-stats" style="margin-bottom:20px">' +
             '<div class="mini-stat"><b>' + rows.length + "</b><span>오늘 방문</span></div>" +
@@ -342,7 +425,7 @@
           '<h3 style="font-size:.92rem;margin:0 0 10px">페이지별</h3>' +
           '<ul class="toppages" style="margin-bottom:22px">' +
             sort(byPage).slice(0, 15).map(function (p) {
-              return "<li><code>" + esc(p[0]) + "</code><b>" + p[1] + "</b></li>";
+              return "<li>" + pageCell(p[0]) + "<b>" + p[1] + "</b></li>";
             }).join("") +
           "</ul>" +
           '<h3 style="font-size:.92rem;margin:0 0 10px">유입 경로</h3>' +
@@ -357,13 +440,14 @@
               var ref = (v.detail && v.detail.ref) || "";
               var host = "직접";
               if (ref) { try { host = new URL(ref).hostname; } catch (e) { host = ref.slice(0, 30); } }
-              return "<tr><td>" + esc(SL.fmtDateTime(v.created_at)) + "</td><td><code>" +
-                esc(v.entity || "/") + "</code></td><td>" + esc(host) + "</td></tr>";
+              return "<tr><td>" + esc(SL.fmtDateTime(v.created_at)) + "</td><td>" +
+                pageCell(v.entity) + "</td><td>" + esc(host) + "</td></tr>";
             }).join("") +
           "</tbody></table></div>" +
           '<p class="tiny" style="margin-top:14px">동일 IP·경로는 10분 안에 중복으로 세지 않습니다. ' +
           "관리자 화면은 집계에서 제외됩니다.</p>";
         box.innerHTML = html;
+        });
       });
   }
 
@@ -418,11 +502,13 @@
         : '<div style="color:var(--muted);font-size:.85rem">방문 기록이 아직 없습니다.</div>';
 
       var tp = s.top_pages || [];
-      document.getElementById("toppages").innerHTML = tp.length
-        ? tp.map(function (p) {
-            return "<li><code>" + esc(p.page || "/") + "</code><b>" + esc(p.n) + "</b></li>";
-          }).join("")
-        : '<li style="color:var(--muted)">데이터 없음</li>';
+      withPageTitles(tp.map(function (p) { return p.page; }), function () {
+        document.getElementById("toppages").innerHTML = tp.length
+          ? tp.map(function (p) {
+              return "<li>" + pageCell(p.page) + "<b>" + esc(p.n) + "</b></li>";
+            }).join("")
+          : '<li style="color:var(--muted)">데이터 없음</li>';
+      });
     }).catch(function (err) {
       document.getElementById("stats").innerHTML =
         '<div class="alert on bad" style="grid-column:1/-1">통계를 불러오지 못했습니다. ' +
@@ -1027,6 +1113,38 @@
     return out;
   }
 
+  /** Edge 함수 실패에서 **서버가 보낸 한국어 사유**를 꺼내 cb(메시지, 상태코드) 로 넘긴다.
+
+      supabase-js 는 비-2xx 응답을 FunctionsHttpError 로 감싸는데, 그 message 는
+      "Edge Function returned a non-2xx status code" 라는 **영문 고정 문자열**이다.
+      그걸 그대로 보여주면 관리자는 무엇이 잘못됐는지 알 수 없다 —
+      "관리자 목록에 없는 계정입니다" 같은 진짜 사유는 err.context(Response) 본문에 들어 있다. */
+  function fnFail(err, cb) {
+    var ctx = err && err.context;
+    var status = (ctx && ctx.status) || 0;
+    var generic = (err && err.message) || "알 수 없는 오류";
+    if (!ctx || typeof ctx.json !== "function") { cb(generic, status); return; }
+    Promise.resolve(ctx.json()).then(function (b) {
+      cb((b && (b.message || b.error)) || generic, status);
+    }).catch(function () { cb(generic, status); });
+  }
+
+  /** 함수가 아직 배포되지 않은 상태인지.
+
+      두 갈래를 모두 인정해야 한다(실측):
+       ① 미배포 프로젝트의 게이트웨이는 `404 {"code":"NOT_FOUND"}` 를 준다.
+       ② 그런데 그 404 는 **CORS preflight 에서** 먼저 터진다. 비-2xx 인 데다
+          preflight 응답의 allow-headers 에 content-type 이 없어 브라우저가 요청을 막는다.
+          그러면 supabase-js 는 FunctionsFetchError 를 던지고 context 는 Response 가 아니라
+          TypeError 라 status 가 0 이다. ①만 보면 이 흔한 경우를 놓쳐서
+          "재설정 실패: Failed to send a request to the Edge Function" 라는
+          영문만 뜬다 — 오너는 무엇을 해야 하는지 알 수 없다. */
+  function notDeployed(msg, status) {
+    var m = String(msg);
+    if (status === 404 && /function not found|not found/i.test(m)) return true;
+    return status === 0 && /failed to send a request|failed to fetch|networkerror/i.test(m);
+  }
+
   function loadAcct() {
     var box = document.getElementById("acct-table");
     box.innerHTML = emptyBox("불러오는 중…");
@@ -1050,10 +1168,18 @@
             acts.push('<button class="lnk" data-acct-role="' + escA(x.email) + '">' +
               (x.role === "admin" ? "editor 로 변경" : "admin 으로 변경") + "</button>");
           }
+          /* 비밀번호 재설정은 **마지막 admin 이어도 막지 않는다** — 계정을 없애는 게 아니라서
+             락아웃을 만들지 않고, 관리자가 한 명뿐일 때야말로 가장 필요하다.
+             다만 **이 사이트가 만든 계정(pw_managed)** 에만 붙인다. 공유 Supabase 프로젝트라
+             [연결]로 끌어온 남의 계정까지 바꿀 수 있으면 그건 탈취다(0006 참조).
+             서버도 같은 기준으로 거부하므로 버튼이 없는 것은 화면 편의일 뿐 방어선이 아니다. */
+          if (x.linked && !x.is_self && x.pw_managed) {
+            acts.push('<button class="lnk" data-acct-pw="' + escA(x.email) + '">비밀번호 재설정</button>');
+          }
           if (!x.is_self && !lastAdmin) {
             acts.push('<button class="lnk danger" data-acct-del="' + escA(x.email) + '">삭제</button>');
           }
-          if (x.is_self) acts.push('<span class="tiny">내 계정</span>');
+          if (x.is_self) acts.push('<button class="lnk" data-acct-self-pw="1">내 비밀번호 변경</button>');
           else if (lastAdmin) acts.push('<span class="tiny">마지막 admin</span>');
           return '<tr><td class="t-title">' + esc(x.email) + "</td>" +
             '<td><span class="badge ' + (x.role === "admin" ? "on" : "off") + '">' + esc(x.role) + "</span></td>" +
@@ -1122,11 +1248,12 @@
               show("acct-alert", "ok",
                 email + " 계정을 생성했습니다. 임시 비밀번호를 안전한 경로로 전달하세요.");
             }).catch(function (err) {
-              var m = (err && err.message) || "";
-              show("md-alert", "bad", /Function not found|404/i.test(m)
-                ? "로그인 계정 생성 함수(sl-admin-user)가 배포되지 않았습니다. " +
-                  "Supabase 대시보드에서 계정을 먼저 만든 뒤, 체크를 해제해 등록하세요."
-                : "계정 생성 실패: " + m);
+              fnFail(err, function (m, st) {
+                show("md-alert", "bad", notDeployed(m, st)
+                  ? "로그인 계정 생성 함수(sl-admin-user)가 배포되지 않았습니다. " +
+                    "Supabase 대시보드에서 계정을 먼저 만든 뒤, 체크를 해제해 등록하세요."
+                  : "계정 생성 실패: " + m);
+              });
             });
           } },
       ]);
@@ -1171,6 +1298,52 @@
            } }]);
       return;
     }
+    if (e.target.closest("[data-acct-self-pw]")) { openSelfPasswordModal(); return; }
+
+    var pw = e.target.closest("[data-acct-pw]");
+    if (pw) {
+      var pem = pw.getAttribute("data-acct-pw");
+      var tmp = tempPassword();
+      openModal("비밀번호 재설정",
+        "<p style='color:var(--ink-2);line-height:1.7'><b>" + esc(pem) + "</b> 의 비밀번호를 " +
+        "아래 값으로 바꿉니다. 본인이 쓰던 비밀번호는 즉시 무효가 됩니다.</p>" +
+        '<div class="field" style="margin-top:14px">' +
+        '<label for="pr-pw">임시 비밀번호 (한 번만 표시됩니다)</label>' +
+        '<input id="pr-pw" type="text" maxlength="72" value="' + escA(tmp) + '" ' +
+        'style="font-family:\'IBM Plex Mono\',monospace">' +
+        '<div class="hint">그대로 써도 되고, 직접 정해도 됩니다(12자 이상). ' +
+        "안전한 경로로 전달하고 첫 로그인 후 바꾸도록 안내하세요.</div></div>" +
+        '<div class="alert" id="md-alert"></div>',
+        [{ label: "취소", on: closeModal },
+         { label: "재설정", cls: "", on: function () {
+             var np = val("pr-pw");
+             if (np.length < 12) {
+               show("md-alert", "bad", "임시 비밀번호는 12자 이상이어야 합니다."); return;
+             }
+             show("md-alert", "info", "재설정하는 중…");
+             /* 값을 화면 밖으로 내보내기 전에 복사해 둘 기회를 준다 — 성공해도 모달은 바로 닫지 않는다. */
+             db.functions.invoke("sl-admin-user", {
+               body: { action: "set_password", email: pem, password: np },
+             }).then(function (r) {
+               if (r.error) throw r.error;
+               var d = r.data || {};
+               if (d.error) throw new Error(d.message || d.error);
+               show("md-alert", "ok",
+                 "재설정했습니다. 위 값을 지금 복사해 전달하세요 — 창을 닫으면 다시 볼 수 없습니다." +
+                 (d.logged === false ? " (감사 로그 기록에는 실패했습니다.)" : ""));
+               loadAcct();
+             }).catch(function (err) {
+               fnFail(err, function (m, st) {
+                 show("md-alert", "bad", notDeployed(m, st)
+                   ? "비밀번호 재설정 함수(sl-admin-user)가 배포되지 않았습니다. " +
+                     "Supabase 대시보드 → Edge Functions 에서 배포한 뒤 다시 시도하세요."
+                   : "재설정 실패: " + m);
+               });
+             });
+           } }]);
+      return;
+    }
+
     var dl = e.target.closest("[data-acct-del]");
     if (dl) {
       var em = dl.getAttribute("data-acct-del");
@@ -1179,7 +1352,9 @@
         "<p style='color:var(--ink-2);line-height:1.7'><b>" + esc(em) + "</b> 를 관리자 목록에서 제거합니다. " +
         "즉시 콘솔 접근이 차단됩니다.</p>" +
         "<p class='tiny' style='margin-top:12px'>" +
-        (it && it.has_login
+        /* sl_admin_list 가 주는 필드는 has_login 이 아니라 linked 다.
+           예전 코드가 없는 필드를 봐서 **로그인 계정이 있어도 항상 "없습니다"** 라고 안내했다. */
+        (it && it.linked
           ? "Supabase 로그인 계정은 그대로 남습니다. 계정까지 삭제하려면 Supabase 대시보드에서 처리하세요."
           : "이 이메일에는 로그인 계정이 없습니다.") + "</p>" +
         '<div class="alert" id="md-alert"></div>',

@@ -485,6 +485,15 @@ select.inp,input.inp{background:transparent;border:1px solid var(--rule-2);paddi
   border-bottom:1px solid var(--rule);font-size:.84rem;color:var(--ink-2)}
 .toppages li:last-child{border-bottom:0}
 .toppages code{font-family:var(--font-mono);font-size:.78rem;color:var(--ink)}
+/* 페이지 이름 + 경로 병기. 이름이 주(主), 경로는 확인용으로 아래에 작게 깐다.
+   ⚠ `.toppages .pg` 로 한정하지 않는다 — 같은 칸을 [최근 방문] **표(table)** 안에서도 쓰는데,
+      거기서는 규칙이 안 걸려 이름과 경로가 한 줄에 붙어 나온다. 클래스 자체에 건다. */
+.pg{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pg-name{font-weight:500;color:var(--ink);letter-spacing:-.01em}
+.pg code{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pg-group{color:var(--muted);font-weight:400}
+.toppages > li > b{flex:none;font-variant-numeric:tabular-nums}
 .two{display:grid;grid-template-columns:1.3fr .7fr;gap:var(--gut)}
 
 /* ─────────────── 반응형 ─────────────── */
