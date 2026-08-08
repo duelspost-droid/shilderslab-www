@@ -361,7 +361,7 @@ def main():
     add("services/index.html", "0.9", S.TITLE, S.DESC, S.BODY, "/services/", S.CSS)
     for svc in S.DETAILS:
         add(f"services/{svc['slug']}/index.html", "0.8", svc["title"], svc["desc"], svc["body"],
-            f"/services/{svc['slug']}/", S.DETAIL_CSS)
+            f"/services/{svc['slug']}/", S.DETAIL_CSS, ld=svc.get("ld", ""))
 
     add("method/index.html", "0.8", P.METHOD_TITLE, P.METHOD_DESC, P.METHOD_BODY, "/method/", P.METHOD_CSS)
 

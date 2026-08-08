@@ -6,6 +6,7 @@
      · 정보보호 전문서비스기업 지정이 필요한 과업(주요정보통신기반시설 분석·평가)은
        수행 가능하다고 쓰지 않는다. 사실대로 밝힌다.
 """
+import json
 
 TITLE = "서비스 | 쉴더스랩 — ISMS-P · 모의해킹 · 취약점 진단 · 클라우드 보안"
 DESC = ("ISMS-P 인증 컨설팅, 모의해킹·침투테스트, 취약점 진단, 개인정보 컴플라이언스, 클라우드 보안, "
@@ -716,3 +717,27 @@ DETAILS = [
             ]),
     },
 ]
+
+
+# ── 서비스 상세 구조화 데이터(schema.org Service) ──────────────────────────
+# 각 상세 페이지에 Service 를 실어 검색결과가 "무슨 서비스인지" 를 구조로 읽게 한다.
+# name/serviceType 는 title 에서 사명 접미사( | 쉴더스랩 …)를 뗀 짧은 이름.
+# provider·url 의 도메인 리터럴은 set-domain.py 가 함께 치환한다(이 파일은 TARGETS 에 있음).
+# `<` 는 < 로 — JSON-LD 가 <script> 안에 들어가므로 조기 종료를 원천 차단한다.
+def _service_ld(d):
+    name = d["title"].split("|")[0].strip()
+    return json.dumps({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": name,
+        "serviceType": name,
+        "description": d["desc"],
+        "provider": {"@type": "Organization", "name": "쉴더스랩",
+                     "url": "https://shilderslab.com"},
+        "areaServed": {"@type": "Country", "name": "대한민국"},
+        "url": "https://shilderslab.com/services/" + d["slug"] + "/",
+    }, ensure_ascii=False).replace("<", "\\u003c")
+
+
+for _d in DETAILS:
+    _d["ld"] = _service_ld(_d)
