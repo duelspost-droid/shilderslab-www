@@ -269,7 +269,7 @@
       p.classList.toggle("show", p.id === "panel-" + name);
     });
     var loaders = { dash: loadDash, inq: loadInq, app: loadApp, ins: loadIns, job: loadJob,
-                    cnt: loadCnt, log: loadLog, acct: loadAcct, set: loadSet };
+                    cnt: loadCnt, card: loadCard, log: loadLog, acct: loadAcct, set: loadSet };
     if (!loaded[name] && loaders[name]) { loaded[name] = true; loaders[name](); }
   }
   document.getElementById("tabs").addEventListener("click", function (e) {
@@ -848,6 +848,54 @@
     });
   });
 
+
+  /* ═══════════════ 명함 ═══════════════
+     공개 페이지(/brand/)에 있던 것을 여기로 옮겼다. 대외 공개할 자료가 아니라 내부 자료다.
+     파일 이름이 규칙적이라(card-{A|B|C}[-ko]-{front|back}.{svg,pdf,png,jpg})
+     목록을 손으로 적지 않고 조합으로 만든다 — 시안이 늘어도 여기만 고치면 된다. */
+  var CARD_SETS = [
+    { key: "A", name: "에디토리얼", desc: "상단 액센트 바 + 좌측 정렬. 정보 위계가 가장 분명하다. 기본 권장안." },
+    { key: "B", name: "여백형", desc: "심볼과 이름만 남긴 구성. 직함이 길거나 연락처가 적을 때 잘 맞는다." },
+    { key: "C", name: "역상", desc: "딥 파인 바탕에 페이퍼 글자. 대외 행사용으로 눈에 띈다." },
+  ];
+  var CARD_VARIANTS = [
+    { suffix: "", label: "영문형", note: "SHIELDUS LAB 우선" },
+    { suffix: "-ko", label: "한글형", note: "쉴더스랩 우선 · 영문 병기" },
+  ];
+  var CARD_SIDES = [{ k: "front", ko: "앞면" }, { k: "back", ko: "뒷면" }];
+
+  function loadCard() {
+    var box = document.getElementById("card-grid");
+    if (!box) return;
+    var html = "";
+    CARD_VARIANTS.forEach(function (v) {
+      html += '<h3 class="cnt-sec">' + esc(v.label) +
+              ' <span class="kind-tag">' + esc(v.note) + "</span></h3>";
+      CARD_SETS.forEach(function (s) {
+        var base = "/assets/ci/card/card-" + s.key + v.suffix;
+        html += '<div class="card-set">' +
+          '<div class="card-set-head"><b>시안 ' + s.key + " · " + esc(s.name) + "</b>" +
+          '<span class="hint" style="margin:0">' + esc(s.desc) + "</span></div>" +
+          '<div class="card-sides">' +
+          CARD_SIDES.map(function (sd) {
+            var f = base + "-" + sd.k;
+            return '<div class="card-one">' +
+              '<a href="' + f + '@300.jpg" target="_blank" rel="noopener" class="card-shot">' +
+                '<img src="' + f + '@300.jpg" alt="" loading="lazy"></a>' +
+              '<div class="card-cap">' + sd.ko + "</div>" +
+              '<div class="card-dl">' +
+                '<a href="' + f + '.pdf" download><b>PDF</b></a>' +
+                '<a href="' + f + '.svg" download>SVG</a>' +
+                '<a href="' + f + '@300.png" download>PNG</a>' +
+                '<a href="' + f + '@300.jpg" download>JPG</a>' +
+                '<a href="' + f + '-guide.svg" download title="재단선·안전여백 표시">가이드</a>' +
+              "</div></div>";
+          }).join("") +
+          "</div></div>";
+      });
+    });
+    box.innerHTML = html;
+  }
 
   /* ═══════════════ 페이지 문구 (sl_content) ═══════════════
      값은 평문/최소 마크다운으로만 저장한다. HTML 을 저장하지 않는 것이 이 화면의 계약이고,

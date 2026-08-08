@@ -25,6 +25,24 @@
     .admin-who{width:100%;gap:10px}
     .admin-who #who{flex-basis:100%}
   }
+  /* 명함 탭 */
+  .card-set{border-top:1px solid var(--rule);padding:18px 0 26px}
+  .card-set-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:14px}
+  .card-set-head b{font-size:.95rem;font-weight:600}
+  .card-sides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gut)}
+  .card-shot{display:block;border:1px solid var(--rule);background:var(--paper-2)}
+  .card-shot img{width:100%;height:auto;display:block}
+  .card-shot:hover{border-color:var(--accent)}
+  .card-cap{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.1em;color:var(--ink-3);
+    margin:8px 0 6px}
+  .card-dl{display:flex;flex-wrap:wrap;gap:6px 12px}
+  .card-dl a{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.04em;color:var(--ink-2);
+    border-bottom:1px solid var(--rule-2);padding-bottom:1px}
+  .card-dl a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+  .card-dl a b{font-weight:600;color:var(--accent)}
+  .card-cli{background:var(--paper-3);border:1px solid var(--rule);padding:16px;overflow-x:auto;
+    font-family:var(--font-mono);font-size:.78rem;line-height:1.7;white-space:pre}
+  @media (max-width:640px){.card-sides{grid-template-columns:1fr}}
   /* 클릭 가능한 지표 카드 — 어디를 누를 수 있는지 보이게 한다 */
   .mini-stat.clickable{cursor:pointer;transition:border-color .15s,background .15s}
   .mini-stat.clickable:hover{border-color:var(--accent);background:rgba(26,75,58,.04)}
@@ -126,6 +144,7 @@
       <button data-tab="ins">인사이트</button>
       <button data-tab="job">채용 공고</button>
       <button data-tab="cnt">페이지 문구</button>
+      <button data-tab="card">명함</button>
       <button data-tab="log" data-owner>로그 · 감사</button>
       <button data-tab="acct" data-owner>계정 관리</button>
       <button data-tab="set" data-owner>설정</button>
@@ -273,6 +292,66 @@
            저장하면 방문자에게는 즉시 반영되고, 다음 배포 때 정적 파일에도 구워집니다.</p>
       </div>
       <div id="cnt-body"><div class="empty">불러오는 중…</div></div>
+    </section>
+
+    <!-- 명함 — 공개 페이지(/brand/)에서 옮겨 왔다. 대외 공개할 내용이 아니라 내부 자료다. -->
+    <section class="panel" id="panel-card">
+      <div class="panel-head"><h2>명함</h2></div>
+
+      <div class="alert on warn" style="margin-bottom:18px">
+        <b>인쇄 발주는 잠시 보류해 주세요.</b>
+        명함에 새겨진 주소는 <b>전환 예정 도메인</b>이고 아직 확보 전입니다.
+        지금 인쇄하면 웹 주소와 이메일이 닿지 않는 곳을 가리킵니다.
+        도메인 확보와 사이트 전환이 끝난 뒤에 발주하시면 됩니다.
+      </div>
+
+      <p class="hint" style="margin:0 0 20px;max-width:76ch">
+        시안 셋(A·B·C), 각각 <b>영문형</b>과 <b>한글형</b>이 있고 앞뒤 두 면입니다.
+        모두 인쇄소에 바로 넘길 수 있는 규격입니다 — 재단 90 × 50 mm에 사방 3 mm 도련,
+        글자는 전부 아웃라인이라 폰트를 따로 보내실 필요가 없습니다.
+        <b>인쇄소에는 PDF</b> 를 주시면 됩니다. 미리보기의 이름·연락처는 예시입니다.
+      </p>
+
+      <div id="card-grid"><div class="empty">불러오는 중…</div></div>
+
+      <h3 class="cnt-sec">인쇄 규격</h3>
+      <p class="hint" style="margin:0 0 12px">아래 표를 인쇄소에 그대로 전달하시면 됩니다.</p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <tbody>
+            <tr><td>재단 규격</td><td>90 × 50 mm (국내 표준)</td></tr>
+            <tr><td>도련(재단여유)</td><td>사방 3 mm → 작업 사이즈 96 × 56 mm</td></tr>
+            <tr><td>안전여백</td><td>재단선에서 안쪽 5 mm — 글자·로고는 이 안에 있습니다</td></tr>
+            <tr><td>해상도</td><td>PDF·SVG 벡터 / PNG·JPG 300 dpi (1134 × 661 px)</td></tr>
+            <tr><td>서체</td><td>전부 아웃라인 변환 — 폰트 파일을 함께 보내지 않아도 됩니다</td></tr>
+            <tr><td>색상</td><td>파일은 RGB. 아래 CMYK 근사값으로 맞춰 주세요</td></tr>
+            <tr><td>권장 용지</td><td>랑데뷰 240 g 이상 또는 문켄 계열 — 무광 질감이 브랜드 톤에 맞습니다</td></tr>
+            <tr><td>후가공</td><td>불필요. 코팅을 넣으면 종이 질감이 가려집니다</td></tr>
+            <tr><td>딥 파인 #1A4B3A</td><td>C80 M42 Y72 K44</td></tr>
+            <tr><td>잉크 #15181B</td><td>C72 M64 Y60 K71</td></tr>
+            <tr><td>페이퍼 #F6F4EF</td><td>C2 M2 Y6 K0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint" style="margin-top:10px;max-width:76ch">
+        RGB→CMYK 변환값이라 인쇄기·용지에 따라 차이가 납니다. 색이 중요하면 교정 인쇄(감리)를
+        한 번 요청하세요. 딥 파인은 어두운 녹색이라 잉크가 눌리면 검정에 가까워질 수 있습니다.
+      </p>
+
+      <h3 class="cnt-sec">사람별 명함 만들기</h3>
+      <p class="hint" style="margin:0 0 12px;max-width:76ch">
+        이름과 직함, 연락처를 넣고 다시 뽑습니다. 발주 전에 미리보기의 <b>예시 정보가 남아 있지 않은지</b>
+        확인해 주세요. (개발 환경에서 실행하는 명령입니다 — 필요하시면 요청해 주세요.)
+      </p>
+      <pre class="card-cli">python3 tools/build-card.py \
+  --name 김보안 --title 보안컨설턴트 \
+  --mobile 010-1234-5678 \
+  --email kim@shilderslab.com</pre>
+      <p class="hint" style="margin-top:10px">
+        시안 3종 × 영문·한글 × 앞뒤 × 4포맷이 <code>assets/ci/card/</code> 에 생성됩니다.
+        <code>--phone</code>(대표번호) · <code>--dept</code>(부서) · <code>--addr</code>(주소) 도 넣을 수 있습니다.
+        한글형은 <code>--ko</code> 를 붙입니다.
+      </p>
     </section>
 
     <section class="panel" id="panel-set">
