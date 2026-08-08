@@ -85,8 +85,8 @@
   <div class="shell g12">
     <div class="c7">
       <span class="lbl lbl-a">Information security consulting</span>
-      <h1 data-content="home.hero_title">조치가 끝났는지<br>다시 확인하고 닫습니다</h1>
-      <p class="lead sub" data-content="home.hero_lead">ISMS-P 인증 대응과 모의해킹·취약점 진단을 한 계약 안에서 맡습니다. 취약하다고 적은 항목에는 어떻게 재현했는지를 덧붙이고, 조치가 끝나면 한 번 더 들어가 닫혔는지 확인합니다.</p>
+      <h1 data-content="home.hero_title">정보보호 전문가가  제대로 처리합니다</h1>
+      <p class="lead sub" data-content="home.hero_lead">ISMS-P 인증 대응과 모의해킹·취약점 진단을 한 계약 안에서 맡습니다. 취약하다고 적은 항목에는 어떻게 재현했는지를 덧붙이고, 조치가 끝나면 한 번 더 들어가 조치되었는지 확인합니다.</p>
       <div class="acts">
         <a class="btn" href="/contact/">상담 요청</a>
         <a class="btn btn-line" href="/method/">진단 방법론 보기</a>
@@ -380,5 +380,9 @@
   }).catch(fallback);
 })();
 </script>
+<!-- 홈 인트로. **홈에서만** 로드한다(다른 페이지는 이 파일을 받지 않는다).
+     defer 라 본문 파싱을 막지 않고, 오버레이는 JS 가 끼워 넣으므로 정적 HTML 에는 없다.
+     세션당 1회 · prefers-reduced-motion 이면 미재생 · ?nointro 로 끌 수 있다. -->
+<script src="/assets/js/intro.js" defer></script>
 </body>
 </html>

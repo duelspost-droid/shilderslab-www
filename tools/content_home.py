@@ -298,4 +298,8 @@ JS = """<script>
     }).join("");
   }).catch(fallback);
 })();
-</script>"""
+</script>
+<!-- 홈 인트로. **홈에서만** 로드한다(다른 페이지는 이 파일을 받지 않는다).
+     defer 라 본문 파싱을 막지 않고, 오버레이는 JS 가 끼워 넣으므로 정적 HTML 에는 없다.
+     세션당 1회 · prefers-reduced-motion 이면 미재생 · ?nointro 로 끌 수 있다. -->
+<script src="/assets/js/intro.js" defer></script>"""
