@@ -7,8 +7,8 @@ from content_resources import RES_TITLE, RES_DESC, RES_CSS, RES_BODY  # noqa: F4
 # 회사소개
 # ══════════════════════════════════════════════════════════════════════
 ABOUT_TITLE = "회사소개 | 쉴더스랩 — 정보보호 컨설팅"
-ABOUT_DESC = ("쉴더스랩은 ISMS-P 인증 대응과 기술 진단을 한 계약 안에서 수행하는 정보보호 컨설팅 "
-              "회사입니다. 조치를 확인하는 재점검까지를 과업 범위로 봅니다.")
+ABOUT_DESC = ("쉴더스랩은 ISMS-P 인증 대응과 모의해킹·취약점 진단을 한 계약 안에서 수행하는 정보보호 컨설팅 "
+              "회사입니다. 발견마다 규제 조항과 담당 조직을 붙이고, 재점검으로 조치를 확인한 뒤 과업을 마칩니다.")
 ABOUT_LD = ('{"@context":"https://schema.org","@type":"AboutPage","name":"회사소개 | 쉴더스랩",'
             '"url":"https://shilderslab.com/about/"}')
 
@@ -27,9 +27,9 @@ ABOUT_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 회사소개</div>
     <h1 class="d1" data-content="about.hero_title">확인한 것만<br>보고서에 씁니다</h1>
-    <p class="lead" data-content="about.hero_lead">쉴더스랩(SHIELDUS LAB)은 정보보호 컨설팅 회사입니다.
-       ISMS-P 인증 대응과 모의해킹·취약점 진단을 한 계약 안에서 수행하고,
-       조치를 확인하는 재점검까지를 과업 범위로 봅니다.</p>
+    <p class="lead" data-content="about.hero_lead">쉴더스랩(SHIELDUS LAB)은 ISMS-P 인증 대응과 모의해킹·취약점 진단을
+       한 계약 안에서 수행하는 정보보호 컨설팅 회사이며, 진단으로 찾아낸 항목이 실제 조치로 이어지는 데까지를
+       과업 범위로 봅니다. 그래서 보고서 제출은 중간 지점입니다.</p>
   </div>
 </section>
 
@@ -40,19 +40,19 @@ ABOUT_BODY = """<section class="phead">
       <h2 class="d2" style="margin:20px 0 26px" data-content="about.view_title">발견마다 담당자와<br>순서를 붙입니다</h2>
       <div class="lead cms-rich" data-content="about.view_body">
         <p>
-          진단을 받은 다음 해에 같은 항목이 다시 지적되는 일이 있습니다.
-          발견 사항이 담당 조직의 작업 단위로 옮겨지지 않고, 조치 결과를 확인하는 절차가
-          <b>계약 범위에 없을 때</b> 그렇습니다.
+          작년 보고서에 있던 항목이 올해 또 올라오는 이유는 무엇일까요.
+          담당자가 손을 놓아서인 경우는 드뭅니다. 발견 사항이 어느 조직의 어떤 작업으로 넘어가는지 적혀 있지 않고,
+          고쳤는지 되짚는 절차가 <b>계약 범위에 없을 때</b> 같은 목록이 해마다 되돌아옵니다.
         </p>
         <p>
-          쉴더스랩은 발견을 규제 항목과 시스템 담당자의 작업 단위에 함께 연결합니다.
-          조치가 적용됐는지 재점검으로 확인한 뒤 과업을 닫습니다.
-          “무엇이 취약한가”에서 멈추지 않습니다. “지금은 안전한가”에 답하고 끝냅니다.
+          그래서 저희는 발견마다 걸리는 규제 조항과 그 항목을 받아 갈 담당 조직을 함께 붙이고,
+          조치가 적용됐는지는 재점검에서 직접 열어 확인합니다.
+          “지금은 안전한가”라는 질문까지 답한 뒤에 과업을 닫습니다.
         </p>
       </div>
       <div class="pull" style="margin-top:44px">
-        <p>재현되지 않은 항목은 보고서에 올리지 않습니다.
-           판단이 어려우면 “확인 필요” 등급으로 분리하고, 무엇을 더 받으면 확정할 수 있는지 적습니다.</p>
+        <p>확인한 범위와 확인하지 못한 범위를 보고서 안에서 구분해 표시합니다.
+           그래야 다음 사람이 어디서부터 이어받을지 알 수 있습니다.</p>
         <cite>보고서 작성 규칙</cite>
       </div>
     </div>
@@ -79,20 +79,18 @@ ABOUT_BODY = """<section class="phead">
       <h2 class="d2" style="margin:0 0 30px" data-content="about.name_title">이름이 곧<br>하는 일입니다</h2>
       <div class="lead cms-rich" data-content="about.name_body">
         <p>
-          <b>SHIELD</b> 지킨다 · <b>US</b> 우리를 · <b>LAB</b> 연구한다.
-          사명은 이 세 낱말을 그대로 이어 붙인 것입니다.
-          국문 <b>쉴더스랩</b>은 ‘shield us’를 이어 읽은 음차이므로, 영문과 국문은 다른 이름이 아니라 같은 말입니다.
+          <b>shield us</b>, 우리를 지킨다. 이어 읽으면 쉴더스가 되고, 여기에 연구를 뜻하는 <b>LAB</b>이 붙어 사명이 됐습니다.
+          국문 <b>쉴더스랩</b>과 영문 표기는 같은 말을 두 번 적은 것입니다.
         </p>
         <p>
-          <b>US</b> 는 고객사를 가리키는 말이면서 저희를 포함하는 말입니다.
-          보안은 지켜 주는 쪽과 지킴받는 쪽으로 나뉘지 않습니다.
-          같은 위협 아래 있는 사람들이 같은 편에서 막는 일입니다.
-          그래서 저희는 진단을 넘겨주고 끝내지 않고, 조치가 닫힐 때까지 함께 봅니다.
+          여기서 <b>us</b>는 고객사만 가리키는 말이 아닙니다. 저희도 그 안에 들어갑니다.
+          지켜 주는 쪽과 지킴받는 쪽을 갈라 놓으면 보고서를 건네는 순간 일이 끝나 버리고,
+          그래서 조치가 닫히기 전까지는 저희 과업도 열려 있습니다.
         </p>
         <p>
-          <b>LAB</b> 은 연구를 뜻합니다. 저희에게 연구는 방법을 공개하는 일입니다.
-          진단 절차와 위험도 등급 정의, 보고서 구성을 계약 전에 공개하고, 발견마다 재현 절차를 붙입니다.
-          다시 확인할 수 없는 주장은 연구가 아니라고 봅니다.
+          <b>LAB</b>은 방법을 열어 둔다는 뜻으로 씁니다.
+          진단 순서와 위험도 등급 기준을 계약 전에 공개하고, 발견 하나하나에 재현 절차를 적습니다.
+          다시 해 봐도 같은 결과가 나오지 않는 항목은 연구 결과라고 부를 수 없습니다.
         </p>
       </div>
     </div>
@@ -108,24 +106,24 @@ ABOUT_BODY = """<section class="phead">
       <h2 class="d2" style="margin:0 0 30px" data-content="about.message_title">대표이사 인사말</h2>
       <div class="lead cms-rich" data-content="about.message_body">
         <p>
-          두꺼운 보고서를 받고도 다음 주 월요일에 무엇부터 손댈지 정하지 못하는 상황이 있습니다.
-          저는 그 상태를 <b>컨설팅의 실패</b>로 봅니다.
+          두꺼운 보고서를 다 읽고도 다음 주 월요일 아침에 무엇부터 손대야 할지 모르겠다면,
+          저는 그것을 <b>컨설팅의 실패</b>라고 봅니다.
         </p>
         <p>
-          쉴더스랩은 그 지점에서 시작했습니다. 취약점을 찾아내는 일만으로는 변별력이 되기 어렵습니다.
-          발견을 규제 조항과 담당자의 작업 단위로 옮기고, 우선순위에 근거를 붙이고,
-          조치를 다시 확인한 뒤 과업을 닫습니다. 여기까지를 계약 범위에 넣습니다.
+          쉴더스랩은 그 지점에서 출발했습니다. 취약점 목록을 넘기는 데서 멈추면 담당자의 다음 주는 어제와 똑같기 때문입니다.
+          저희는 발견을 규제 조항과 담당 조직의 작업 단위로 옮기고, 왜 그 순서여야 하는지를 옆에 적습니다.
+          조치를 다시 확인하는 데까지가 계약 범위입니다.
         </p>
         <p>
-          저희가 스스로에게 두는 규칙은 두 가지입니다. 첫째, <b>할 수 없는 일을 할 수 있다고 말하지 않습니다.</b>
-          법령상 수행 자격이 제한된 과업이 있고, 저희가 보유하지 않은 지위가 있습니다.
-          그 경계는 홈페이지에 그대로 적어 두었습니다. 둘째, <b>확인하지 않은 것을 확인했다고 쓰지 않습니다.</b>
-          재현되지 않은 취약점은 보고서에 올리지 않습니다.
+          <b>할 수 없는 일을 할 수 있다고 말씀드리지 않습니다.</b>
+          법령상 수행 자격이 제한된 과업이 있고, 저희가 보유하지 않은 지위도 있습니다.
+          그 경계는 이 홈페이지에 숨김 없이 적어 두었습니다.
+          <b>확인하지 않은 것을 확인했다고 쓰는 일도 없습니다.</b> 재현되지 않은 취약점은 보고서에 올라가지 않습니다.
         </p>
         <p>
-          그래서 방법론과 산출물 규격을 계약 전에 공개합니다.
-          저희 판정이 맞는지 고객사가 직접 되짚어 볼 수 있어야 한다고 보기 때문입니다.
-          함께 볼 범위부터 편하게 말씀해 주시면, 거기서부터 시작하겠습니다.
+          방법론과 산출물 규격을 계약 전에 공개하는 것도 같은 이유에서입니다.
+          저희 판정이 맞는지 고객사가 직접 되짚어 볼 수 있어야 하니까요.
+          어디부터 봐야 할지 모르시겠다면 그 이야기부터 꺼내 주셔도 됩니다. 범위를 정하는 일에서부터 시작하겠습니다.
         </p>
       </div>
       <div class="sign" style="margin-top:40px">
@@ -141,29 +139,29 @@ ABOUT_BODY = """<section class="phead">
     <div class="sec-head">
       <div class="idx"><span class="lbl">04 / Principles</span></div>
       <div class="body">
-        <h2 class="d2">일하는 방식 세 가지</h2>
-        <p class="lead">판단 근거를 공개하지 않으면 고객사가 결론을 검증할 방법이 없습니다.
-           아래 세 가지는 요청하시면 계약서 조항으로 넣을 수 있는 항목입니다.</p>
+        <h2 class="d2">일하는 방식</h2>
+        <p class="lead">근거를 공개하지 않으면 고객사는 저희 결론이 맞는지 확인할 길이 없습니다.
+           아래 항목은 요청하시면 계약서 조항으로 넣습니다.</p>
       </div>
     </div>
     <div class="cols cols-3 divided">
       <div class="col-item rv">
         <span class="n">01</span>
-        <h3>근거 없는 지적은 하지 않습니다</h3>
-        <p>모든 발견 사항에 재현 절차와 확인 근거를 붙입니다. 판단이 어려운 항목은 추정으로 적지 않고
-           “확인 필요” 등급으로 분리해, 무엇을 더 받으면 확정할 수 있는지 함께 적습니다.</p>
+        <h3>근거부터</h3>
+        <p>발견마다 재현 절차와 확인 근거가 붙습니다. 판단이 서지 않는 항목은 추정으로 적지 않고
+           “확인 필요”로 분리합니다. 무엇을 더 받으면 확정되는지도 그 자리에 밝혀 드립니다.</p>
       </div>
       <div class="col-item rv d1">
         <span class="n">02</span>
-        <h3>조치 가능한 형태로 전달합니다</h3>
-        <p>위험도와 조치 난이도를 함께 산정해 우선순위를 제시합니다. 경영진 보고용 요약과 실무 조치
-           가이드를 분리해 각자 필요한 것만 보게 합니다.</p>
+        <h3>월요일에 바로 손댈 수 있게</h3>
+        <p>위험도 하나로 순서가 정해지지는 않습니다. 고치는 데 걸리는 시간을 나란히 놓고 봐야
+           다음 주에 실제로 착수할 항목이 추려집니다.</p>
       </div>
       <div class="col-item rv d2">
         <span class="n">03</span>
         <h3>알게 된 것은 밖으로 나가지 않습니다</h3>
-        <p>착수 전 NDA를 체결하고, 진단 데이터는 합의된 경로로만 취급합니다. 보관 기간이 끝나면 파기하고
-           파기 확인서를 제공합니다.</p>
+        <p>착수 전 NDA를 먼저 쓰고, 진단 데이터는 합의된 경로로만 주고받으며, 보관 기간이 끝나면
+           파기한 뒤 확인서를 드립니다.</p>
       </div>
     </div>
   </div>
@@ -174,16 +172,17 @@ ABOUT_BODY = """<section class="phead">
     <div class="c5">
       <span class="lbl">05 / Capability</span>
       <h2 class="d2" style="margin:20px 0 24px">규제와 공격,<br>두 언어를 함께</h2>
-      <p class="lead">인증 심사를 준비하는 언어와 침투 경로를 찾는 언어는 다릅니다.
-         쉴더스랩은 두 가지를 같은 프로젝트 안에서 다루고, 발견을 하나의 우선순위 목록으로 합칩니다.</p>
+      <p class="lead">심사원 앞에서 쓰는 말과, 공격자가 지나갈 길을 찾을 때 쓰는 말은 다릅니다.
+         이 둘을 다른 회사에 나눠 맡기면 담당자 책상 위에 목록이 두 개 남습니다.
+         저희는 한 프로젝트 안에서 보고, 우선순위 목록 하나로 합쳐 드립니다.</p>
       <div style="margin-top:32px"><a class="alink" href="/method/">진단 방법론 전체 보기</a></div>
     </div>
     <div class="c6 start7">
       <ul class="ticks">
-        <li><span><b>관리체계</b> — ISMS-P 인증기준, 개인정보보호법상 안전성 확보조치, 내부 정책 체계</span></li>
-        <li><span><b>기술 진단</b> — 웹·API·모바일·내부망 모의해킹, 인프라·소스코드 취약점 진단</span></li>
-        <li><span><b>클라우드</b> — AWS·Azure·GCP 구성 진단, IAM 권한과 로깅 체계 검토</span></li>
-        <li><span><b>운영 정착</b> — 침해사고 대응 절차, 모의훈련, 담당자·임직원 교육</span></li>
+        <li><span><b>관리체계</b> — ISMS-P 인증기준과 개인정보보호법상 안전성 확보조치를 놓고, 내부 정책이 실제 운영과 맞물려 있는지 봅니다.</span></li>
+        <li><span><b>기술 진단</b> — 웹·API·모바일·내부망 모의해킹. 인프라와 소스코드 취약점 진단도 여기 들어갑니다.</span></li>
+        <li><span><b>클라우드</b> — AWS·Azure·GCP 구성을 진단하면서 IAM 권한 범위와 로그 적재 상태를 확인합니다.</span></li>
+        <li><span><b>운영 정착</b> — 사고가 나면 누가 먼저 전화를 받는지부터 정합니다. 모의훈련과 담당자 교육도 함께 합니다.</span></li>
       </ul>
     </div>
   </div>
@@ -194,7 +193,8 @@ ABOUT_BODY = """<section class="phead">
     <div class="c7">
       <span class="lbl">Contact</span>
       <h2 class="d2" style="margin:18px 0 18px">함께 볼 범위부터 이야기해 주세요</h2>
-      <p class="lead">현재 규제 요건과 시스템 구성을 알려주시면, 필요한 진단과 우선순위를 정리해 회신드립니다.</p>
+      <p class="lead">지금 걸려 있는 규제 요건과 시스템 구성만 알려 주시면,
+         어떤 진단이 왜 필요한지 적어 보내 드립니다.</p>
     </div>
     <div class="c4 start9" style="display:flex;align-items:flex-end">
       <div style="display:flex;gap:12px;flex-wrap:wrap">
@@ -209,8 +209,8 @@ ABOUT_BODY = """<section class="phead">
 # 진단 방법론
 # ══════════════════════════════════════════════════════════════════════
 METHOD_TITLE = "진단 방법론 | 쉴더스랩 — 절차 · 위험도 산정 · 산출물 규격"
-METHOD_DESC = ("쉴더스랩이 실제로 쓰는 진단 방법론을 공개합니다. 5단계 절차, 위험도 산정 기준, "
-               "보고서 구성, 수행 규칙(Rules of Engagement), 하지 않는 일까지 계약 전에 확인하세요.")
+METHOD_DESC = ("쉴더스랩이 실제로 쓰는 진단 방법론을 계약 전에 공개합니다. 5단계 절차와 위험도 산정 "
+               "기준, 산출물 규격, 수행 규칙(Rules of Engagement), 그리고 하지 않는 일까지.")
 
 METHOD_CSS = """
   .phase{border-top:1px solid var(--ink);padding:26px 0 34px;display:grid;
@@ -235,8 +235,9 @@ METHOD_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 진단 방법론</div>
     <h1 class="d1">계약 전에<br>먼저 공개합니다</h1>
-    <p class="lead">진단은 결과보다 절차가 신뢰를 만듭니다. 저희가 실제로 쓰는 단계, 위험도 산정 기준,
-       산출물 구성, 수행 규칙을 그대로 공개합니다. 제안서를 비교하실 때 기준으로 쓰셔도 됩니다.</p>
+    <p class="lead">제안서를 여러 곳에서 받아 놓고도 무엇을 기준으로 비교해야 할지 막막할 때가 있습니다.
+       쉴더스랩은 그래서 실제로 쓰는 5단계 절차와 위험도 산정 기준, 산출물 규격을 계약 전에 공개합니다.
+       감추면 비교가 안 되니까요.</p>
   </div>
 </section>
 
@@ -246,8 +247,8 @@ METHOD_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">01 / Process</span></div>
       <div class="body">
         <h2 class="d2">5단계 표준 절차</h2>
-        <p class="lead">모든 과업은 같은 단계를 거칩니다. 마지막 재점검이 끝나야 종료로 봅니다.
-           단계별 산출물은 계약서에 그대로 명시됩니다.</p>
+        <p class="lead">과업 종류가 달라도 단계는 같고, 05 재점검이 끝나야 종료입니다.
+           각 단계에서 무엇이 나오는지는 계약서에 명시합니다.</p>
       </div>
     </div>
 
@@ -255,8 +256,9 @@ METHOD_BODY = """<section class="phead">
       <div class="n">01</div>
       <div>
         <h3>범위 정의</h3>
-        <p class="what">대상 자산과 시스템, 적용 규제, 제약 조건(운영시간·부하 허용 범위·접근 경로)을 확정합니다.
-           범위가 흔들리면 이후 산출물이 전부 다시 만들어지므로, 이 단계에서 경계와 제외 대상을 문서로 못 박습니다.</p>
+        <p class="what">어디까지 볼지부터 정합니다. 대상 자산과 적용 규제는 물론이고, 언제 시험해도 되는지,
+           부하는 어디까지 허용되는지, 어느 경로로 들어가야 하는지까지 여기서 확정합니다.
+           이 단계가 흔들리면 뒤따르는 산출물을 전부 다시 만들게 되므로, 범위 밖으로 빼는 대상까지 문서에 남깁니다.</p>
       </div>
       <div class="out">
         <span class="k">산출물</span>
@@ -272,8 +274,8 @@ METHOD_BODY = """<section class="phead">
       <div class="n">02</div>
       <div>
         <h3>진단 수행</h3>
-        <p class="what">관리·기술·개인정보 영역을 병행 진단합니다. 자동 스캔 결과는 그대로 보고하지 않고,
-           사람이 재현해 오탐을 제거한 항목만 남깁니다. 진행 중 중대한 발견이 나오면 보고서를 기다리지 않고 즉시 통보합니다.</p>
+        <p class="what">관리·기술·개인정보를 나눠 맡아 동시에 진행합니다. 자동 스캔 결과는 옮겨 담지 않고,
+           사람이 한 번 재현해 본 항목만 남깁니다. Critical이 나오면 보고서를 기다리지 않고 바로 연락드립니다.</p>
       </div>
       <div class="out">
         <span class="k">산출물</span>
@@ -289,8 +291,8 @@ METHOD_BODY = """<section class="phead">
       <div class="n">03</div>
       <div>
         <h3>분석 · 보고</h3>
-        <p class="what">발견 사항마다 재현 절차, 영향 범위, 위험도, 조치 방향을 붙입니다.
-           위험도는 아래 기준표로 산정하고 산정 근거를 함께 적습니다. 경영진 요약과 실무 조치 가이드는 분리합니다.</p>
+        <p class="what">발견마다 재현 절차와 조치 방향을 달고, 영향 범위와 등급 판정 근거도 같은 항목 안에 적습니다.
+           경영진이 읽을 요약과 실무자가 들고 다닐 가이드는 따로 만듭니다.</p>
       </div>
       <div class="out">
         <span class="k">산출물</span>
@@ -306,8 +308,8 @@ METHOD_BODY = """<section class="phead">
       <div class="n">04</div>
       <div>
         <h3>이행 지원</h3>
-        <p class="what">조치 자체는 시스템 담당 조직이 수행합니다. 저희는 조치 방향 협의, 설정 예시 제공,
-           적용안 검토를 맡습니다. 조직 사정상 지금 못 고치는 항목은 억지로 닫지 않고 잔여위험으로 남깁니다.</p>
+        <p class="what">실제로 고치는 손은 시스템 담당 조직입니다. 저희는 방향을 잡아 드리고, 설정 예시를 제공하고,
+           적용안이 맞는지 검토합니다. 조직 사정상 당장 고치기 어려운 항목은 억지로 닫지 않고 잔여위험으로 남깁니다.</p>
       </div>
       <div class="out">
         <span class="k">산출물</span>
@@ -323,7 +325,7 @@ METHOD_BODY = """<section class="phead">
       <div class="n">05</div>
       <div>
         <h3>재점검</h3>
-        <p class="what">조치했다고 보고된 항목을 다시 확인합니다. 재점검 1회는 기본 범위에 포함됩니다.
+        <p class="what">조치했다고 올라온 항목을 저희가 다시 열어 봅니다. 재점검 1회는 기본 범위이며,
            확인되지 않은 항목은 “조치 완료”로 적지 않습니다.</p>
       </div>
       <div class="out">
@@ -344,8 +346,8 @@ METHOD_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">02 / Severity</span></div>
       <div class="body">
         <h2 class="d2">위험도 산정 기준</h2>
-        <p class="lead">등급은 아래 정의표로 정하고, 항목마다 어느 조건에 해당해 그 등급이 됐는지 함께 적습니다.
-           같은 표를 보고서 첫 장에 실어서 등급의 의미를 다시 협의하지 않아도 되게 합니다.</p>
+        <p class="lead">“이건 왜 High입니까?” 보고 자리에서 가장 자주 나오는 질문입니다.
+           그래서 항목마다 아래 표의 어느 줄에 걸려 그 등급이 됐는지 밝히고, 같은 표를 보고서 첫 장에도 싣습니다.</p>
       </div>
     </div>
     <table class="spec sev">
@@ -382,8 +384,8 @@ METHOD_BODY = """<section class="phead">
       </tbody>
     </table>
     <p class="tiny" style="margin-top:18px">
-      CVSS 점수를 함께 요구하시면 산정치를 병기합니다. 다만 최종 우선순위는 CVSS가 아니라
-      고객사 환경에서의 실제 영향과 조치 난이도로 정합니다.
+      CVSS 점수가 필요하시면 옆에 나란히 적어 드립니다. 다만 조치 순서는 그 환경에서 실제로
+      어떤 피해가 생기는지, 고치는 데 얼마나 걸리는지를 보고 정합니다.
     </p>
   </div>
 </section>
@@ -393,16 +395,16 @@ METHOD_BODY = """<section class="phead">
     <div class="c5">
       <span class="lbl">03 / Rules of engagement</span>
       <h2 class="d2" style="margin:20px 0 24px">수행 규칙</h2>
-      <p class="lead">진단은 합의된 범위 안에서만 수행합니다. 아래 항목은 착수 전 서면으로 확정합니다.</p>
+      <p class="lead">합의된 범위 밖은 건드리지 않습니다. 아래 항목은 착수 전에 서면으로 확정합니다.</p>
     </div>
     <div class="c6 start7">
       <ul class="ticks">
-        <li><span><b>사전 서면 승인</b> — 대상 IP·도메인·계정 범위를 명시한 승인 없이는 어떤 시험도 하지 않습니다.</span></li>
-        <li><span><b>가용성 영향</b> — 부하를 유발할 수 있는 시험은 별도 합의 후, 합의된 시간대에만 수행합니다.</span></li>
-        <li><span><b>데이터 취급</b> — 실데이터 열람은 필요한 최소 범위로 제한하고, 추출·복제하지 않습니다.</span></li>
-        <li><span><b>제3자 자산</b> — 고객사 소유가 아닌 자산(외부 SaaS·공용 인프라)은 범위에서 제외합니다.</span></li>
-        <li><span><b>비상 정지</b> — 이상 징후가 확인되면 즉시 중단하고 담당자에게 통보합니다.</span></li>
-        <li><span><b>기록 보존</b> — 수행 이력을 남겨 사후에 “누가 무엇을 했는지” 재구성할 수 있게 합니다.</span></li>
+        <li><span><b>사전 서면 승인</b> — 대상 IP·도메인·계정 범위를 적은 승인서가 없으면 시험을 시작하지 않습니다.</span></li>
+        <li><span><b>가용성</b> — 부하가 걸릴 수 있는 시험은 따로 합의하고, 합의한 시간대에만 돌립니다.</span></li>
+        <li><span><b>실데이터를 다루는 방식</b> — 열람은 필요한 최소 범위까지입니다. 밖으로 내보내거나 사본을 남기지 않습니다.</span></li>
+        <li><span><b>제3자 자산</b> — 고객사 소유가 아닌 외부 SaaS나 공용 인프라는 범위에서 뺍니다.</span></li>
+        <li><span><b>이상 징후가 보이면 멈춥니다</b> — 서비스에 영향이 갈 조짐이 확인되면 그 자리에서 중단하고 담당자에게 알립니다. 재개할지는 담당자가 정합니다.</span></li>
+        <li><span><b>기록 보존</b> — 누가 언제 무엇을 했는지 나중에 되짚을 수 있도록 수행 이력을 남깁니다.</span></li>
       </ul>
     </div>
   </div>
@@ -413,18 +415,18 @@ METHOD_BODY = """<section class="phead">
     <div class="c5">
       <span class="lbl">04 / What we don't do</span>
       <h2 class="d2" style="margin:20px 0 24px">하지 않는 일</h2>
-      <p class="lead">할 수 있는 것만큼 하지 않는 것도 미리 밝히는 편이 서로에게 낫습니다.</p>
+      <p class="lead">계약서에 도장을 찍은 뒤에 알게 되면 서로 곤란합니다. 그래서 미리 밝혀 드립니다.</p>
     </div>
     <div class="c6 start7">
       <ul class="ticks no-list">
         <li><span><b>스캐너 결과 납품</b> — 도구 출력물을 그대로 옮겨 담은 보고서는 만들지 않습니다.
-          오탐 제거와 재현이 끝난 항목만 싣습니다.</span></li>
-        <li><span><b>확인 없는 “조치 완료”</b> — 재점검으로 확인되지 않은 항목은 완료로 기재하지 않습니다.</span></li>
-        <li><span><b>인증 통과 보장</b> — 심사 결과를 보장한다는 약속은 하지 않습니다.
-          결함 발생 가능 지점을 사전에 드러내는 것이 저희 역할입니다.</span></li>
-        <li><span><b>보안 솔루션 판매</b> — 제품을 팔지 않습니다. 도입이 필요하면 요건만 정의하고
-          선정은 고객사가 합니다.</span></li>
-        <li><span><b>범위 밖 진단</b> — 승인되지 않은 자산은 “해보니 되더라”라도 손대지 않습니다.</span></li>
+          오탐을 걷어 내고 사람이 재현한 항목만 싣습니다.</span></li>
+        <li><span><b>확인 없는 “조치 완료”</b> — 재점검에서 저희가 직접 확인한 항목만 완료로 기록합니다.</span></li>
+        <li><span><b>인증 통과 보장</b> — 심사 결과를 보장하겠다는 약속은 드리지 않습니다.
+          결함이 날 만한 지점을 심사 전에 드러내는 것이 저희 몫입니다.</span></li>
+        <li><span><b>보안 솔루션 판매</b> — 제품을 팔지 않는 대신, 도입이 필요하면 요건만 정리해 드리고
+          어느 제품을 살지는 고객사가 정합니다.</span></li>
+        <li><span><b>범위 밖 진단</b> — 승인되지 않은 자산은 “해 보니 되던데요”라도 손대지 않습니다.</span></li>
       </ul>
     </div>
   </div>
@@ -435,7 +437,8 @@ METHOD_BODY = """<section class="phead">
     <div class="c7">
       <span class="lbl">Next</span>
       <h2 class="d2" style="margin:18px 0 18px">이 기준으로<br>우리 환경을 보면 어떻게 될까요</h2>
-      <p class="lead">현재 시스템 구성만 알려주시면 어떤 단계에 무엇이 필요한지 정리해 회신드립니다.</p>
+      <p class="lead">이 페이지를 그대로 들고 다른 회사 제안서와 비교해 보셔도 됩니다.
+         저희 쪽 이야기가 필요해지면, 그때 시스템 구성만 알려 주세요.</p>
     </div>
     <div class="c4 start9" style="display:flex;align-items:flex-end">
       <div style="display:flex;gap:12px;flex-wrap:wrap">
@@ -450,8 +453,8 @@ METHOD_BODY = """<section class="phead">
 # 브랜드
 # ══════════════════════════════════════════════════════════════════════
 BRAND_TITLE = "브랜드 · CI | 쉴더스랩"
-BRAND_DESC = ("쉴더스랩 CI 벡터 원본(SVG) 다운로드와 사용 규칙. 워드마크까지 아웃라인 패스로 변환되어 "
-              "폰트 설치 없이 동일하게 렌더됩니다.")
+BRAND_DESC = ("쉴더스랩 CI 벡터 원본(SVG)을 내려받으실 수 있습니다. 워드마크의 글자까지 아웃라인 패스로 "
+              "변환해 두어, 폰트가 설치되지 않은 컴퓨터에서 열어도 모양이 흐트러지지 않습니다.")
 
 BRAND_CSS = """
   .assets{display:grid;grid-template-columns:repeat(3,1fr);gap:0 var(--gut)}
@@ -502,9 +505,9 @@ BRAND_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 브랜드 · CI</div>
     <h1 class="d2">쉴더스랩 CI</h1>
-    <p class="lead">모든 로고 파일은 <b>벡터(SVG) 원본</b>이며, 워드마크까지 실제 아웃라인 패스로 변환되어 있습니다.
-       폰트가 설치되지 않은 환경에서도 동일하게 렌더되고, 인쇄·간판·커팅 등 로우데이터가 필요한 작업에
-       그대로 사용할 수 있습니다.</p>
+    <p class="lead">인쇄소나 간판 업체가 원본 데이터를 달라고 하면 어떤 파일을 보내야 할까요.
+       여기 있는 로고는 전부 <b>벡터(SVG) 원본</b>이라, 이 페이지에서 내려받은 파일을 그대로 넘기시면 됩니다.
+       워드마크의 글자까지 아웃라인 패스로 바꿔 두었기 때문에 폰트가 설치되지 않은 컴퓨터에서 열어도 모양이 흐트러지지 않습니다.</p>
   </div>
 </section>
 
@@ -514,10 +517,9 @@ BRAND_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">01 / Name</span></div>
       <div class="body">
         <h2 class="d3">사명의 뜻</h2>
-        <p class="lead" data-content="brand.name_summary">SHIELD 지킨다 · US 우리를 · LAB 연구한다 —
-           우리를 지키는 방법을 연구한다는 뜻입니다.
-           국문 쉴더스랩은 ‘shield us’를 이어 읽은 음차로, 영문과 국문은 같은 말입니다.
-           로고의 실드와 그 안의 각인도 이 뜻에서 나왔습니다.</p>
+        <p class="lead" data-content="brand.name_summary">shield us, 우리를 지킨다.
+           이어 읽으면 쉴더스가 되고, 여기에 연구를 뜻하는 LAB이 붙었습니다.
+           로고의 실드와 그 안의 각인도 같은 뜻에서 나왔습니다.</p>
         <p class="tiny" style="margin-top:14px">
           자세한 설명은 <a href="/about/" style="border-bottom:1px solid var(--rule-2)">회사소개</a>에 있습니다.
         </p>
@@ -531,7 +533,7 @@ BRAND_BODY = """<section class="phead">
     <div class="sec-head">
       <div class="idx"><span class="lbl">02 / Logo</span></div>
       <div class="body"><h2 class="d3">로고 원본</h2>
-        <p class="lead">용도에 맞는 파일을 사용하세요.</p></div>
+        <p class="lead">쓰실 자리에 맞는 파일을 내려받으시면 됩니다.</p></div>
     </div>
     <div class="assets">
       <div class="asset">
@@ -573,9 +575,9 @@ BRAND_BODY = """<section class="phead">
     <div class="sec-head">
       <div class="idx"><span class="lbl">03 / Korean lockup</span></div>
       <div class="body"><h2 class="d3">한글형 <span class="ko">(국문 우선 · 영문 병기)</span></h2>
-        <p class="lead">국문 계약서·제안서·국내 인쇄물처럼 국문이 주가 되는 자리에 씁니다.
-           구조는 기본형과 같고 위계만 뒤집혀 있습니다 — <b>쉴더스랩</b>이 크고 SHIELDUS LAB 이 아래에 병기됩니다.
-           둘을 한 지면에 섞어 쓰지는 마세요.</p></div>
+        <p class="lead">국문 계약서나 국내 인쇄물처럼 한글이 주인공인 자리에 씁니다.
+           구조는 기본형과 같고 위계만 뒤집혀, <b>쉴더스랩</b>이 크고 SHIELDUS LAB 이 아래에 작게 붙습니다.
+           한 지면에 기본형과 한글형을 섞어 쓰는 것만 피해 주세요.</p></div>
     </div>
     <div class="assets">
       <div class="asset">
@@ -625,7 +627,8 @@ BRAND_BODY = """<section class="phead">
     <div class="sec-head">
       <div class="idx"><span class="lbl">04 / Color</span></div>
       <div class="body"><h2 class="d3">브랜드 컬러</h2>
-        <p class="lead">딥 파인 그린 하나를 액센트로 씁니다. 배경은 웜 오프화이트, 텍스트는 잉크입니다.</p></div>
+        <p class="lead">액센트는 딥 파인 그린 하나입니다. 배경에는 웜 오프화이트, 글자에는 잉크를 씁니다.
+           나머지는 이 셋을 받쳐 주는 색입니다.</p></div>
     </div>
     <div class="sw">
       <div class="s"><div class="chip" style="background:#1A4B3A"></div><div class="i"><b>Accent · 딥 파인</b><code>#1A4B3A</code></div></div>
@@ -646,13 +649,13 @@ BRAND_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">05 / Business card</span></div>
       <div class="body">
         <h2 class="d3">명함</h2>
-        <p class="note-warn"><b>도메인 확보 전입니다 — 인쇄 발주를 보류하십시오.</b>
-           명함에는 <b>전환 예정 도메인</b>이 새겨져 있고, 그 주소는 아직 확보되지 않았습니다.
-           확보가 확정되기 전에 인쇄하면 명함의 웹 주소와 이메일이 닿지 않습니다.
-           도메인이 손에 들어오고 사이트 전환이 끝난 뒤에 발주하십시오.</p>
-        <p class="lead">세 가지 시안을 준비했습니다. 모두 <b>인쇄소에 그대로 넘길 수 있는 규격</b>으로 만들었습니다 —
-           재단 90 × 50 mm에 사방 3 mm 도련, 글자는 전부 아웃라인 처리되어 폰트를 함께 보낼 필요가 없습니다.
-           각 시안마다 <b>영문형</b>과 <b>한글형</b>이 있습니다. 한글형은 쉴더스랩이 크고 SHIELDUS LAB 이 아래에 병기됩니다.</p>
+        <p class="note-warn"><b>인쇄 발주는 잠시 보류해 주세요.</b>
+           명함에 새겨진 주소는 <b>전환 예정 도메인</b>이고, 그 도메인은 확보 전입니다.
+           지금 인쇄하면 웹 주소와 이메일이 닿지 않는 곳을 가리키게 됩니다.
+           도메인 확보와 사이트 전환이 끝난 뒤에 발주하시면 됩니다.</p>
+        <p class="lead">시안은 셋이고, 모두 <b>인쇄소에 바로 넘길 수 있는 규격</b>으로 만들었습니다.
+           재단 90 × 50 mm에 사방 3 mm 도련, 글자는 전부 아웃라인 처리라 폰트를 따로 보내실 일이 없습니다.
+           시안마다 <b>영문형</b>과 <b>한글형</b>을 각각 준비했습니다.</p>
       </div>
     </div>
 
@@ -660,7 +663,7 @@ BRAND_BODY = """<section class="phead">
       <div class="card-set">
         <span class="n ko">시안 A</span>
         <h3>에디토리얼</h3>
-        <p>상단 액센트 바 + 좌측 정렬. 정보 위계가 가장 분명하고 어떤 직함에도 잘 맞습니다. 기본 권장안.</p>
+        <p>상단에 액센트 바를 두고 요소를 전부 좌측에 정렬했습니다. 직함이 길든 짧든 위계가 무너지지 않아 기본안으로 삼기 좋습니다.</p>
         <div class="card-shot"><img src="/assets/ci/card/card-A-front@300.jpg" alt="시안 A 앞면" loading="lazy"></div>
         <div class="card-shot"><img src="/assets/ci/card/card-A-back@300.jpg" alt="시안 A 뒷면" loading="lazy"></div>
         <div class="card-dl">
@@ -687,7 +690,7 @@ BRAND_BODY = """<section class="phead">
       <div class="card-set">
         <span class="n ko">시안 B</span>
         <h3>여백형</h3>
-        <p>심볼과 사명을 세로로 쌓고 이름을 크게. 연락처는 우측 하단으로 몰아 여백을 최대한 남긴 안.</p>
+        <p>심볼과 사명을 세로로 쌓고 이름을 크게 세운 뒤, 연락처를 우측 하단으로 몰아 여백을 넓게 남겼습니다.</p>
         <div class="card-shot"><img src="/assets/ci/card/card-B-front@300.jpg" alt="시안 B 앞면" loading="lazy"></div>
         <div class="card-shot"><img src="/assets/ci/card/card-B-back@300.jpg" alt="시안 B 뒷면" loading="lazy"></div>
         <div class="card-dl">
@@ -714,7 +717,7 @@ BRAND_BODY = """<section class="phead">
       <div class="card-set">
         <span class="n ko">시안 C</span>
         <h3>역상 · 딥 파인</h3>
-        <p>앞면 전체를 브랜드 컬러로. 인상은 가장 강하지만 잉크 사용량이 많아 단가가 올라갑니다.</p>
+        <p>앞면 전체를 브랜드 컬러로 채워 인상이 가장 강합니다. 다만 잉크 사용량이 많아 단가가 올라갑니다.</p>
         <div class="card-shot"><img src="/assets/ci/card/card-C-front@300.jpg" alt="시안 C 앞면" loading="lazy"></div>
         <div class="card-shot"><img src="/assets/ci/card/card-C-back@300.jpg" alt="시안 C 뒷면" loading="lazy"></div>
         <div class="card-dl">
@@ -740,9 +743,9 @@ BRAND_BODY = """<section class="phead">
     </div>
 
     <p class="tiny" style="margin-top:26px">
-      미리보기 이미지의 이름·연락처는 예시(홍길동 / 010-0000-0000)입니다. 실제 명함은 아래 방법으로 사람별로 생성합니다.
-      재단선·안전여백을 눈으로 확인하려면 <a href="/assets/ci/card/card-A-front-guide.svg" download>가이드 버전</a>을 보세요
-      (가이드는 검토용이며 인쇄소에는 보내지 않습니다).
+      미리보기에 적힌 이름과 번호는 예시입니다(홍길동 / 010-0000-0000). 실제 명함은 아래 방법으로 사람마다 새로 뽑습니다.
+      재단선과 안전여백을 눈으로 확인하시려면 <a href="/assets/ci/card/card-A-front-guide.svg" download>가이드 버전</a>을 열어 보세요.
+      가이드는 검토용이니 인쇄소에는 보내지 마세요.
     </p>
   </div>
 </section>
@@ -753,7 +756,7 @@ BRAND_BODY = """<section class="phead">
       <div class="idx"><span class="lbl">06 / Print spec</span></div>
       <div class="body">
         <h2 class="d3">인쇄 규격</h2>
-        <p class="lead">인쇄소에 아래 표를 그대로 전달하시면 됩니다.</p>
+        <p class="lead">아래 표를 인쇄소에 전달하시면 됩니다. 따로 덧붙여 설명하실 내용은 없습니다.</p>
       </div>
     </div>
     <div class="g12">
@@ -767,7 +770,7 @@ BRAND_BODY = """<section class="phead">
             <tr><td data-l="항목">서체</td><td data-l="값">전부 아웃라인 변환 — 폰트 파일을 함께 보내지 않아도 됩니다</td></tr>
             <tr><td data-l="항목">색상</td><td data-l="값">파일은 RGB. 아래 CMYK 근사값으로 맞춰 주세요</td></tr>
             <tr><td data-l="항목">권장 용지</td><td data-l="값">랑데뷰 240 g 이상 또는 문켄 계열 — 무광 질감이 브랜드 톤에 맞습니다</td></tr>
-            <tr><td data-l="항목">후가공</td><td data-l="값">불필요. 코팅을 넣으면 종이 질감이 죽습니다</td></tr>
+            <tr><td data-l="항목">후가공</td><td data-l="값">불필요. 코팅을 넣으면 종이 질감이 가려집니다</td></tr>
           </tbody>
         </table>
       </div>
@@ -791,7 +794,7 @@ BRAND_BODY = """<section class="phead">
     <div class="g12" style="margin-top:52px">
       <div class="c5">
         <h3 class="d3" style="font-size:1.02rem;margin-bottom:14px">사람별 명함 만들기</h3>
-        <p class="small">이름·직함·연락처를 넣어 다시 생성합니다. 미리보기의 예시 정보를 그대로 인쇄하지 마세요.</p>
+        <p class="small">이름과 직함, 연락처를 넣고 다시 뽑습니다. 미리보기의 예시 정보가 남아 있지 않은지 발주 전에 확인해 주세요.</p>
       </div>
       <div class="c6 start7">
         <pre style="background:var(--paper-3);border:1px solid var(--rule);padding:16px;overflow-x:auto;
@@ -813,7 +816,7 @@ BRAND_BODY = """<section class="phead">
     <div class="sec-head">
       <div class="idx"><span class="lbl">07 / Usage</span></div>
       <div class="body"><h2 class="d3">사용 규칙</h2>
-        <p class="lead">최소 여백은 심볼 높이의 0.4배, 최소 크기는 심볼 20px / 가로형 락업 높이 24px 이상을 권장합니다.</p></div>
+        <p class="lead">여백은 심볼 높이의 0.4배 이상. 크기는 심볼 20px, 가로형 락업 높이 24px 아래로는 내리지 마세요.</p></div>
     </div>
     <div class="rules">
       <div class="yes">
@@ -846,8 +849,8 @@ NF_TITLE = "페이지를 찾을 수 없습니다 | 쉴더스랩"
 NF_DESC = "요청하신 페이지를 찾을 수 없습니다."
 
 NF_JS = """<script>
-/* /insights/<slug>/ 로 들어왔는데 아직 정적 페이지가 없는 글이면(최근 발행분)
-   동적 렌더러로 넘겨 준다. 그 외에는 일반 404 화면을 그대로 보여준다. */
+/* /insights/<slug>/ 로 들어왔는데 정적 페이지가 생성되지 않은 글이면(최근 발행분)
+   동적 렌더러로 넘겨 준다. 그 외에는 일반 404 화면을 보여준다. */
 (function () {
   var m = /^\/insights\/([a-z0-9][a-z0-9-]*)\/?$/.exec(location.pathname);
   if (m) {
@@ -860,7 +863,7 @@ NF_BODY = """<section class="phead">
   <div class="shell">
     <div class="crumb"><a href="/">홈</a> · 404</div>
     <h1 class="d1">요청하신 페이지가<br>없습니다</h1>
-    <p class="lead">주소가 변경되었거나 삭제된 페이지입니다. 아래에서 필요한 곳으로 이동해 주세요.</p>
+    <p class="lead">주소가 바뀌었거나 지워진 페이지입니다. 찾으시던 것이 아래 셋 중 하나일 수 있습니다.</p>
   </div>
 </section>
 
@@ -868,11 +871,11 @@ NF_BODY = """<section class="phead">
   <div class="shell">
     <div class="cols cols-3 divided">
       <a class="col-item" href="/services/"><span class="n">01</span><h3>서비스</h3>
-        <p>ISMS-P 인증, 모의해킹, 취약점 진단 등 여섯 개 영역</p><span class="go alink">이동</span></a>
+        <p>ISMS-P 인증부터 모의해킹까지, 여섯 개 영역</p><span class="go alink">이동</span></a>
       <a class="col-item" href="/method/"><span class="n">02</span><h3>진단 방법론</h3>
-        <p>절차·위험도 기준·산출물 규격을 계약 전에 공개합니다</p><span class="go alink">이동</span></a>
+        <p>어떤 순서로 진단하는지 계약 전에 다 적어 뒀습니다</p><span class="go alink">이동</span></a>
       <a class="col-item" href="/contact/"><span class="n">03</span><h3>상담 요청</h3>
-        <p>범위 검토와 견적 산정에는 비용이 발생하지 않습니다</p><span class="go alink">이동</span></a>
+        <p>범위 검토와 견적 산정에는 비용이 붙지 않습니다</p><span class="go alink">이동</span></a>
     </div>
   </div>
 </section>"""
