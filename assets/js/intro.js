@@ -43,14 +43,17 @@
      광택은 **SVG 내부 clipPath** 로만 클립한다 — HTML 원소에 mask:url() 을 걸면
      사파리의 3D 컨텍스트에서 깨진 이력이 있다. 그 위험을 아예 만들지 않았다.
 
+   ▣ 언제 뜨는가 — **접속할 때마다** (2026-08-09 오너 지시로 세션 1회 제한을 풀었다)
+     직접 진입 · 북마크 · 검색 · 외부 링크 · 새로고침 → 매번 재생한다.
+     단 **사이트 안에서 홈으로 돌아온 것은 접속이 아니다**(referrer 가 같은 출처) —
+     서비스 → 홈 같은 내부 이동마다 5초를 다시 틀면 사이트를 쓸 수가 없다.
    ▣ 언제 뜨지 않는가(전부 의도된 것)
-     한 세션 1회 · prefers-reduced-motion · ?nointro · 백그라운드 탭이면 대기
+     사이트 내부 이동 · prefers-reduced-motion · ?nointro · 백그라운드 탭이면 대기
      클릭 · Esc · 아무 키 · [건너뛰기] 로 즉시 닫힘 · ?intro 로 강제 재생(점검용)
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
 
-  var KEY = "sl-intro-seen";
   var TOTAL = 5000;
 
   /* ── 타임라인(ms). 여기만 만지면 전부 따라 움직인다 ────────────────── */
@@ -76,10 +79,16 @@
 
   function skipReason() {
     if (FORCE) return null;                    // 점검용 강제 재생(오너 미리보기 경로)
+    if (location.search.indexOf("nointro") >= 0) return "쿼리";
+    /* 접속마다 재생하되, **사이트 안에서 돌아온 것**은 접속으로 치지 않는다.
+       referrer 가 같은 출처면 방문자는 이미 인트로를 보고 사이트를 쓰는 중이다.
+       (내부 이동 뒤의 새로고침도 referrer 가 유지되므로 함께 걸러진다 — 의도한 것.) */
     try {
-      if (location.search.indexOf("nointro") >= 0) return "쿼리";
-      if (sessionStorage.getItem(KEY)) return "이번 세션에 이미 봄";
-    } catch (e) { /* 스토리지 차단 — 그냥 재생한다 */ }
+      if (document.referrer &&
+          new URL(document.referrer).origin === location.origin) {
+        return "사이트 내 이동";
+      }
+    } catch (e) { /* referrer 파싱 실패 — 그냥 재생한다 */ }
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return "동작 최소화 설정";
     }
@@ -88,7 +97,7 @@
 
   if (skipReason()) return;
 
-  if (!FORCE && document.hidden) {             // 보이지도 않은 채 "봤음"으로 기록되면 안 된다
+  if (!FORCE && document.hidden) {             // 보이지도 않는데 틀지 않는다 — 탭을 열면 그때 시작
     document.addEventListener("visibilitychange", function once() {
       if (document.hidden) return;
       document.removeEventListener("visibilitychange", once);
@@ -422,7 +431,8 @@
 
     document.documentElement.classList.add("sl-intro-on");
     document.body.appendChild(el);
-    try { sessionStorage.setItem(KEY, "1"); } catch (e) { /* noop */ }
+    /* "봤음" 기록은 남기지 않는다 — 접속마다 재생하는 것이 현재 정책이다(파일 상단).
+       내부 이동 중복 재생은 스토리지가 아니라 referrer 로 거른다. */
 
     /* ── 압출 심볼 만들기 ────────────────────────────────────────────
        symbol.svg 는 fill-rule=evenodd 짜리 **단일 컴파운드 패스**다(방패 + S 카운터).
