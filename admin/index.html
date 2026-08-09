@@ -50,14 +50,40 @@
   .mini-stat.clickable::after{content:"›";position:absolute;right:14px;top:12px;
     color:var(--muted);font-size:1rem;line-height:1}
   .mini-stat{position:relative}
-  /* 페이지 문구 탭 — 섹션 구분선 */
-  .cnt-sec{font-size:.86rem;letter-spacing:.02em;color:var(--accent);
-    border-top:1px solid var(--rule);padding-top:16px;margin:30px 0 14px}
-  .cnt-sec:first-child{border-top:none;padding-top:0;margin-top:0}
+  /* 페이지 문구 탭 — 대분류를 **접이식 카드**로 나눈다.
+     블록이 49개라 한 화면에 다 펼치면 스크롤이 감당이 안 된다. 기본은 모두 접힘. */
+  .cnt-head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .cnt-card{border:1px solid var(--rule);margin-bottom:12px;background:var(--white)}
+  .cnt-card[open]{border-color:var(--rule-2)}
+  .cnt-card>summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;
+    align-items:center;gap:12px;user-select:none}
+  .cnt-card>summary::-webkit-details-marker{display:none}
+  .cnt-card>summary:hover{background:var(--paper-2)}
+  /* 삼각형 표식 — 열리면 회전 */
+  .cnt-card>summary::before{content:"";flex:none;width:0;height:0;
+    border-left:5px solid var(--ink-3);border-top:4px solid transparent;
+    border-bottom:4px solid transparent;transition:transform .15s ease}
+  .cnt-card[open]>summary::before{transform:rotate(90deg)}
+  .cnt-card .sec-name{font-weight:600;font-size:.94rem;color:var(--ink);letter-spacing:-.01em}
+  .cnt-card .sec-count{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-3);
+    border:1px solid var(--rule-2);border-radius:2px;padding:1px 6px}
+  /* 이 대분류에 저장 안 된 변경이 있으면 표시 */
+  .cnt-card .sec-dirty{margin-left:auto;font-size:.72rem;color:var(--accent);font-weight:500;
+    display:none}
+  .cnt-card.dirty .sec-dirty{display:inline}
+  .cnt-card.dirty{border-left:3px solid var(--accent)}
+  .cnt-card .sec-body{padding:4px 18px 18px;border-top:1px solid var(--rule)}
+  /* 대분류별 저장 — 그 묶음만 저장한다 */
+  .cnt-card .sec-save{display:flex;justify-content:flex-end;gap:10px;align-items:center;
+    padding-top:14px;margin-top:4px;border-top:1px solid var(--rule)}
+  .cnt-card .sec-save .tiny{color:var(--ink-3)}
   #panel-cnt textarea{line-height:1.7;resize:vertical;white-space:pre-wrap}
-  /* 입력 가이드 */
+  /* 입력 가이드 — 기본 접힘 */
+  .cnt-guide-wrap{margin:0 0 18px;max-width:74ch}
+  .cnt-guide-wrap>summary{cursor:pointer;font-size:.84rem;color:var(--accent);
+    padding:8px 0;user-select:none}
   .cnt-guide{border:1px solid var(--rule);border-left:3px solid var(--accent);
-    padding:16px 18px;margin:0 0 22px;max-width:74ch;background:rgba(26,75,58,.03)}
+    padding:16px 18px;margin:0 0 4px;max-width:74ch;background:rgba(26,75,58,.03)}
   .cnt-guide p{font-size:.86rem;line-height:1.75;color:var(--ink-2);margin:0 0 10px}
   .cnt-guide p:last-child{margin-bottom:0}
   .cnt-legend{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px}
@@ -269,9 +295,15 @@
     <section class="panel" id="panel-cnt">
       <div class="panel-head">
         <h2>페이지 문구</h2>
-        <button class="btn primary" id="cnt-save">전체 저장</button>
+        <div class="cnt-head-actions">
+          <button class="btn btn-line btn-sm" id="cnt-expand">모두 펼치기</button>
+          <button class="btn primary" id="cnt-save">전체 저장</button>
+        </div>
       </div>
       <div class="alert" id="cnt-alert" role="status"></div>
+      <!-- 안내는 길어서 기본으로 접어 둔다. 처음 쓰는 사람만 펼쳐 보면 된다. -->
+      <details class="cnt-guide-wrap">
+        <summary>작성 방법 안내 — 줄바꿈 · 표기법</summary>
       <div class="cnt-guide">
         <p><b>줄바꿈</b> — 입력칸에서 <b>Enter</b> 를 치면 그 자리에서 줄이 바뀝니다.
            칸마다 <span class="kind-tag">한 문단</span> 또는 <span class="kind-tag">여러 문단</span> 이 붙어 있습니다.
@@ -291,6 +323,7 @@
            <b>비워 두면 사이트 기본 문구가 나옵니다</b> — 실수로 지워도 빈 화면이 되지 않습니다.
            저장하면 방문자에게는 즉시 반영되고, 다음 배포 때 정적 파일에도 구워집니다.</p>
       </div>
+      </details>
       <div id="cnt-body"><div class="empty">불러오는 중…</div></div>
     </section>
 

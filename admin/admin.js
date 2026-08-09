@@ -1008,6 +1008,92 @@
     }
   }
 
+  /** 대분류 이름 → 카드 인덱스. 렌더 순서(sort_order)가 곧 카드 순서다. */
+  function secIdxOf(section) {
+    var seen = [], idx = -1;
+    for (var i = 0; i < cntRows.length; i++) {
+      var s = cntRows[i].section;
+      if (seen.indexOf(s) < 0) { seen.push(s); }
+      if (s === section) { idx = seen.indexOf(s); break; }
+    }
+    return idx;
+  }
+
+  /** 그 대분류에 저장 안 된 변경이 있는지 계산해 카드에 표식을 켠다. */
+  function markSectionDirty(section) {
+    var idx = secIdxOf(section);
+    var card = document.getElementById("cnt-card-" + idx);
+    if (!card) return;
+    var dirty = false;
+    cntRows.forEach(function (row, i) {
+      if (row.section !== section || dirty) return;
+      var el = document.getElementById("cnt-f-" + i);
+      if (el && el.value !== (row.value || "")) dirty = true;
+    });
+    card.classList.toggle("dirty", dirty);
+  }
+
+  function refreshAllDirty() {
+    var seen = [];
+    cntRows.forEach(function (r) {
+      if (seen.indexOf(r.section) < 0) { seen.push(r.section); markSectionDirty(r.section); }
+    });
+  }
+
+  /** 바뀐 항목만 저장한다. rows 를 좁히면 그 대분류만 저장된다. */
+  function saveCnt(rowsFilter, alertId, doneMsgEl) {
+    var changed = [];
+    cntRows.forEach(function (row, i) {
+      if (rowsFilter && !rowsFilter(row)) return;
+      var el = document.getElementById("cnt-f-" + i);
+      if (!el) return;
+      if (el.value === (row.value || "")) return;
+      changed.push({ key: row.key, value: el.value });
+    });
+    if (!changed.length) {
+      if (doneMsgEl) { doneMsgEl.textContent = "바뀐 내용이 없습니다."; setTimeout(function () { doneMsgEl.textContent = ""; }, 2500); }
+      else show(alertId, "ok", "바뀐 내용이 없습니다.");
+      return;
+    }
+    if (doneMsgEl) doneMsgEl.textContent = "저장하는 중…";
+    var done = 0, failed = null;
+    changed.forEach(function (c) {
+      /* key 만 보내면 나머지 컬럼이 기본값으로 덮인다 — value 만 갱신한다. */
+      Promise.resolve(db.from("sl_content").update({ value: c.value }).eq("key", c.key))
+        .then(function (r) {
+          done++;
+          if (r && r.error && !failed) failed = r.error.message;
+          if (done !== changed.length) return;
+          if (failed) {
+            if (doneMsgEl) doneMsgEl.textContent = "";
+            show(alertId, "bad", "저장 실패: " + failed);
+            return;
+          }
+          changed.forEach(function (c2) {
+            for (var i = 0; i < cntRows.length; i++) {
+              if (cntRows[i].key === c2.key) { cntRows[i].value = c2.value; break; }
+            }
+          });
+          audit("update_content", "sl_content", changed.map(function (c2) { return c2.key; }).join(","),
+                { count: changed.length });
+          refreshAllDirty();
+          if (doneMsgEl) {
+            doneMsgEl.textContent = changed.length + "개 저장됨";
+            setTimeout(function () { doneMsgEl.textContent = ""; }, 3000);
+          }
+          show(alertId, "ok",
+               changed.length + "개 항목을 저장했습니다. 공개 페이지는 새로고침하면 바로 반영됩니다.");
+        }).catch(function (e) {
+          done++;
+          if (!failed) failed = (e && e.message) || "알 수 없는 오류";
+          if (done === changed.length) {
+            if (doneMsgEl) doneMsgEl.textContent = "";
+            show(alertId, "bad", "저장 실패: " + failed);
+          }
+        });
+    });
+  }
+
   function loadCnt() {
     db.from("sl_content").select("key,value,kind,section,label,hint,sort_order")
       .order("sort_order", { ascending: true })
@@ -1025,12 +1111,28 @@
           box.innerHTML = emptyBox("편집할 문구 블록이 없습니다. 0005 마이그레이션을 적용해 주세요.");
           return;
         }
-        var html = "", sec = null;
+        /* 대분류(section)마다 접이식 카드 하나. 49블록을 한 화면에 펼치면 못 쓴다.
+           카드 안에 그 묶음만 저장하는 버튼을 따로 둔다(전체 저장도 헤더에 남긴다). */
+        var html = "", sec = null, secIdx = -1, secCount = 0;
+        function closeSection() {
+          if (sec === null) return "";
+          return '<div class="sec-save">' +
+                   '<span class="tiny" id="cnt-sec-msg-' + secIdx + '"></span>' +
+                   '<button class="btn btn-line btn-sm" data-cnt-save-sec="' + secIdx + '">' +
+                     esc(sec) + " 저장</button>" +
+                 "</div></div></div></details>";
+        }
         cntRows.forEach(function (row, i) {
           if (row.section !== sec) {
-            if (sec !== null) html += "</div>";
-            sec = row.section;
-            html += '<h3 class="cnt-sec">' + esc(sec) + "</h3><div class=\"form\" style=\"max-width:820px\">";
+            html += closeSection();
+            sec = row.section; secIdx++;
+            secCount = 0;
+            cntRows.forEach(function (r2) { if (r2.section === sec) secCount++; });
+            html += '<details class="cnt-card" id="cnt-card-' + secIdx + '" data-sec-idx="' + secIdx + '">' +
+              '<summary><span class="sec-name">' + esc(sec) + "</span>" +
+              '<span class="sec-count">' + secCount + "</span>" +
+              '<span class="sec-dirty">● 저장 안 된 변경</span></summary>' +
+              '<div class="sec-body"><div class="form" style="max-width:820px">';
           }
           var id = "cnt-f-" + i;
           var rich = row.kind === "rich";
@@ -1055,51 +1157,51 @@
             '<div class="hint mono" style="opacity:.7">' + esc(row.key) + "</div>" +
             "</div>";
         });
-        if (sec !== null) html += "</div>";
+        html += closeSection();
         box.innerHTML = html;
         cntRows.forEach(function (row, i) {
           var el = document.getElementById("cnt-f-" + i);
           if (!el) return;
           el.value = row.value || "";
-          var draw = function () { renderPreview(el, row.kind, i); };
+          el.setAttribute("data-sec-idx", String(secIdxOf(row.section)));
+          var draw = function () {
+            renderPreview(el, row.kind, i);
+            markSectionDirty(row.section);   /* 어느 묶음에 미저장 변경이 있는지 표식 */
+          };
           el.addEventListener("input", draw);
-          draw();
+          renderPreview(el, row.kind, i);
         });
       });
   }
 
+  /* 전체 저장 — 모든 대분류에서 바뀐 것만 */
   document.getElementById("cnt-save").addEventListener("click", function () {
     if (!cntRows.length) { show("cnt-alert", "bad", "불러온 문구가 없어 저장할 수 없습니다."); return; }
-    var changed = [];
-    cntRows.forEach(function (row, i) {
-      var el = document.getElementById("cnt-f-" + i);
-      if (!el) return;
-      var v = el.value;
-      if (v === (row.value || "")) return;
-      changed.push({ key: row.key, value: v });
-    });
-    if (!changed.length) { show("cnt-alert", "ok", "바뀐 내용이 없습니다."); return; }
+    saveCnt(null, "cnt-alert", null);
+  });
 
-    /* key 만 보내면 나머지 컬럼이 기본값으로 덮인다 — value 만 갱신한다. */
-    var done = 0, failed = null;
-    changed.forEach(function (c) {
-      db.from("sl_content").update({ value: c.value }).eq("key", c.key).then(function (r) {
-        done++;
-        if (r.error && !failed) failed = r.error.message;
-        if (done === changed.length) {
-          if (failed) { show("cnt-alert", "bad", "저장 실패: " + failed); return; }
-          changed.forEach(function (c2) {
-            for (var i = 0; i < cntRows.length; i++) {
-              if (cntRows[i].key === c2.key) { cntRows[i].value = c2.value; break; }
-            }
-          });
-          audit("update_content", "sl_content", changed.map(function (c2) { return c2.key; }).join(","),
-                { count: changed.length });
-          show("cnt-alert", "ok",
-               changed.length + "개 항목을 저장했습니다. 공개 페이지는 새로고침하면 바로 반영됩니다.");
-        }
-      });
+  /* 대분류별 저장 — 카드 안 버튼(위임). 그 묶음만 저장한다. */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cnt-save-sec]");
+    if (!b) return;
+    var idx = Number(b.getAttribute("data-cnt-save-sec"));
+    var seen = [], section = null;
+    cntRows.forEach(function (r) {
+      if (seen.indexOf(r.section) < 0) seen.push(r.section);
     });
+    section = seen[idx];
+    if (section == null) return;
+    saveCnt(function (row) { return row.section === section; }, "cnt-alert",
+            document.getElementById("cnt-sec-msg-" + idx));
+  });
+
+  /* 모두 펼치기 / 접기 — 49블록을 훑을 때 편하도록 */
+  document.getElementById("cnt-expand").addEventListener("click", function () {
+    var cards = document.querySelectorAll("#cnt-body .cnt-card");
+    if (!cards.length) return;
+    var anyClosed = Array.prototype.some.call(cards, function (c) { return !c.open; });
+    Array.prototype.forEach.call(cards, function (c) { c.open = anyClosed; });
+    this.textContent = anyClosed ? "모두 접기" : "모두 펼치기";
   });
 
 
