@@ -58,13 +58,29 @@
     wrap.innerHTML = "";
     (actions || []).forEach(function (a) {
       var b = document.createElement("button");
-      b.className = "btn " + (a.cls || "btn-line") + " btn-sm";
+      /* ⚠ `a.cls || "btn-line"` 이면 **cls:"" 로 넘긴 확인 버튼**(저장·삭제·재설정)이
+         취소와 똑같은 외곽선 버튼이 된다 — 실제로 전부 구분이 안 되고 있었다.
+         cls 를 아예 안 준 경우만 btn-line(보조), "" 는 기본 .btn(강조)로 둔다. */
+      b.className = "btn " + (a.cls == null ? "btn-line" : a.cls) + " btn-sm";
       b.textContent = a.label;
       b.addEventListener("click", a.on);
       wrap.appendChild(b);
     });
     modal.classList.add("on");
   }
+  /** 모달의 확인(마지막) 버튼을 저장 중에 잠근다 — 연타로 같은 글이 두 번 등록되던 문제.
+      복구용 함수를 돌려주므로 실패 시 되돌리면 된다. */
+  function lockModalAction(labelWhileBusy) {
+    var wrap = document.getElementById("modal-actions");
+    var btns = wrap ? wrap.querySelectorAll("button") : [];
+    if (!btns.length) return function () {};
+    var b = btns[btns.length - 1];
+    var prev = b.textContent, prevDisabled = b.disabled;
+    b.disabled = true;
+    b.textContent = labelWhileBusy || "저장 중…";
+    return function () { b.disabled = prevDisabled; b.textContent = prev; };
+  }
+
   function closeModal() {
     modalSeq++;
     modal.classList.remove("on");
@@ -463,6 +479,15 @@
 
   /* ═══════════════ 대시보드 ═══════════════ */
   function loadDash() {
+    /* 목록 탭들은 "불러오는 중…"을 보여 주는데 대시보드만 빈 화면이었다 —
+       느린 회선에서 로그인 직후 아무것도 없는 화면이 잠깐 뜬다. 자리표시를 먼저 채운다. */
+    var statsBox = document.getElementById("stats");
+    if (statsBox && !statsBox.children.length) {
+      statsBox.innerHTML = '<div class="empty" style="grid-column:1/-1">불러오는 중…</div>';
+    }
+    var recentBox = document.getElementById("recent-inq");
+    if (recentBox && !recentBox.children.length) recentBox.innerHTML = emptyBox("불러오는 중…");
+
     db.rpc("sl_stats").then(function (r) {
       if (r.error) throw r.error;
       var s = r.data || {};
@@ -712,16 +737,21 @@
     if (!/^\d{4}-\d{2}-\d{2}$/.test(payload.published_at)) {
       show("md-alert", "bad", "발행일을 선택해 주세요."); return;
     }
+    var unlock = lockModalAction();   /* 연타로 같은 글이 두 번 등록되지 않게 */
     var p = id ? db.from("sl_insights").update(payload).eq("id", id)
                : db.from("sl_insights").insert(payload);
-    p.then(function (r) {
-      if (r.error) {
+    Promise.resolve(p).then(function (r) {
+      if (r && r.error) {
+        unlock();
         show("md-alert", "bad", /duplicate|unique/i.test(r.error.message)
           ? "이미 사용 중인 slug 입니다." : r.error.message);
         return;
       }
       audit(id ? "update" : "create", "sl_insights", id || payload.slug, { title: payload.title });
       closeModal(); loadIns(); loadDash();
+    }).catch(function (e) {
+      unlock();
+      show("md-alert", "bad", "저장하지 못했습니다: " + ((e && e.message) || "연결을 확인해 주세요."));
     });
   }
 
@@ -824,11 +854,15 @@
       published: checked("j-pub"),
     };
     if (!payload.title) { show("md-alert", "bad", "포지션명을 입력해 주세요."); return; }
+    var unlock = lockModalAction();   /* 연타로 같은 공고가 두 번 등록되지 않게 */
     var p = id ? db.from("sl_jobs").update(payload).eq("id", id) : db.from("sl_jobs").insert(payload);
-    p.then(function (r) {
-      if (r.error) { show("md-alert", "bad", r.error.message); return; }
+    Promise.resolve(p).then(function (r) {
+      if (r && r.error) { unlock(); show("md-alert", "bad", r.error.message); return; }
       audit(id ? "update" : "create", "sl_jobs", id || payload.title, { title: payload.title });
       closeModal(); loadJob(); loadDash();
+    }).catch(function (e) {
+      unlock();
+      show("md-alert", "bad", "저장하지 못했습니다: " + ((e && e.message) || "연결을 확인해 주세요."));
     });
   }
 
@@ -1382,9 +1416,23 @@
               body: { action: "create", email: email, password: val("ac-pw"), role: role, note: note },
             }).then(function (r) {
               if (r.error) throw r.error;
-              closeModal(); loadAcct();
-              show("acct-alert", "ok",
-                email + " 계정을 생성했습니다. 임시 비밀번호를 안전한 경로로 전달하세요.");
+              /* ⚠ 여기서 closeModal() 을 부르면 임시 비밀번호가 화면에서 사라진다
+                 (closeModal 이 모달 본문을 비운다). 한 번만 보여 주는 값이라 그러면
+                 담당자에게 전달할 방법이 없어진다 — 재설정 흐름과 같이 열어 둔다. */
+              show("md-alert", "ok",
+                   "계정을 만들었습니다. 위 임시 비밀번호를 지금 복사해 전달하세요 — " +
+                   "창을 닫으면 다시 볼 수 없습니다.");
+              loadAcct();   /* 목록은 뒤에서 갱신 */
+              /* 같은 계정을 두 번 만들지 않게 [추가] 는 치우고 [닫기] 만 남긴다. */
+              var wrap = document.getElementById("modal-actions");
+              if (wrap) {
+                wrap.innerHTML = "";
+                var okBtn = document.createElement("button");
+                okBtn.className = "btn btn-sm";
+                okBtn.textContent = "복사했습니다 · 닫기";
+                okBtn.addEventListener("click", closeModal);
+                wrap.appendChild(okBtn);
+              }
             }).catch(function (err) {
               fnFail(err, function (m, st) {
                 show("md-alert", "bad", notDeployed(m, st)

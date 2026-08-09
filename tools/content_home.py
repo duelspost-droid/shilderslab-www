@@ -43,7 +43,10 @@ CSS = """
   .open-grid .o a{margin-top:14px;display:inline-block}
   @media (max-width:980px){
     .home-hero{padding:56px 0 0}
-    .hero-meta{border-left:0;padding-left:0;border-top:1px solid var(--rule);margin-top:44px}
+    /* ⚠ .hero-meta 의 '아래로 쌓인' 스타일(좌측선 제거·상단선·위 여백)은 여기 두면 안 된다.
+       이 그리드가 실제로 1열이 되는 건 site.css 의 820px 규칙(.g12>*{grid-column:1/-1})이라,
+       980 에 걸면 821~980 구간에서 메타가 헤드라인 옆 좁은 열에 남은 채 상단 헤어라인만
+       떠서 어긋난다. site.css 가 820 에서 같은 처리를 이미 하므로 그쪽에 맡긴다. */
     .open-grid{grid-template-columns:1fr}
   }
 """

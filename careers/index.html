@@ -331,6 +331,27 @@
     }
   }
 
+  /* 검증 규칙을 한 곳에 둔다 — 제출할 때와 '고치는 즉시 풀어 줄 때' 같은 기준을 써야 한다. */
+  function checks() {
+    var g = function (id) { return document.getElementById(id); };
+    return [[g("ap-name"), !g("ap-name").value.trim()],
+            [g("ap-email"), !/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(g("ap-email").value.trim())],
+            [g("ap-position"), !g("ap-position").value],
+            [g("ap-summary"), g("ap-summary").value.trim().length < 10]];
+  }
+  /* 오류를 고치면 그 자리에서 빨간 표시가 사라진다(재제출 전까지 남아 있지 않게). */
+  checks().forEach(function (p) {
+    var el = p[0];
+    if (!el) return;
+    var ev = el.tagName === "SELECT" ? "change" : "input";
+    el.addEventListener(ev, function () {
+      if (!el.closest(".field") || !el.closest(".field").classList.contains("err")) return;
+      var still = false;
+      checks().forEach(function (q) { if (q[0] === el) still = q[1]; });
+      if (!still) markErr(el, false);
+    });
+  });
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var hp = document.getElementById("ap-website");
@@ -348,10 +369,7 @@
     var phone = document.getElementById("ap-phone");
 
     var bad = false, firstBad = null;
-    [[name, !name.value.trim()],
-     [email, !/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email.value.trim())],
-     [pos, !pos.value],
-     [summary, summary.value.trim().length < 10]].forEach(function (p) {
+    checks().forEach(function (p) {
       markErr(p[0], p[1]); if (p[1]) { bad = true; if (!firstBad) firstBad = p[0]; }
     });
     if (bad) { show("bad", "입력값을 확인해 주세요."); if (firstBad) firstBad.focus(); return; }
@@ -369,6 +387,8 @@
       form.reset();
       show("ok", "지원서가 접수되었습니다. 확인 후 이메일로 연락드립니다.");
       btn.textContent = "접수 완료";
+      /* 영구 비활성으로 두면 다른 포지션에 다시 지원할 수 없다. 잠깐 뒤 되살린다. */
+      setTimeout(function () { btn.disabled = false; btn.textContent = "지원서 제출"; }, 4000);
     }).catch(function (err) {
       var m = (err && err.message) || "";
       show("bad", /too many|rate/i.test(m)

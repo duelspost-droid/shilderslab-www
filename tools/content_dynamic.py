@@ -426,6 +426,27 @@ CAR_JS = """<script>
     }
   }
 
+  /* 검증 규칙을 한 곳에 둔다 — 제출할 때와 '고치는 즉시 풀어 줄 때' 같은 기준을 써야 한다. */
+  function checks() {
+    var g = function (id) { return document.getElementById(id); };
+    return [[g("ap-name"), !g("ap-name").value.trim()],
+            [g("ap-email"), !/^[^@\\s]+@[^@\\s.]+\\.[^@\\s]+$/.test(g("ap-email").value.trim())],
+            [g("ap-position"), !g("ap-position").value],
+            [g("ap-summary"), g("ap-summary").value.trim().length < 10]];
+  }
+  /* 오류를 고치면 그 자리에서 빨간 표시가 사라진다(재제출 전까지 남아 있지 않게). */
+  checks().forEach(function (p) {
+    var el = p[0];
+    if (!el) return;
+    var ev = el.tagName === "SELECT" ? "change" : "input";
+    el.addEventListener(ev, function () {
+      if (!el.closest(".field") || !el.closest(".field").classList.contains("err")) return;
+      var still = false;
+      checks().forEach(function (q) { if (q[0] === el) still = q[1]; });
+      if (!still) markErr(el, false);
+    });
+  });
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var hp = document.getElementById("ap-website");
@@ -443,10 +464,7 @@ CAR_JS = """<script>
     var phone = document.getElementById("ap-phone");
 
     var bad = false, firstBad = null;
-    [[name, !name.value.trim()],
-     [email, !/^[^@\\s]+@[^@\\s.]+\\.[^@\\s]+$/.test(email.value.trim())],
-     [pos, !pos.value],
-     [summary, summary.value.trim().length < 10]].forEach(function (p) {
+    checks().forEach(function (p) {
       markErr(p[0], p[1]); if (p[1]) { bad = true; if (!firstBad) firstBad = p[0]; }
     });
     if (bad) { show("bad", "입력값을 확인해 주세요."); if (firstBad) firstBad.focus(); return; }
@@ -464,6 +482,8 @@ CAR_JS = """<script>
       form.reset();
       show("ok", "지원서가 접수되었습니다. 확인 후 이메일로 연락드립니다.");
       btn.textContent = "접수 완료";
+      /* 영구 비활성으로 두면 다른 포지션에 다시 지원할 수 없다. 잠깐 뒤 되살린다. */
+      setTimeout(function () { btn.disabled = false; btn.textContent = "지원서 제출"; }, 4000);
     }).catch(function (err) {
       var m = (err && err.message) || "";
       show("bad", /too many|rate/i.test(m)
@@ -608,7 +628,12 @@ CON_JS = """<script>
   var alertEl = document.getElementById("inq-alert");
   var btn = document.getElementById("inq-submit");
 
-  function show(kind, msg) { alertEl.className = "alert on " + kind; alertEl.textContent = msg; }
+  /* 알림은 폼 맨 위에 있고 제출 버튼은 맨 아래다 — 스크롤해 주지 않으면 성공/실패 메시지를
+     사용자가 보지 못한 채 "아무 일도 안 일어났다"고 느낀다(채용 폼과 같은 동작으로 통일). */
+  function show(kind, msg) {
+    alertEl.className = "alert on " + kind; alertEl.textContent = msg;
+    alertEl.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
   function markErr(el, bad) {
     var f = el.closest(".field"); if (f) f.classList.toggle("err", !!bad);
     /* 시각(빨간 밑줄)만이 아니라 프로그램적으로도 오류를 알린다(WCAG 3.3.1·4.1.2).
@@ -625,6 +650,29 @@ CON_JS = """<script>
       else el.removeAttribute("aria-describedby");
     }
   }
+
+  /* 검증 규칙을 한 곳에 둔다 — 제출할 때와 '고치는 즉시 풀어 줄 때' 같은 기준을 써야 한다. */
+  function checks() {
+    var g = function (id) { return document.getElementById(id); };
+    return [[g("inq-company"), !g("inq-company").value.trim()],
+            [g("inq-name"), !g("inq-name").value.trim()],
+            [g("inq-email"), !/^[^@\\s]+@[^@\\s.]+\\.[^@\\s]+$/.test(g("inq-email").value.trim())],
+            [g("inq-service"), !g("inq-service").value],
+            [g("inq-message"), g("inq-message").value.trim().length < 5]];
+  }
+  /* 오류를 고치면 그 자리에서 빨간 표시가 사라진다. 재제출해야만 풀리면
+     "고쳤는데도 계속 틀렸다고 한다"고 읽힌다. */
+  checks().forEach(function (p) {
+    var el = p[0];
+    if (!el) return;
+    var ev = el.tagName === "SELECT" ? "change" : "input";
+    el.addEventListener(ev, function () {
+      if (!el.closest(".field") || !el.closest(".field").classList.contains("err")) return;
+      var still = false;
+      checks().forEach(function (q) { if (q[0] === el) still = q[1]; });
+      if (!still) markErr(el, false);
+    });
+  });
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -643,10 +691,7 @@ CON_JS = """<script>
     var consent = document.getElementById("inq-consent");
 
     var bad = false, firstBad = null;
-    [[company, !company.value.trim()], [name, !name.value.trim()],
-     [email, !/^[^@\\s]+@[^@\\s.]+\\.[^@\\s]+$/.test(email.value.trim())],
-     [service, !service.value],
-     [message, message.value.trim().length < 5]].forEach(function (p) {
+    checks().forEach(function (p) {
       markErr(p[0], p[1]); if (p[1]) { bad = true; if (!firstBad) firstBad = p[0]; }
     });
     if (bad) { show("bad", "입력값을 확인해 주세요."); if (firstBad) firstBad.focus(); return; }
@@ -664,6 +709,8 @@ CON_JS = """<script>
       form.reset();
       show("ok", "문의가 접수되었습니다. 영업일 기준 24시간 내에 담당자가 회신드립니다.");
       btn.textContent = "접수 완료";
+      /* 영구 비활성으로 두면 추가 문의를 못 한다. 잠깐 완료를 보여 준 뒤 되살린다. */
+      setTimeout(function () { btn.disabled = false; btn.textContent = "문의 보내기"; }, 4000);
     }).catch(function (err) {
       var m = (err && err.message) || "";
       show("bad", /too many|rate/i.test(m)

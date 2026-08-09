@@ -23,6 +23,12 @@
     /* 열린 패널 뒤(본문)로 포커스가 새지 않게 main·footer 를 inert 로 만든다.
        inert 미지원 브라우저는 무시된다(그 경우에도 visibility:hidden 이 닫힌 패널을 가린다). */
     var behind = [doc.getElementById("main"), doc.querySelector("footer.site")];
+    /* 드로어 뒤 딤. 바깥을 누르면 닫힌다 — 모바일에서 가장 흔한 닫기 동작이다.
+       CSS 는 모바일 폭에서만 보이게 되어 있어 데스크톱에는 영향이 없다. */
+    var backdrop = doc.createElement("div");
+    backdrop.className = "nav-backdrop";
+    doc.body.appendChild(backdrop);
+    backdrop.addEventListener("click", function () { closeNav(true); });
     function setBehindInert(on) {
       behind.forEach(function (el) {
         if (!el) return;
@@ -35,6 +41,7 @@
       burger.classList.remove("on");
       burger.setAttribute("aria-expanded", "false");
       doc.documentElement.style.overflow = "";
+      backdrop.classList.remove("on");
       setBehindInert(false);
       if (focusBurger) burger.focus();
     }
@@ -43,6 +50,7 @@
       burger.classList.toggle("on", open);
       burger.setAttribute("aria-expanded", open ? "true" : "false");
       doc.documentElement.style.overflow = open ? "hidden" : "";
+      backdrop.classList.toggle("on", open);
       setBehindInert(open);
       if (open) {
         var first = nav.querySelector("a[href]");
