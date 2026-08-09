@@ -76,8 +76,8 @@ CAREERS_TPL = """<section class="sec" id="home-careers"{hidden}>
     <div class="sec-head">
       <div class="idx"><span class="lbl">06 / Careers</span></div>
       <div class="body">
-        <h2 class="d2">함께 볼 사람을 찾습니다</h2>
-        <p class="lead">컨설팅은 결국 사람이 하는 일이라, 채용은 서비스 품질과 같은 문제로 봅니다.
+        <h2 class="d2" data-content="home.careers_title">함께 볼 사람을 찾습니다</h2>
+        <p class="lead" data-content="home.careers_lead">컨설팅은 결국 사람이 하는 일이라, 채용은 서비스 품질과 같은 문제로 봅니다.
            지금 열려 있는 자리입니다.</p>
       </div>
     </div>
