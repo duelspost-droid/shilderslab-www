@@ -270,7 +270,15 @@ privacyOfficer: "",   // 개인정보 보호책임자
   ⚠ **공고를 추가·수정하면 재빌드해야 정적 HTML 에 반영된다**(방문자는 JS 갱신으로 즉시 보이지만
   검색엔진은 정적 본문을 읽는다). `render_jobs` 와 `CAR_JS` 의 `card()` 는 **같은 구조를 유지**할 것.
 - **P2** Supabase 리전 확인 후 개인정보처리방침 국외이전 항목에 정확한 국가·리전 명시
-  (현재 "미국(Supabase, Inc.)" 으로 기재).
+  (현재 `content_legal.py` 3항에 **미국(Supabase, Inc.)** 으로 기재).
+  ⚠ 2026-08-09 확인 시도 — 대시보드 General/Infrastructure/Connect 가 이 무료 프로젝트에서
+  **계속 로딩 스켈레톤**이라 리전을 확정하지 못했다. Direct 호스트는 신형 `db.<ref>.supabase.co`
+  형식이라 리전이 드러나지 않는다. **리전 확정이 이 수정의 선행 조건**이다 — 근거 없이 법적
+  고지를 바꾸지 않는다(잘못된 국외이전 고지는 그 자체가 위험).
+  → 확인 방법: 대시보드가 정상 로드될 때 **Settings › General 의 Region** 필드,
+    또는 Connect › **Session/Transaction pooler** 문자열의 `aws-0-<region>` 호스트.
+    **리전이 서울(ap-northeast-2)이면 Supabase 행은 국외이전이 아니다** → 국가를 "대한민국"으로
+    바꾸고 국외이전 문구를 재구성해야 한다(GitHub Pages·Google Fonts 는 미국 유지).
 - **P3** 팀·자격 보유 현황 섹션(회사소개)에 실제 인력·자격 정보 추가.
 
 ### 접근성·성능 감사 (2026-08-09) — 확정 20건 중 17건 반영, 3건 보류
