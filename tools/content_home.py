@@ -65,9 +65,13 @@ CSS = """
   }
 """
 
-# 홈 06 채용 섹션 — build-pages.py 가 공개 공고가 있을 때만 이 틀을 채워 넣는다.
-# {items} 자리에 포지션 행들이 들어간다.
-CAREERS_TPL = """<section class="sec">
+# 홈 06 채용 섹션 — build-pages.py 가 {items}/{hidden} 을 채운다.
+#   공고가 있으면        : hidden="" 없이 행이 들어간 채로 구워진다(크롤러가 본다).
+#   공고가 0건이면       : hidden 속성이 붙은 **빈 틀**로 구워진다.
+# 빈 틀을 남기는 이유는 하이드레이션 때문이다 — 빌드 이후 콘솔에서 공고를 발행하면
+# JS 가 이 틀을 채우고 hidden 을 떼어 재빌드 없이 바로 보이게 한다.
+# hidden 이라 사람도 크롤러도 빈 섹션을 보지 않는다.
+CAREERS_TPL = """<section class="sec" id="home-careers"{hidden}>
   <div class="shell">
     <div class="sec-head">
       <div class="idx"><span class="lbl">06 / Careers</span></div>
@@ -77,7 +81,7 @@ CAREERS_TPL = """<section class="sec">
            지금 열려 있는 자리입니다.</p>
       </div>
     </div>
-    <div class="jobrow">
+    <div class="jobrow" id="home-jobs">
 {items}
     </div>
     <div style="margin-top:30px"><a class="alink" href="/careers/">채용 안내 전체 보기</a></div>
@@ -341,6 +345,33 @@ JS = """<script>
         '<div class="go">읽기 →</div></a>';
     }).join("");
   }).catch(fallback);
+})();
+</script>
+<script>
+/* 홈 06 채용 — 콘솔에서 공고를 바꾸면 재빌드를 기다리지 않고 바로 반영한다.
+   빌드가 구운 정적 목록이 이미 있으므로(크롤러용) 조회 실패 시에는 **건드리지 않는다**.
+   ⚠ 행 구조는 build-pages.py 의 render_home_careers() 와 같아야 한다 — 다르면 화면이 튄다. */
+(function () {
+  var sec = document.getElementById("home-careers");
+  var box = document.getElementById("home-jobs");
+  if (!sec || !box || !window.SL || !SL.db()) return;
+
+  SL.listPublished("sl_jobs", {
+    columns: "title,team,employment_type,location,closes_at",
+    order: { col: "sort_order", asc: true }, limit: 4
+  }).then(function (r) {
+    if (r && r.error) return;                 /* 네트워크 문제일 수 있다 — 구운 목록을 남긴다 */
+    var rows = (r && r.data) || [];
+    if (!rows.length) { sec.hidden = true; box.innerHTML = ""; return; }
+    box.innerHTML = rows.map(function (j) {
+      var metas = [j.team, j.employment_type, j.location].filter(Boolean).map(SL.esc).join(" · ");
+      var closes = j.closes_at ? SL.esc(SL.fmtDate(j.closes_at)) + " 마감" : "채용 시 마감";
+      return '<a href="/careers/"><div><h3>' + SL.esc(j.title) + "</h3>" +
+        '<div class="m">' + metas + (metas ? " · " : "") + closes + "</div></div>" +
+        '<div class="go">자세히 →</div></a>';
+    }).join("");
+    sec.hidden = false;
+  }).catch(function () { /* 구운 목록을 그대로 둔다 */ });
 })();
 </script>
 <!-- 홈 인트로. **홈에서만** 로드한다(다른 페이지는 이 파일을 받지 않는다).

@@ -161,11 +161,17 @@ def render_jobs(jobs):
 
 
 def render_home_careers(jobs, tpl):
-    """홈 06 채용 섹션. **공개 공고가 0건이면 섹션 자체를 만들지 않는다** —
-       홈에 "공고가 없습니다"가 뜨는 건 없는 것만 못하다.
-       조회 실패(None)일 때도 만들지 않는다(빈 섹션을 굽느니 생략)."""
+    """홈 06 채용 섹션.
+
+    공고가 0건이거나 조회에 실패하면 **hidden 붙은 빈 틀**을 굽는다(내용은 없다).
+    섹션을 통째로 빼지 않는 이유는 하이드레이션이다 — 빌드 이후 콘솔에서 공고를 발행하면
+    JS(content_home.JS)가 이 틀을 채우고 hidden 을 떼어 재빌드 없이 바로 보이게 한다.
+    hidden 이므로 공고가 없을 때 사람도 크롤러도 빈 섹션을 보지 않는다.
+
+    ⚠ 아래 행 구조는 content_home.JS 의 하이드레이션과 **같아야 한다** —
+      어긋나면 로드 직후 화면이 튄다. 한쪽을 고치면 다른 쪽도 고칠 것."""
     if not jobs:
-        return ""
+        return tpl.replace("{hidden}", " hidden").replace("{items}", "")
     rows = []
     for j in jobs[:4]:      # 홈에는 최대 4개까지만. 그 이상은 /careers/ 에서 본다.
         metas = " · ".join(esc(x) for x in
@@ -177,7 +183,7 @@ def render_home_careers(jobs, tpl):
             '      <a href="/careers/"><div><h3>' + esc(j.get("title")) + "</h3>"
             '<div class="m">' + metas + (" · " if metas else "") + closes + "</div></div>"
             '<div class="go">자세히 →</div></a>')
-    return tpl.replace("{items}", "\n".join(rows))
+    return tpl.replace("{hidden}", "").replace("{items}", "\n".join(rows))
 
 
 def fetch_content():
