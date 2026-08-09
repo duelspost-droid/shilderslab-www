@@ -160,6 +160,26 @@ def render_jobs(jobs):
     return "\n".join(out)
 
 
+def render_home_careers(jobs, tpl):
+    """홈 06 채용 섹션. **공개 공고가 0건이면 섹션 자체를 만들지 않는다** —
+       홈에 "공고가 없습니다"가 뜨는 건 없는 것만 못하다.
+       조회 실패(None)일 때도 만들지 않는다(빈 섹션을 굽느니 생략)."""
+    if not jobs:
+        return ""
+    rows = []
+    for j in jobs[:4]:      # 홈에는 최대 4개까지만. 그 이상은 /careers/ 에서 본다.
+        metas = " · ".join(esc(x) for x in
+                           [j.get("team"), j.get("employment_type"), j.get("location")] if x)
+        closes = esc(fmt_date(j["closes_at"])) + " 마감" if j.get("closes_at") else "채용 시 마감"
+        # 홈에는 제목·조건만 있고 담당 업무·자격 요건이 없다. #apply 로 바로 보내면
+        # 요건을 못 본 채 지원하게 되므로 목록(상세)으로 보낸다.
+        rows.append(
+            '      <a href="/careers/"><div><h3>' + esc(j.get("title")) + "</h3>"
+            '<div class="m">' + metas + (" · " if metas else "") + closes + "</div></div>"
+            '<div class="go">자세히 →</div></a>')
+    return tpl.replace("{items}", "\n".join(rows))
+
+
 def fetch_content():
     """관리자가 고친 문구를 빌드 시점에 구워 넣기 위해 읽는다.
        0005 미적용이거나 네트워크가 없으면 조용히 비운다 — 그 경우 코드 기본 문구로 빌드된다."""
@@ -360,7 +380,10 @@ def main():
     def add(path, prio, *a, **kw):
         static.append((url_of(page(path, *a, **kw)), prio))
 
-    add("index.html", "1.0", H.TITLE, H.DESC, H.BODY, "/", H.CSS, H.JS, H.LD)
+    # 공고는 홈 06 섹션과 /careers/ 두 곳에서 쓴다 — 한 번만 조회해 나눠 쓴다.
+    jobs = fetch_jobs()
+    home_body = H.BODY.replace("<!--SL_HOME_CAREERS-->", render_home_careers(jobs, H.CAREERS_TPL))
+    add("index.html", "1.0", H.TITLE, H.DESC, home_body, "/", H.CSS, H.JS, H.LD)
 
     add("services/index.html", "0.9", S.TITLE, S.DESC, S.BODY, "/services/", S.CSS)
     for svc in S.DETAILS:
@@ -383,7 +406,7 @@ def main():
 
     add("insights/index.html", "0.8", D.INS_TITLE, D.INS_DESC, D.INS_BODY, "/insights/",
         D.INS_CSS, D.INS_JS, D.INS_LD)
-    car_body = D.CAR_BODY.replace("<!--SL_JOBS-->", render_jobs(fetch_jobs()))
+    car_body = D.CAR_BODY.replace("<!--SL_JOBS-->", render_jobs(jobs))
     add("careers/index.html", "0.6", D.CAR_TITLE, D.CAR_DESC, car_body, "/careers/", D.CAR_CSS, D.CAR_JS)
     add("contact/index.html", "0.9", D.CON_TITLE, D.CON_DESC, D.CON_BODY, "/contact/",
         D.CON_CSS, D.CON_JS, D.CON_LD)

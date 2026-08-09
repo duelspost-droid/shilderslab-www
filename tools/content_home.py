@@ -49,7 +49,40 @@ CSS = """
        떠서 어긋난다. site.css 가 820 에서 같은 처리를 이미 하므로 그쪽에 맡긴다. */
     .open-grid{grid-template-columns:1fr}
   }
+  /* 홈 채용 목록 — /careers/ 의 상세 아코디언과 달리 여기서는 포지션 한 줄만 건다.
+     행 전체가 링크라 모바일에서 탭 대상이 넉넉하다. */
+  .jobrow{border-top:1px solid var(--ink)}
+  .jobrow a{display:grid;grid-template-columns:1fr auto;gap:14px var(--gut);align-items:baseline;
+    padding:22px 0;border-bottom:1px solid var(--rule)}
+  .jobrow a:hover h3{color:var(--accent)}
+  .jobrow h3{font-size:1.06rem;font-weight:600;letter-spacing:-.02em;margin-bottom:7px}
+  .jobrow .m{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;color:var(--ink-3)}
+  .jobrow .go{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.1em;color:var(--accent);
+    white-space:nowrap}
+  @media (max-width:620px){
+    .jobrow a{grid-template-columns:1fr}
+    .jobrow .go{margin-top:4px}
+  }
 """
+
+# 홈 06 채용 섹션 — build-pages.py 가 공개 공고가 있을 때만 이 틀을 채워 넣는다.
+# {items} 자리에 포지션 행들이 들어간다.
+CAREERS_TPL = """<section class="sec">
+  <div class="shell">
+    <div class="sec-head">
+      <div class="idx"><span class="lbl">06 / Careers</span></div>
+      <div class="body">
+        <h2 class="d2">함께 볼 사람을 찾습니다</h2>
+        <p class="lead">컨설팅은 결국 사람이 하는 일이라, 채용은 서비스 품질과 같은 문제로 봅니다.
+           지금 열려 있는 자리입니다.</p>
+      </div>
+    </div>
+    <div class="jobrow">
+{items}
+    </div>
+    <div style="margin-top:30px"><a class="alink" href="/careers/">채용 안내 전체 보기</a></div>
+  </div>
+</section>"""
 
 BODY = """<section class="home-hero">
   <div class="shell g12">
@@ -262,6 +295,12 @@ BODY = """<section class="home-hero">
     <div style="margin-top:30px"><a class="alink" href="/insights/">전체 인사이트</a></div>
   </div>
 </section>
+
+<!-- 06 채용 — 공개 공고가 있을 때만 나온다.
+     build-pages.py 가 이 마커를 sl_jobs 공개분으로 채우고, 공고가 0건이면 **섹션째 지운다**
+     (홈에 "공고가 없습니다"가 뜨는 건 안 하느니만 못하다).
+     상세는 /careers/ 가 맡고 여기서는 포지션과 조건만 보여 준다. -->
+<!--SL_HOME_CAREERS-->
 
 <section class="sec band-dark cta">
   <div class="shell g12">
