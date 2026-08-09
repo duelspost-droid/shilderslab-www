@@ -70,9 +70,9 @@ RES_BODY = """<section class="phead">
 
 <section class="sec band-dark cta">
   <div class="shell g12">
-    <div class="c7">
+    <div class="c7 col-head">
       <span class="lbl">Contact</span>
-      <h2 class="d2" style="margin:18px 0 18px">체크리스트를 채우다<br>막히면 물어보세요</h2>
+      <h2 class="d2">체크리스트를 채우다<br>막히면 물어보세요</h2>
       <p class="lead">항목의 뜻이 애매하거나 우리 환경에는 어떻게 적용되는지 판단이 서지 않으면, 그 항목만 짚어서 보내 주세요. 답변에 비용은 받지 않습니다.</p>
     </div>
     <div class="c4 start9" style="display:flex;align-items:flex-end">

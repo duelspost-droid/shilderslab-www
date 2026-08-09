@@ -144,9 +144,9 @@ BODY = """<section class="phead">
 
 <section class="sec">
   <div class="shell g12">
-    <div class="c5">
+    <div class="c5 col-head">
       <span class="lbl">03 / Scope honesty</span>
-      <h2 class="d2" style="margin:20px 0 24px">할 수 없는 것도<br>먼저 밝힙니다</h2>
+      <h2 class="d2">할 수 없는 것도<br>먼저 밝힙니다</h2>
       <p class="lead">국내 정보보호 시장에는 법으로 자격이 정해진 과업이 있고, 지정을 받은 사업자만 그 일을 맡을 수 있습니다.
          그 선 밖에 있는 항목이라면 “가능하다”고 적지 않고 아래에 그대로 밝혀 둡니다.</p>
     </div>
@@ -168,9 +168,9 @@ BODY = """<section class="phead">
 
 <section class="sec band-dark cta">
   <div class="shell g12">
-    <div class="c7">
+    <div class="c7 col-head">
       <span class="lbl">Contact</span>
-      <h2 class="d2" style="margin:18px 0 18px">어떤 진단이 필요한지부터<br>정리해 드립니다</h2>
+      <h2 class="d2">어떤 진단이 필요한지부터<br>정리해 드립니다</h2>
       <p class="lead">지금 인증 심사를 준비 중이신가요, 아니면 오픈 일정이 먼저 잡혀 있나요?
          규제 요건과 시스템 구성, 목표 시점을 적어 보내주시면 어떤 진단을 어떤 순서로 붙여야 하는지 답장에 적어 드립니다.
          범위를 잡고 견적을 내는 데까지는 비용이 붙지 않습니다.</p>
@@ -245,9 +245,9 @@ def _detail(slug, kicker, h1, lead, when, scope, outputs, targets, notes, faqs):
 
 <section class="sec">
   <div class="shell g12">
-    <div class="c4">
+    <div class="c4 col-head">
       <span class="lbl">01 / When you need it</span>
-      <h2 class="d3" style="margin:18px 0 14px">이런 경우에<br>필요합니다</h2>
+      <h2 class="d3">이런 경우에<br>필요합니다</h2>
     </div>
     <div class="c7 start6">
       <ul class="when">
@@ -326,9 +326,9 @@ def _detail(slug, kicker, h1, lead, when, scope, outputs, targets, notes, faqs):
 
 <section class="sec band-dark cta">
   <div class="shell g12">
-    <div class="c7">
+    <div class="c7 col-head">
       <span class="lbl">Contact</span>
-      <h2 class="d2" style="margin:18px 0 18px">범위와 일정을<br>먼저 정리해 드립니다</h2>
+      <h2 class="d2">범위와 일정을<br>먼저 정리해 드립니다</h2>
       <p class="lead">무엇을 언제까지 해야 하는지만 적어 보내주세요. 필요한 항목과 예상 기간을 문서로 만들어 회신해 드리며,
          이 단계까지는 비용이 붙지 않습니다.</p>
     </div>

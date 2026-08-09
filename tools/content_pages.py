@@ -35,9 +35,9 @@ ABOUT_BODY = """<section class="phead">
 
 <section class="sec">
   <div class="shell g12">
-    <div class="c7">
+    <div class="c7 col-head">
       <span class="lbl">01 / Our view</span>
-      <h2 class="d2" style="margin:20px 0 26px" data-content="about.view_title">발견마다 담당자와<br>순서를 붙입니다</h2>
+      <h2 class="d2" data-content="about.view_title">발견마다 담당자와<br>순서를 붙입니다</h2>
       <div class="lead cms-rich" data-content="about.view_body">
         <p>
           작년 보고서에 있던 항목이 올해 또 올라오는 이유는 무엇일까요.
@@ -72,7 +72,7 @@ ABOUT_BODY = """<section class="phead">
 
 <section class="sec band">
   <div class="shell g12">
-    <div class="c3">
+    <div class="c3 col-head">
       <span class="lbl">02 / Name</span>
     </div>
     <div class="c8 start4">
@@ -171,7 +171,7 @@ ABOUT_BODY = """<section class="phead">
   <div class="shell g12">
     <div class="c5">
       <span class="lbl">05 / Capability</span>
-      <h2 class="d2" style="margin:20px 0 24px">규제와 공격,<br>두 언어를 함께</h2>
+      <h2 class="d2">규제와 공격,<br>두 언어를 함께</h2>
       <p class="lead">심사원 앞에서 쓰는 말과, 공격자가 지나갈 길을 찾을 때 쓰는 말은 다릅니다.
          이 둘을 다른 회사에 나눠 맡기면 담당자 책상 위에 목록이 두 개 남습니다.
          저희는 한 프로젝트 안에서 보고, 우선순위 목록 하나로 합쳐 드립니다.</p>
@@ -190,9 +190,9 @@ ABOUT_BODY = """<section class="phead">
 
 <section class="sec band-dark cta">
   <div class="shell g12">
-    <div class="c7">
+    <div class="c7 col-head">
       <span class="lbl">Contact</span>
-      <h2 class="d2" style="margin:18px 0 18px">함께 볼 범위부터 이야기해 주세요</h2>
+      <h2 class="d2">함께 볼 범위부터 이야기해 주세요</h2>
       <p class="lead">지금 걸려 있는 규제 요건과 시스템 구성만 알려 주시면,
          어떤 진단이 왜 필요한지 적어 보내 드립니다.</p>
     </div>
@@ -392,9 +392,9 @@ METHOD_BODY = """<section class="phead">
 
 <section class="sec">
   <div class="shell g12">
-    <div class="c5">
+    <div class="c5 col-head">
       <span class="lbl">03 / Rules of engagement</span>
-      <h2 class="d2" style="margin:20px 0 24px">수행 규칙</h2>
+      <h2 class="d2">수행 규칙</h2>
       <p class="lead">합의된 범위 밖은 건드리지 않습니다. 아래 항목은 착수 전에 서면으로 확정합니다.</p>
     </div>
     <div class="c6 start7">
@@ -412,9 +412,9 @@ METHOD_BODY = """<section class="phead">
 
 <section class="sec band-3">
   <div class="shell g12">
-    <div class="c5">
+    <div class="c5 col-head">
       <span class="lbl">04 / What we don't do</span>
-      <h2 class="d2" style="margin:20px 0 24px">하지 않는 일</h2>
+      <h2 class="d2">하지 않는 일</h2>
       <p class="lead">계약서에 도장을 찍은 뒤에 알게 되면 서로 곤란합니다. 그래서 미리 밝혀 드립니다.</p>
     </div>
     <div class="c6 start7">
@@ -434,9 +434,9 @@ METHOD_BODY = """<section class="phead">
 
 <section class="sec band-dark cta">
   <div class="shell g12">
-    <div class="c7">
+    <div class="c7 col-head">
       <span class="lbl">Next</span>
-      <h2 class="d2" style="margin:18px 0 18px">이 기준으로<br>우리 환경을 보면 어떻게 될까요</h2>
+      <h2 class="d2">이 기준으로<br>우리 환경을 보면 어떻게 될까요</h2>
       <p class="lead">이 페이지를 그대로 들고 다른 회사 제안서와 비교해 보셔도 됩니다.
          저희 쪽 이야기가 필요해지면, 그때 시스템 구성만 알려 주세요.</p>
     </div>

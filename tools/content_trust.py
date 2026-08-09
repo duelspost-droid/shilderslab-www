@@ -156,9 +156,9 @@ TRUST_BODY = """<section class="phead">
 
 <section class="sec band-3">
   <div class="shell g12">
-    <div class="c5">
+    <div class="c5 col-head">
       <span class="lbl">04 / Vulnerability disclosure</span>
-      <h2 class="d2" style="margin:20px 0 22px">취약점을<br>발견하셨다면</h2>
+      <h2 class="d2">취약점을<br>발견하셨다면</h2>
       <p class="lead">이 사이트나 저희가 운영하는 자산에서 이상한 점을 발견하셨습니까?
          알려주시면 확인하겠습니다. 선의로 제보해 주신 분께는 법적 책임을 묻지 않습니다.</p>
     </div>
@@ -186,9 +186,9 @@ TRUST_BODY = """<section class="phead">
 
 <section class="sec band-dark cta">
   <div class="shell g12">
-    <div class="c7">
+    <div class="c7 col-head">
       <span class="lbl">Contact</span>
-      <h2 class="d2" style="margin:18px 0 18px">더 확인하고 싶은<br>조건이 있으면 말씀해 주세요</h2>
+      <h2 class="d2">더 확인하고 싶은<br>조건이 있으면 말씀해 주세요</h2>
       <p class="lead">계약 조건이든 데이터 취급이든, 이 표에 없는 항목이 필요하시면 문의로 남겨 주시면 됩니다.
          투입 인력 구성까지 계약 전에 서면으로 답변드립니다.</p>
     </div>
@@ -401,9 +401,9 @@ REG_BODY = """<section class="phead">
 
 <section class="sec band-dark cta">
   <div class="shell g12">
-    <div class="c7">
+    <div class="c7 col-head">
       <span class="lbl">Contact</span>
-      <h2 class="d2" style="margin:18px 0 18px">우리가 대상인지부터<br>확인해 드립니다</h2>
+      <h2 class="d2">우리가 대상인지부터<br>확인해 드립니다</h2>
       <p class="lead">매출 규모와 이용자 수, 업종, 처리하시는 개인정보 종류만 알려 주시면 됩니다.
          어떤 제도가 걸리는지 근거 조문을 붙여 답을 드립니다. 이 확인에는 비용을 청구하지 않습니다.</p>
     </div>
