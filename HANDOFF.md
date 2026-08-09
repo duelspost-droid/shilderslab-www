@@ -90,6 +90,18 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
 
 ## 3. 오너 조치 필요 (순서대로)
 
+> **▶ 다음 세션 재개 지점 (2026-08-09 마무리 기준)**
+> 코드로 할 수 있는 건 대부분 소진됨. 다음에 먼저 볼 것:
+> 1. **오너가 콘솔에 한 번 로그인** — 로그인 이후 흐름은 코드 검토로만 봤다(비밀번호는 오너만).
+>    문구 저장 1회·계정 목록 열기 1회면 실검증 끝. 가장 가치 높은 남은 확인.
+> 2. **CDN(Cloudflare 등) 앞단 도입** — HSTS·보안 헤더는 GitHub Pages 한계라 이걸로만 해결(11항 근처).
+> 3. **법인 실값**(사업자번호·주소·개인정보 보호책임자) 콘솔 입력 → 개인정보처리방침 재확인.
+> 4. **도메인 확보**(shielduslab.com) → `set-domain.py` + 11항 DNS 절차(MX 보존).
+> 5. **Supabase 리전 확인** — 대시보드 로딩이 계속 실패해 미확정. 서울이면 개인정보처리방침
+>    국외이전 문구 재구성 필요(4항 P2). 근거 없이 법적 고지 바꾸지 말 것.
+> 6. 백그라운드 태스크 4건(SDK 분리·CSP unsafe-inline 제거·admin CSS 분리·폰트 셀프호스팅) — 별도 세션 진행 중.
+> 맥에서 이어받을 때는 반드시 `git fetch` 먼저.
+
 ### ① DB 마이그레이션
 - `0001_shilderslab_core.sql` · `0002_shilderslab_seed.sql` — ✅ 적용 완료 (2026-07-30)
 - `0003_shilderslab_hardening.sql` — ✅ 적용 완료 (2026-07-30). 서버측 길이 검증, 전역 남용 상한,
@@ -98,6 +110,10 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
   + **권한을 이메일 문자열이 아니라 로그인 계정(user_id)에 결속**.
   적대적 검토에서 나온 critical(계정 없는 화이트리스트 행을 제3자가 선점 → 관리자 탈취) 을 막기 위한 변경이다.
   적용 후 anon 경로 검증: 신규 권한 함수 7개 전부 `permission denied`.
+- `0006_shilderslab_admin_password.sql` — ✅ 적용 완료 (2026-08-08). 비밀번호 재설정 RPC + `pw_managed` 경계.
+- `0007_shilderslab_pw_managed_boundary.sql` — ✅ **적용 완료 (2026-08-09)**. 모의해킹 high 수정 —
+  `sl_admin_mark_pw_managed` 제거 + `pw_managed` 변경을 service_role 만 허용하는 트리거.
+  적용 후 실측: RPC 0개·트리거 1개(SECURITY INVOKER)·`sl_admin_pw_uid` 유지·엣지 재배포 401/200.
 
 전부 재실행 안전(idempotent)이다.
 
