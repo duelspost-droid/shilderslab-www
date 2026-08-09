@@ -525,7 +525,7 @@ CON_BODY = """<section class="phead">
 <section class="sec">
   <div class="shell g12">
     <div class="c7">
-      <h2 class="sr-only">상담 신청서</h2>
+      <h2 class="sr-only">문의 양식</h2>
       <form class="form" id="inq-form" novalidate>
         <div class="alert" id="inq-alert" role="status"></div>
         <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
@@ -565,7 +565,7 @@ CON_BODY = """<section class="phead">
             <option>개인정보 컴플라이언스</option>
             <option>클라우드 보안</option>
             <option>보안 거버넌스 · 교육</option>
-            <option>기타 · 어떤 진단이 필요한지 모르겠음</option>
+            <option>기타 · 어떤 진단이 필요한지 모르겠습니다</option>
           </select>
           <div class="msg">문의 유형을 선택해 주세요.</div>
         </div>

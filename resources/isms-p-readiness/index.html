@@ -52,10 +52,22 @@
   .chk li .why{display:block;font-size:.85rem;color:var(--ink-3);margin-top:5px;line-height:1.6}
   .doc-note{background:var(--wash);border-left:2px solid var(--accent);padding:18px 22px;
     font-size:.92rem;color:var(--ink-2);line-height:1.78;margin:26px 0}
+  /* 모바일 목차 — 좁은 화면에서는 좌측 스티키 목차(.toc)를 숨기는 대신 이 접이식 목차를 쓴다.
+     긴 문서(최대 9섹션)를 처음부터 끝까지 스크롤하게 두지 않기 위한 것이다. */
   .toc-mobile{display:none}
+  .toc-mobile summary{cursor:pointer;list-style:none;font-family:var(--font-mono);font-size:.68rem;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--accent);
+    padding:14px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
+  .toc-mobile summary::-webkit-details-marker{display:none}
+  .toc-mobile summary::after{content:" +";font-family:var(--font-mono)}
+  .toc-mobile[open] summary::after{content:" −"}
+  .toc-mobile a{display:block;padding:11px 0;border-bottom:1px solid var(--rule);
+    font-size:.92rem;color:var(--ink-2)}
+  .toc-mobile a:last-child{border-bottom:0}
   @media (max-width:980px){
     .doc-wrap{grid-template-columns:1fr;gap:0}
     .toc{display:none}
+    .toc-mobile{display:block;margin-bottom:30px}
   }
 
 </style>
@@ -102,6 +114,15 @@
       <a href="#g">결과 읽는 법</a>
     </nav>
     <div class="doc-body">
+      <details class="toc-mobile"><summary>목차</summary>
+      <a href="#a">A. 범위</a>
+      <a href="#b">B. 문서</a>
+      <a href="#c">C. 운영 기록</a>
+      <a href="#d">D. 위험평가</a>
+      <a href="#e">E. 개인정보</a>
+      <a href="#f">F. 조직과 일정</a>
+      <a href="#g">결과 읽는 법</a>
+      </details>
       <p>같은 규모인데 어떤 조직은 6개월 만에 심사를 받고, 어떤 조직은 1년 반이 걸립니다.
          무엇이 이 차이를 만들까요? 문서를 얼마나 갖췄느냐보다
          <b>지금 남아 있는 운영 기록</b>과 <b>범위가 정해졌는지</b>가 기간을 가릅니다.

@@ -101,7 +101,9 @@
       <div class="hero-meta">
         <div class="r"><span class="k">위험도 판정</span><span class="v">다섯 등급으로 나누고, 정의표를 보고서 첫 장에 싣습니다</span></div>
         <div class="r"><span class="k">수행 영역</span><span class="v">관리체계 · 기술진단 · 개인정보 · 클라우드</span></div>
-        <div class="r"><span class="k">초기 회신</span><span class="v" data-setting="sla_note">영업일 기준 24시간 이내, 사람이 직접</span></div>
+        <!-- ⚠ data-setting 키가 같으면 기본 문구도 같아야 한다. 관리자가 sla_note 를 저장하는
+             순간 두 자리가 같은 값으로 덮이므로, 기본값이 다르면 그때 문구가 갑자기 바뀐다. -->
+        <div class="r"><span class="k">초기 회신</span><span class="v" data-setting="sla_note">영업일 기준 24시간 내 초기 회신</span></div>
         <div class="r"><span class="k">과업 종료 기준</span><span class="v">재점검 결과서가 나가야 종료입니다</span></div>
       </div>
     </div>

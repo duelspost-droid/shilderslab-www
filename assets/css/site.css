@@ -446,6 +446,13 @@ table.tbl td.t-title{color:var(--ink);font-weight:500}
 .admin-who{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--ink-3)}
 .admin-who b{color:var(--ink-2);font-weight:500}
 .tabs{display:flex;gap:26px;flex-wrap:wrap;border-bottom:1px solid var(--rule);margin:28px 0 30px}
+/* 관리자 탭이 10개라 좁은 화면에서 3~4줄로 접혀 본문을 아래로 밀어낸다.
+   가로 스크롤 스트립으로 바꿔 한 줄을 유지한다(스크롤바는 숨기고 넘침만 허용). */
+@media (max-width:760px){
+  .tabs{flex-wrap:nowrap;overflow-x:auto;gap:18px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{white-space:nowrap;flex:none}
+}
 .tabs button{background:none;border:0;padding:0 0 14px;font-size:.88rem;font-weight:500;color:var(--ink-3);
   cursor:pointer;position:relative;display:flex;align-items:center;gap:7px}
 .tabs button::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:transparent}

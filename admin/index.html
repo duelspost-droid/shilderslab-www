@@ -207,7 +207,7 @@
             <option value="new">접수</option>
             <option value="doing">진행</option>
             <option value="done">완료</option>
-            <option value="drop">보류 · 종료</option>
+            <option value="drop">보류</option>
           </select>
           <button class="btn btn-line btn-sm" id="inq-reload">새로고침</button>
         </div>
@@ -223,9 +223,11 @@
           <select class="inp" id="app-filter">
             <option value="">전체 상태</option>
             <option value="new">접수</option>
-            <option value="doing">검토 중</option>
+            <!-- 라벨은 statusBadge(admin.js)와 같아야 한다 — 같은 doing 이 목록에선 '진행',
+                 필터에선 '검토 중' 으로 보이면 다른 상태로 읽힌다. -->
+            <option value="doing">진행</option>
             <option value="done">완료</option>
-            <option value="drop">보류 · 종료</option>
+            <option value="drop">보류</option>
           </select>
           <button class="btn btn-line btn-sm" id="app-reload">새로고침</button>
         </div>

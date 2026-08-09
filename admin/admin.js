@@ -634,9 +634,12 @@
     openModal(d.label + " 상세", html, [
       { label: "닫기", on: closeModal },
       { label: "삭제", cls: "btn-line", on: function () {
-          openModal(d.label + " 삭제", "<p style='color:var(--fg-dim)'>이 " + esc(d.label) +
-            "를 완전히 삭제합니다. 복구할 수 없습니다.</p><p style='color:var(--fg-dim);margin-top:10px'><b>" +
-            esc((x.company || x.name) + " · " + SL.fmtDateTime(x.created_at)) + "</b></p>", [
+          /* ⚠ 알림칸(#md-alert)을 반드시 둔다 — 없으면 삭제 실패 시 show() 가 갈 곳이 없어
+             아무 일도 안 일어난 것처럼 보인다(모달이 그대로 남아 재클릭만 반복하게 된다). */
+          openModal(d.label + " 삭제", "<p style='color:var(--ink-2)'>이 " + esc(d.label) +
+            "를 완전히 삭제합니다. 복구할 수 없습니다.</p><p style='color:var(--ink-2);margin-top:10px'><b>" +
+            esc((x.company || x.name) + " · " + SL.fmtDateTime(x.created_at)) + "</b></p>" +
+            '<div class="alert" id="md-alert"></div>', [
             { label: "취소", on: function () { openSubmit(key, id); } },
             { label: "삭제 확인", cls: "", on: function () {
                 db.from(d.table).delete().eq("id", id).then(function (r) {
@@ -783,12 +786,21 @@
     var dl = e.target.closest("[data-ins-del]");
     if (dl) {
       var did = dl.getAttribute("data-ins-del"), item = state.cache.ins[did];
-      openModal("인사이트 삭제", "<p style='color:var(--fg-dim)'>‘" + esc(item.title) +
-        "’ 글을 삭제합니다. 복구할 수 없습니다.</p>", [
+      openModal("인사이트 삭제", "<p style='color:var(--ink-2)'>‘" + esc(item.title) +
+        "’ 글을 삭제합니다. 복구할 수 없습니다.</p>" +
+        '<div class="alert" id="md-alert"></div>', [
         { label: "취소", on: closeModal },
         { label: "삭제 확인", cls: "", on: function () {
-            db.from("sl_insights").delete().eq("id", did).then(function (r) {
-              if (!r.error) { audit("delete", "sl_insights", did, { title: item.title }); closeModal(); loadIns(); loadDash(); }
+            var unlock = lockModalAction("삭제 중…");
+            /* 실패를 조용히 삼키면(이전: if (!r.error) 만 처리) 모달이 그대로 남아
+               "눌렀는데 아무 일도 없다"가 된다. 사유를 보여 준다. */
+            Promise.resolve(db.from("sl_insights").delete().eq("id", did)).then(function (r) {
+              if (r && r.error) { unlock(); show("md-alert", "bad", r.error.message); return; }
+              audit("delete", "sl_insights", did, { title: item.title });
+              closeModal(); loadIns(); loadDash();
+            }).catch(function (e) {
+              unlock();
+              show("md-alert", "bad", "삭제하지 못했습니다: " + ((e && e.message) || "연결을 확인해 주세요."));
             });
           } },
       ]);
@@ -894,11 +906,19 @@
     var dl = e.target.closest("[data-job-del]");
     if (dl) {
       var did = dl.getAttribute("data-job-del"), item = state.cache.job[did];
-      openModal("공고 삭제", "<p style='color:var(--fg-dim)'>‘" + esc(item.title) + "’ 공고를 삭제합니다.</p>", [
+      openModal("공고 삭제", "<p style='color:var(--ink-2)'>‘" + esc(item.title) +
+        "’ 공고를 삭제합니다. 복구할 수 없습니다.</p>" +
+        '<div class="alert" id="md-alert"></div>', [
         { label: "취소", on: closeModal },
         { label: "삭제 확인", cls: "", on: function () {
-            db.from("sl_jobs").delete().eq("id", did).then(function (r) {
-              if (!r.error) { audit("delete", "sl_jobs", did, { title: item.title }); closeModal(); loadJob(); loadDash(); }
+            var unlock = lockModalAction("삭제 중…");
+            Promise.resolve(db.from("sl_jobs").delete().eq("id", did)).then(function (r) {
+              if (r && r.error) { unlock(); show("md-alert", "bad", r.error.message); return; }
+              audit("delete", "sl_jobs", did, { title: item.title });
+              closeModal(); loadJob(); loadDash();
+            }).catch(function (e) {
+              unlock();
+              show("md-alert", "bad", "삭제하지 못했습니다: " + ((e && e.message) || "연결을 확인해 주세요."));
             });
           } },
       ]);

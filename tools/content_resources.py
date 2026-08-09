@@ -111,10 +111,22 @@ DOC_CSS = """
   .chk li .why{display:block;font-size:.85rem;color:var(--ink-3);margin-top:5px;line-height:1.6}
   .doc-note{background:var(--wash);border-left:2px solid var(--accent);padding:18px 22px;
     font-size:.92rem;color:var(--ink-2);line-height:1.78;margin:26px 0}
+  /* 모바일 목차 — 좁은 화면에서는 좌측 스티키 목차(.toc)를 숨기는 대신 이 접이식 목차를 쓴다.
+     긴 문서(최대 9섹션)를 처음부터 끝까지 스크롤하게 두지 않기 위한 것이다. */
   .toc-mobile{display:none}
+  .toc-mobile summary{cursor:pointer;list-style:none;font-family:var(--font-mono);font-size:.68rem;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--accent);
+    padding:14px 0;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule)}
+  .toc-mobile summary::-webkit-details-marker{display:none}
+  .toc-mobile summary::after{content:" +";font-family:var(--font-mono)}
+  .toc-mobile[open] summary::after{content:" −"}
+  .toc-mobile a{display:block;padding:11px 0;border-bottom:1px solid var(--rule);
+    font-size:.92rem;color:var(--ink-2)}
+  .toc-mobile a:last-child{border-bottom:0}
   @media (max-width:980px){
     .doc-wrap{grid-template-columns:1fr;gap:0}
     .toc{display:none}
+    .toc-mobile{display:block;margin-bottom:30px}
   }
 """
 
@@ -136,6 +148,9 @@ def _doc(kicker, h1, lead, toc, body):
 {toc_html}
     </nav>
     <div class="doc-body">
+      <details class="toc-mobile"><summary>목차</summary>
+{toc_html}
+      </details>
 {body}
       <div style="margin-top:60px;padding-top:24px;border-top:1px solid var(--ink);display:flex;
                   gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center">
