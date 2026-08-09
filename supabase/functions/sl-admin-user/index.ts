@@ -177,12 +177,23 @@ Deno.serve(async (req: Request): Promise<Response> => {
       }, 500);
     }
 
-    // 이 계정은 **우리가 만들었다** — 나중에 콘솔에서 비밀번호를 재설정할 수 있는 유일한 조건이다.
-    // (기존 계정을 sl_admin_link 로 갖다 붙인 행은 이 표시가 없어 재설정 대상이 되지 않는다.)
-    const mark = await rpc(url, anon, token, "sl_admin_mark_pw_managed", { p_email: email });
-    if (!mark.ok) console.error("mark_pw_managed failed", mark.status);
+    // 이 계정은 **우리가 방금 만들었다** — 나중에 콘솔에서 비밀번호를 재설정할 수 있는 유일한 조건이다.
+    // ⚠ 이 표시(pw_managed)는 **service_role 로만, 방금 생성한 uid(newId)에 한해** 켠다.
+    //   예전엔 sl_admin_mark_pw_managed 를 호출자(오너) 토큰으로 켰는데, 그 RPC 가
+    //   authenticated 에 열려 있어 오너가 **남의 기존 계정을 sl_admin_add 로 끌어온 뒤** 켤 수 있었다
+    //   → 공유 프로젝트의 타 서비스 계정 탈취 경로(모의해킹 확증, 0007 에서 그 RPC 제거).
+    //   여기서는 user_id=newId 로 매칭하므로, 방금 만든 계정 외에는 절대 켤 수 없다.
+    let pwManaged = false;
+    if (newId) {
+      const mk = await fetch(
+        `${url}/rest/v1/sl_admins?user_id=eq.${newId}`,
+        { method: "PATCH", headers: { ...svc, Prefer: "return=minimal" },
+          body: JSON.stringify({ pw_managed: true }) });
+      pwManaged = mk.ok;
+      if (!mk.ok) console.error("pw_managed set failed", mk.status);
+    }
 
-    return json({ ok: true, email, role, pw_managed: mark.ok });
+    return json({ ok: true, email, role, pw_managed: pwManaged });
   }
 
   // ══════════════ 비밀번호 재설정 ══════════════
