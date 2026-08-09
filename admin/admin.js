@@ -549,9 +549,11 @@
         box.innerHTML = '<table class="tbl"><thead><tr><th>접수일</th><th>회사</th><th>담당자</th>' +
           "<th>유형</th><th>상태</th></tr></thead><tbody>" +
           rows.map(function (x) {
-            return "<tr><td>" + esc(SL.fmtDateTime(x.created_at)) + '</td><td class="t-title">' +
-              esc(x.company) + "</td><td>" + esc(x.name) + "</td><td>" + esc(x.service) +
-              "</td><td>" + statusBadge(x.status) + "</td></tr>";
+            return '<tr><td data-l="접수일">' + esc(SL.fmtDateTime(x.created_at)) +
+              '</td><td class="t-title" data-l="회사">' + esc(x.company) +
+              '</td><td data-l="담당자">' + esc(x.name) +
+              '</td><td data-l="유형">' + esc(x.service) +
+              '</td><td data-l="상태">' + statusBadge(x.status) + "</td></tr>";
           }).join("") + "</tbody></table>";
       });
   }
@@ -599,13 +601,18 @@
       state.cache[key] = {};
       rows.forEach(function (x) { state.cache[key][x.id] = x; });
       if (!rows.length) { box.innerHTML = emptyBox("표시할 " + d.label + "가 없습니다."); return; }
+      /* data-l 은 모바일에서 헤더 대신 셀 앞에 붙는 라벨이다(site.css 760px 규칙).
+         이게 있어야 좁은 화면에서 표가 가로 스크롤 대신 카드로 접힌다. */
       box.innerHTML = '<table class="tbl"><thead><tr>' +
         d.head.map(function (h) { return "<th>" + esc(h) + "</th>"; }).join("") +
         "</tr></thead><tbody>" + rows.map(function (x) {
           var cells = d.row(x).map(function (c, i) {
-            return "<td" + (i === 1 ? ' class="t-title"' : "") + ">" + esc(c || "-") + "</td>";
+            return "<td" + (i === 1 ? ' class="t-title"' : "") +
+              ' data-l="' + escA(d.head[i] || "") + '">' + esc(c || "-") + "</td>";
           }).join("");
-          return "<tr>" + cells + "<td>" + statusBadge(x.status) + "</td>" +
+          return "<tr>" + cells +
+            '<td data-l="' + escA(d.head[d.head.length - 2] || "상태") + '">' +
+            statusBadge(x.status) + "</td>" +
             '<td><div class="row-actions"><button class="lnk" data-view="' + escA(key) +
             '" data-id="' + escA(x.id) + '">상세</button></div></td></tr>';
         }).join("") + "</tbody></table>";
@@ -1371,14 +1378,14 @@
           }
           if (x.is_self) acts.push('<button class="lnk" data-acct-self-pw="1">내 비밀번호 변경</button>');
           else if (lastAdmin) acts.push('<span class="tiny">마지막 admin</span>');
-          return '<tr><td class="t-title">' + esc(x.email) + "</td>" +
-            '<td><span class="badge ' + (x.role === "admin" ? "on" : "off") + '">' + esc(x.role) + "</span></td>" +
-            "<td>" + (x.linked
+          return '<tr><td class="t-title" data-l="이메일">' + esc(x.email) + "</td>" +
+            '<td data-l="역할"><span class="badge ' + (x.role === "admin" ? "on" : "off") + '">' + esc(x.role) + "</span></td>" +
+            '<td data-l="권한 결속">' + (x.linked
               ? '<span class="badge done">연결됨</span>'
               : '<span class="badge doing">미연결 · 권한 없음</span>') + "</td>" +
-            "<td>" + esc(x.last_sign_in_at ? SL.fmtDateTime(x.last_sign_in_at) : "-") + "</td>" +
-            "<td>" + esc(SL.fmtDate(x.created_at)) + "</td>" +
-            "<td>" + esc(x.note || "-") + "</td>" +
+            '<td data-l="최근 로그인">' + esc(x.last_sign_in_at ? SL.fmtDateTime(x.last_sign_in_at) : "-") + "</td>" +
+            '<td data-l="등록일">' + esc(SL.fmtDate(x.created_at)) + "</td>" +
+            '<td data-l="메모">' + esc(x.note || "-") + "</td>" +
             '<td><div class="row-actions">' + acts.join("") + "</div></td></tr>";
         }).join("") + "</tbody></table>";
     });
