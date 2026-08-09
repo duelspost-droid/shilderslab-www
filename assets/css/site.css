@@ -281,6 +281,11 @@ table.spec .num{font-variant-numeric:tabular-nums;color:var(--ink)}
 .bullets li::before{content:"·";color:var(--ink-3);font-weight:700;text-align:center}
 
 /* ─────────────── 인용 ─────────────── */
+/* 콜아웃 — 본문 흐름 중 강조 박스. 법률 문서(.doc .note)와 자료실(.doc-note)이
+   배경·테두리·글꼴·행간까지 같은 걸 각자 정의하고 패딩만 2px 달랐다. 하나로 합친다.
+   새 강조 박스가 필요하면 이걸 쓰고, 의미 변형은 수정자 클래스로 붙일 것. */
+.callout{border-left:2px solid var(--accent);background:var(--wash);padding:18px 22px;
+  font-size:.92rem;color:var(--ink-2);line-height:1.78;margin:26px 0}
 .pull{border-left:2px solid var(--accent);padding-left:26px;max-width:52ch}
 .pull p{font-family:var(--font-serif);font-size:clamp(1.2rem,1.9vw,1.5rem);
   line-height:1.62;letter-spacing:-.014em;color:var(--ink)}
@@ -765,7 +770,7 @@ table.spec caption{font-size:.78rem}
   /* ── 문서 ── */
   .doc-body h2{font-size:1.12rem;margin:36px 0 12px;padding-top:18px}
   .doc-body p,.doc-body .q .ask{font-size:.94rem}
-  .doc-note{padding:14px 16px;font-size:.88rem}
+  .callout{padding:14px 16px;font-size:.88rem}
   .article .body{font-size:1rem;line-height:1.8}
   .article .body h2{font-size:1.16rem;margin:32px 0 12px}
 

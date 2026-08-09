@@ -15,8 +15,7 @@ CSS = """
   .doc li{margin-bottom:9px}
   .doc a{color:var(--accent);border-bottom:1px solid var(--rule-2)}
   .doc a:hover{border-bottom-color:var(--accent)}
-  .doc .note{border-left:2px solid var(--accent);background:var(--wash);padding:16px 20px;
-    font-size:.92rem;color:var(--ink-2);margin-bottom:26px;line-height:1.78}
+  /* 강조 박스는 site.css 의 공용 .callout 을 쓴다(여기서 다시 정의하지 않는다). */
   .doc table{width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:22px}
   .doc th{text-align:left;font-weight:500;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
     color:var(--ink-3);padding:0 14px 10px 0;border-bottom:1px solid var(--ink);vertical-align:bottom}
@@ -52,7 +51,7 @@ PRIVACY_BODY = """<section class="phead">
 
 <section class="sec">
   <div class="shell doc">
-    <div class="note">
+    <div class="callout">
       이 웹사이트는 <b>상담·견적 문의</b>, <b>채용 지원</b>, <b>웹사이트 운영 로그</b> 목적으로만 개인정보를 처리합니다.
       마케팅·광고 목적의 활용, 제3자 판매, 자동화된 프로파일링은 수행하지 않습니다.
     </div>
@@ -221,7 +220,7 @@ TERMS_BODY = """<section class="phead">
       <li>악성코드 유포, 접근 권한 우회, 관리자 기능에 대한 무단 접근 시도</li>
       <li>법령 또는 공서양속에 위반되는 행위</li>
     </ol>
-    <div class="note">
+    <div class="callout">
       보안 취약점을 발견하신 경우 악용하지 마시고
       <a href="mailto:contact@shilderslab.com">contact@shilderslab.com</a>
       으로 알려주시기 바랍니다. 신고 내용은 비공개로 검토하며, 선의의 신고자에게 법적 조치를 취하지 않습니다.

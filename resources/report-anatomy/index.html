@@ -50,8 +50,7 @@
   .chk li::before{content:"□";color:var(--ink-3);font-size:1rem;line-height:1.5}
   .chk li b{color:var(--ink);font-weight:600}
   .chk li .why{display:block;font-size:.85rem;color:var(--ink-3);margin-top:5px;line-height:1.6}
-  .doc-note{background:var(--wash);border-left:2px solid var(--accent);padding:18px 22px;
-    font-size:.92rem;color:var(--ink-2);line-height:1.78;margin:26px 0}
+  /* 강조 박스는 site.css 의 공용 .callout 을 쓴다(여기서 다시 정의하지 않는다). */
   /* 모바일 목차 — 좁은 화면에서는 좌측 스티키 목차(.toc)를 숨기는 대신 이 접이식 목차를 쓴다.
      긴 문서(최대 9섹션)를 처음부터 끝까지 스크롤하게 두지 않기 위한 것이다. */
   .toc-mobile{display:none}
@@ -161,7 +160,7 @@
       </ul>
 
       <h3>예시 (익명화 · 형식 설명용)</h3>
-      <div class="doc-note" style="background:var(--paper-2);border-left-color:var(--rule-2)">
+      <div class="callout" style="background:var(--paper-2);border-left-color:var(--rule-2)">
         <p style="margin:0 0 10px"><b>WEB-014 · 타 사용자 주문 정보 조회 가능 (인가 우회)</b></p>
         <p style="margin:0 0 10px"><b>위험도</b> High — 인증된 일반 사용자 권한으로 타인의 개인정보에 접근 가능하며,
           재현이 안정적임. 대량 조회 가능 여부는 아래 “영향” 참조.</p>

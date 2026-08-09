@@ -109,8 +109,7 @@ DOC_CSS = """
   .chk li::before{content:"□";color:var(--ink-3);font-size:1rem;line-height:1.5}
   .chk li b{color:var(--ink);font-weight:600}
   .chk li .why{display:block;font-size:.85rem;color:var(--ink-3);margin-top:5px;line-height:1.6}
-  .doc-note{background:var(--wash);border-left:2px solid var(--accent);padding:18px 22px;
-    font-size:.92rem;color:var(--ink-2);line-height:1.78;margin:26px 0}
+  /* 강조 박스는 site.css 의 공용 .callout 을 쓴다(여기서 다시 정의하지 않는다). */
   /* 모바일 목차 — 좁은 화면에서는 좌측 스티키 목차(.toc)를 숨기는 대신 이 접이식 목차를 쓴다.
      긴 문서(최대 9섹션)를 처음부터 끝까지 스크롤하게 두지 않기 위한 것이다. */
   .toc-mobile{display:none}
@@ -169,7 +168,7 @@ _RFP_BODY = """      <p>제안서를 나란히 펴 놓으면 금액이 몇 배�
          <b>범위와 방식이 서로 다르기 때문</b>입니다. 다만 어디가 어떻게 다른지는 제안서만 봐서는 잘 드러나지 않습니다.
          아래 질문을 받으신 제안서 전부에 빠짐없이 던져 보세요.</p>
 
-      <div class="doc-note">
+      <div class="callout">
         특정 업체에 유리하게 쓰지 않았습니다. 받으신 제안서 전부에 똑같이 쓰세요. 저희 제안서가 그중에 있어도 마찬가지입니다.
       </div>
 
@@ -275,7 +274,7 @@ _RFP_BODY = """      <p>제안서를 나란히 펴 놓으면 금액이 몇 배�
           <tr><td data-l="항목">금액</td><td data-l="업체 A"></td><td data-l="업체 B"></td><td data-l="업체 C"></td></tr>
         </tbody>
       </table>
-      <div class="doc-note">
+      <div class="callout">
         같은 질문에 대한 저희 답은 <a href="/services/pentest/">모의해킹 서비스 페이지</a>와
         <a href="/method/">진단 방법론</a>에 미리 적어 두었습니다. 같은 잣대로 저희도 재 보세요.
       </div>"""
@@ -288,7 +287,7 @@ _ISMS_BODY = """      <p>같은 규모인데 어떤 조직은 6개월 만에 심
          <b>지금 남아 있는 운영 기록</b>과 <b>범위가 정해졌는지</b>가 기간을 가릅니다.
          컨설팅을 부르기 전에 아래부터 확인해 보세요.</p>
 
-      <div class="doc-note">
+      <div class="callout">
         “아니오”가 많아도 괜찮습니다. 일정을 현실적으로 잡는 데 필요한 정보일 뿐입니다.
         채워서 가져오시면 첫 미팅을 자료 요청부터 시작하지 않아도 됩니다.
       </div>
@@ -358,7 +357,7 @@ _ISMS_BODY = """      <p>같은 규모인데 어떤 조직은 6개월 만에 심
          <b>A(범위)에 “아니오”가 하나라도 있으면</b> 순서는 더 단순합니다. 범위를 먼저 닫습니다.
          그러지 않으면 정책도 위험평가도 두 번 만들게 됩니다.</p>
       <p>채운 목록을 그대로 붙여서 보내 주시면 첫 회신에서 기간과 순서를 훨씬 구체적으로 짚어 드릴 수 있습니다.</p>
-      <div class="doc-note">
+      <div class="callout">
         의무 대상인지 아닌지부터 애매하시면 매출 규모와 이용자 수, 업종을 함께 적어 보내 주세요.
         어느 조문 때문에 그렇게 판단했는지까지 밝혀서 답을 드립니다.
       </div>"""
@@ -410,7 +409,7 @@ _REPORT_BODY = """      <p>보고서는 받아 보기 전에는 쓸 만한지 �
       </ul>
 
       <h3>예시 (익명화 · 형식 설명용)</h3>
-      <div class="doc-note" style="background:var(--paper-2);border-left-color:var(--rule-2)">
+      <div class="callout" style="background:var(--paper-2);border-left-color:var(--rule-2)">
         <p style="margin:0 0 10px"><b>WEB-014 · 타 사용자 주문 정보 조회 가능 (인가 우회)</b></p>
         <p style="margin:0 0 10px"><b>위험도</b> High — 인증된 일반 사용자 권한으로 타인의 개인정보에 접근 가능하며,
           재현이 안정적임. 대량 조회 가능 여부는 아래 “영향” 참조.</p>
