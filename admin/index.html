@@ -21,9 +21,17 @@
      버튼 라벨이 두세 줄로 접혔다. 한 줄로 고정하고 아래로 내려 폭을 다 쓰게 한다. */
   .admin-who .btn{white-space:nowrap}
   @media (max-width:720px){
-    .admin-top .bar{flex-wrap:wrap;row-gap:12px}
-    .admin-who{width:100%;gap:10px}
+    /* 두 줄로 접히므로 위아래 여백을 직접 준다(고정 높이에 기대지 않는다). */
+    .admin-top .bar{row-gap:10px;align-items:flex-start;padding-top:11px;padding-bottom:11px}
+    .admin-who{width:100%;gap:10px 14px}
     .admin-who #who{flex-basis:100%}
+    .admin-top .brand img{height:24px}
+    .admin-top .admin-tag{padding-left:9px}
+    /* 버튼이 본문 line-height(1.78)를 물려받아 54px 로 부풀어 있었다.
+       고정 헤더가 화면의 16% 를 먹던 원인이라 여기서만 조인다. */
+    .admin-who .btn{padding:7px 13px;font-size:.78rem;line-height:1.35}
+    .admin-who .lnk{font-size:.78rem}
+    .admin-who #who{font-size:.76rem;line-height:1.4}
   }
   /* 명함 탭 */
   .card-set{border-top:1px solid var(--rule);padding:18px 0 26px}

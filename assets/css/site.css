@@ -461,14 +461,22 @@ table.tbl td.t-title{color:var(--ink);font-weight:500}
 
 /* ─────────────── 관리자 ─────────────── */
 .admin-top{border-bottom:1px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:40}
-.admin-top .bar{display:flex;align-items:center;justify-content:space-between;height:64px;gap:20px}
+/* ⚠ height 가 아니라 min-height 여야 한다. 아래 720px 규칙에서 이 줄이 wrap 되는데,
+   고정 높이면 접힌 두 번째 줄이 상자 밖으로 흘러 탭 위에 겹쳐 그려진다. */
+.admin-top .bar{display:flex;align-items:center;justify-content:space-between;
+  min-height:64px;gap:20px;flex-wrap:wrap}
 .admin-who{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--ink-3)}
 .admin-who b{color:var(--ink-2);font-weight:500}
 .tabs{display:flex;gap:26px;flex-wrap:wrap;border-bottom:1px solid var(--rule);margin:28px 0 30px}
 /* 관리자 탭이 10개라 좁은 화면에서 3~4줄로 접혀 본문을 아래로 밀어낸다.
    가로 스크롤 스트립으로 바꿔 한 줄을 유지한다(스크롤바는 숨기고 넘침만 허용). */
 @media (max-width:760px){
-  .tabs{flex-wrap:nowrap;overflow-x:auto;gap:18px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  /* 스크롤 스트립인 걸 알 수 있게 오른쪽 끝을 흐린다. 이게 없으면 잘린 글자가
+     레이아웃이 깨진 것처럼 보인다(실제 사용자 피드백). */
+  .tabs{flex-wrap:nowrap;overflow-x:auto;gap:18px;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
+    mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
   .tabs::-webkit-scrollbar{display:none}
   .tabs button{white-space:nowrap;flex:none}
 }
