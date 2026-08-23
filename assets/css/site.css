@@ -437,128 +437,16 @@ footer.site .flinks a{font-size:.76rem}
 .faq details[open] summary::after{content:"–";color:var(--accent)}
 .faq .ans{padding:0 60px 24px 0;font-size:.94rem;color:var(--ink-2);line-height:1.78;max-width:70ch}
 
-/* ─────────────── 배지 · 상태 ─────────────── */
-.badge{display:inline-block;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.1em;
-  text-transform:uppercase;padding:3px 9px;border:1px solid var(--rule-2);color:var(--ink-2)}
-.badge.new{border-color:var(--accent);color:var(--accent)}
-.badge.doing{border-color:var(--ochre);color:var(--ochre)}
-.badge.done{border-color:var(--rule-2);color:var(--ink-3)}
-.badge.drop{border-color:var(--rule);color:var(--ink-3)}
-.badge.on{border-color:var(--accent);color:var(--accent)}
-.badge.off{border-color:var(--rule);color:var(--ink-3)}
-
-/* ─────────────── 표 (관리자) ─────────────── */
-.tbl-wrap{overflow-x:auto;border-top:1px solid var(--ink)}
-table.tbl{width:100%;border-collapse:collapse;font-size:.88rem;min-width:680px}
-table.tbl th{text-align:left;padding:12px 16px 12px 0;font-family:var(--font-mono);
-  font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
-  border-bottom:1px solid var(--rule-2);white-space:nowrap}
-table.tbl td{padding:14px 16px 14px 0;border-bottom:1px solid var(--rule);color:var(--ink-2);
-  vertical-align:top;line-height:1.6}
-table.tbl tr:hover td{background:rgba(26,75,58,.03)}
-table.tbl td.t-title{color:var(--ink);font-weight:500}
+/* 배지·상태, 표(.tbl), 관리자 셸 CSS 는 assets/css/admin.css 로 분리했다(관리자 전용).
+   .empty 만 공개 페이지(채용·인사이트 폴백)도 쓰므로 여기 남긴다. */
 .empty{padding:44px 0;color:var(--ink-3);font-size:.9rem}
 
-/* ─────────────── 관리자 ─────────────── */
-.admin-top{border-bottom:1px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:40}
-/* ⚠ height 가 아니라 min-height 여야 한다. 아래 720px 규칙에서 이 줄이 wrap 되는데,
-   고정 높이면 접힌 두 번째 줄이 상자 밖으로 흘러 탭 위에 겹쳐 그려진다. */
-.admin-top .bar{display:flex;align-items:center;justify-content:space-between;
-  min-height:64px;gap:20px;flex-wrap:wrap}
-.admin-who{display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:.82rem;color:var(--ink-3)}
-.admin-who b{color:var(--ink-2);font-weight:500}
-.tabs{display:flex;gap:26px;flex-wrap:wrap;border-bottom:1px solid var(--rule);margin:28px 0 30px}
-/* 관리자 탭이 10개라 좁은 화면에서 3~4줄로 접혀 본문을 아래로 밀어낸다.
-   가로 스크롤 스트립으로 바꿔 한 줄을 유지한다(스크롤바는 숨기고 넘침만 허용). */
-@media (max-width:760px){
-  /* 스크롤 스트립인 걸 알 수 있게 오른쪽 끝을 흐린다. 이게 없으면 잘린 글자가
-     레이아웃이 깨진 것처럼 보인다(실제 사용자 피드백). */
-  .tabs{flex-wrap:nowrap;overflow-x:auto;gap:18px;scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;
-    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);
-    mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
-  .tabs::-webkit-scrollbar{display:none}
-  .tabs button{white-space:nowrap;flex:none}
-}
-.tabs button{background:none;border:0;padding:0 0 14px;font-size:.88rem;font-weight:500;color:var(--ink-3);
-  cursor:pointer;position:relative;display:flex;align-items:center;gap:7px}
-.tabs button::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:transparent}
-.tabs button:hover{color:var(--ink)}
-.tabs button.active{color:var(--ink);font-weight:500}
-.tabs button.active::after{background:var(--accent)}
-.panel{display:none}
-.panel.show{display:block}
-.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:20px;
-  flex-wrap:wrap}
-.panel-head h2{font-size:1.2rem}
-.panel-head .tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-/* 열 수를 **고정**한다. auto-fit 로 두면 접히는 열 수를 CSS 가 알 수 없어
-   행별 첫/끝 칸을 지정할 수 없고, 구분선이 행마다 어긋난다(실제로 그랬다). */
-.mini-stats{display:grid;grid-template-columns:repeat(4,1fr);
-  border-top:1px solid var(--ink);margin-bottom:30px}
-/* 왼쪽 선을 쓰고 **각 행의 첫 칸**(4n+1)만 지운다 — 행이 몇 개든 어긋나지 않는다. */
-.mini-stat{padding:18px 20px;border-left:1px solid var(--rule)}
-.mini-stats .mini-stat:nth-child(4n+1){border-left:0;padding-left:0}
-@media (max-width:900px){
-  .mini-stats{grid-template-columns:repeat(2,1fr)}
-  .mini-stats .mini-stat:nth-child(4n+1){border-left:1px solid var(--rule);padding-left:20px}
-  .mini-stats .mini-stat:nth-child(2n+1){border-left:0;padding-left:0}
-}
-@media (max-width:520px){
-  .mini-stats{grid-template-columns:1fr}
-  .mini-stats .mini-stat{border-left:0;padding-left:0;border-top:1px solid var(--rule)}
-  .mini-stats .mini-stat:first-child{border-top:0}
-}
-.mini-stat b{display:block;font-size:1.7rem;font-weight:500;letter-spacing:-.02em;line-height:1.1;
-  font-variant-numeric:tabular-nums;margin-bottom:6px}
-.mini-stat span{display:block;font-size:.78rem;color:var(--ink-2)}
-.login-box{max-width:400px;margin:14vh auto;padding:0 24px}
-select.inp,input.inp{background:transparent;border:1px solid var(--rule-2);padding:8px 12px;
-  font-size:.84rem}
-.lnk{background:none;border:0;padding:0;font-size:.8rem;font-weight:500;color:var(--accent);cursor:pointer;
-  border-bottom:1px solid transparent}
-.lnk:hover{border-bottom-color:var(--accent)}
-.lnk.danger{color:var(--bad)}
-.lnk.danger:hover{border-bottom-color:var(--bad)}
-.row-actions{display:flex;gap:12px;flex-wrap:wrap}
-.modal{position:fixed;inset:0;z-index:90;display:none;align-items:flex-start;justify-content:center;
-  background:rgba(21,24,27,.5);padding:5vh 20px;overflow-y:auto}
-.modal.on{display:flex}
-.modal-card{background:var(--paper);border:1px solid var(--ink);padding:32px;width:100%;max-width:740px}
-.modal-card h3{font-size:1.14rem;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--rule)}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:26px;flex-wrap:wrap}
-.detail-dl{display:grid;grid-template-columns:150px 1fr;gap:0 20px;font-size:.9rem;
-  border-top:1px solid var(--rule)}
-.detail-dl dt{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--ink-3);padding:13px 0}
-.detail-dl dd{color:var(--ink-2);padding:13px 0;border-bottom:1px solid var(--rule);
-  white-space:pre-wrap;word-break:break-word;line-height:1.7}
-.detail-dl dt{border-bottom:1px solid var(--rule)}
-.bars{display:flex;align-items:flex-end;gap:5px;height:110px;padding-top:12px}
-.bars .b{flex:1;background:var(--accent);min-height:2px;position:relative;opacity:.85}
-.bars .b span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);
-  font-family:var(--font-mono);font-size:.58rem;color:var(--ink-3);white-space:nowrap}
-.bars-wrap{border-top:1px solid var(--ink);padding:18px 0 34px}
-.toppages{list-style:none;border-top:1px solid var(--rule)}
-.toppages li{display:flex;justify-content:space-between;gap:14px;padding:9px 0;
-  border-bottom:1px solid var(--rule);font-size:.84rem;color:var(--ink-2)}
-.toppages li:last-child{border-bottom:0}
-.toppages code{font-family:var(--font-mono);font-size:.78rem;color:var(--ink)}
-/* 페이지 이름 + 경로 병기. 이름이 주(主), 경로는 확인용으로 아래에 작게 깐다.
-   ⚠ `.toppages .pg` 로 한정하지 않는다 — 같은 칸을 [최근 방문] **표(table)** 안에서도 쓰는데,
-      거기서는 규칙이 안 걸려 이름과 경로가 한 줄에 붙어 나온다. 클래스 자체에 건다. */
-.pg{display:flex;flex-direction:column;gap:2px;min-width:0}
-.pg-name{font-weight:500;color:var(--ink);letter-spacing:-.01em}
-.pg code{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pg-group{color:var(--muted);font-weight:400}
-/* 비밀번호 입력 + [다시 생성] 한 줄. input 이 남는 폭을 먹고 버튼은 제 크기를 지킨다.
-   min-width:0 이 없으면 모노폰트 긴 값이 버튼을 모달 밖으로 밀어낸다. */
-.pw-row{display:flex;gap:8px;align-items:stretch}
-.pw-row input{flex:1;min-width:0}
-.pw-row .btn{flex:none;white-space:nowrap}
-.toppages > li > b{flex:none;font-variant-numeric:tabular-nums}
-.two{display:grid;grid-template-columns:1.3fr .7fr;gap:var(--gut)}
+/* ─────────────── 관리자 ───────────────
+   관리자 셸·탭·패널·지표·모달·표·배지 등은 assets/css/admin.css 로 옮겼다
+   (공개 페이지에 실리지 않게). admin/index.html 이 site.css 다음에 admin.css 를 링크한다.
+   ⚠ 아래 공용 @media 블록에 .mini-stat span / .login-box / table.tbl 카드접기 반응형이
+     일부 남아 있다 — 그 요소들의 base 는 admin.css 에 있고, 관리자는 두 파일을 다 받으므로
+     정상 동작한다. 그 규칙을 옮기려면 @media 경계를 깨야 해서 남겨 두었다. */
 
 /* ─────────────── 반응형 ─────────────── */
 @media (max-width:1080px){
