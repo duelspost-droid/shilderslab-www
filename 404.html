@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://nrdapzgtibbusvoaceuh.supabase.co wss://nrdapzgtibbusvoaceuh.supabase.co; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://nrdapzgtibbusvoaceuh.supabase.co wss://nrdapzgtibbusvoaceuh.supabase.co; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>페이지를 찾을 수 없습니다 | 쉴더스랩</title>
@@ -117,15 +117,6 @@
 <script src="/assets/vendor/supabase.min.js"></script>
 <script src="/assets/js/supa.js"></script>
 <script src="/assets/js/site.js"></script>
-<script>
-/* /insights/<slug>/ 로 들어왔는데 정적 페이지가 생성되지 않은 글이면(최근 발행분)
-   동적 렌더러로 넘겨 준다. 그 외에는 일반 404 화면을 보여준다. */
-(function () {
-  var m = /^\/insights\/([a-z0-9][a-z0-9-]*)\/?$/.exec(location.pathname);
-  if (m) {
-    location.replace("/insights/view.html?slug=" + encodeURIComponent(m[1]));
-  }
-})();
-</script>
+<script src="/assets/js/notfound.js"></script>
 </body>
 </html>

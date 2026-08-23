@@ -848,16 +848,7 @@ BRAND_BODY = """<section class="phead">
 NF_TITLE = "페이지를 찾을 수 없습니다 | 쉴더스랩"
 NF_DESC = "요청하신 페이지를 찾을 수 없습니다."
 
-NF_JS = """<script>
-/* /insights/<slug>/ 로 들어왔는데 정적 페이지가 생성되지 않은 글이면(최근 발행분)
-   동적 렌더러로 넘겨 준다. 그 외에는 일반 404 화면을 보여준다. */
-(function () {
-  var m = /^\/insights\/([a-z0-9][a-z0-9-]*)\/?$/.exec(location.pathname);
-  if (m) {
-    location.replace("/insights/view.html?slug=" + encodeURIComponent(m[1]));
-  }
-})();
-</script>"""
+NF_JS = """<script src="/assets/js/notfound.js"></script>"""
 
 NF_BODY = """<section class="phead">
   <div class="shell">

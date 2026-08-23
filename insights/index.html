@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://nrdapzgtibbusvoaceuh.supabase.co wss://nrdapzgtibbusvoaceuh.supabase.co; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://nrdapzgtibbusvoaceuh.supabase.co wss://nrdapzgtibbusvoaceuh.supabase.co; base-uri 'self'; object-src 'none'; form-action 'self'; frame-ancestors 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>인사이트 | 쉴더스랩 — 규제 변화와 진단 현장 기록</title>
@@ -126,67 +126,6 @@
 <script src="/assets/vendor/supabase.min.js"></script>
 <script src="/assets/js/supa.js"></script>
 <script src="/assets/js/site.js"></script>
-<script>
-(function () {
-  var listEl = document.getElementById("post-list");
-  var filterEl = document.getElementById("filters");
-  var all = [], cur = "전체";
-
-  function render() {
-    var rows = cur === "전체" ? all : all.filter(function (p) { return (p.category || "") === cur; });
-    if (!rows.length) {
-      listEl.innerHTML = '<div class="empty">해당 분류의 글이 아직 없습니다.</div>';
-      return;
-    }
-    listEl.innerHTML = rows.map(function (p) {
-      return '<a class="post" href="/insights/' + encodeURIComponent(p.slug) + '/">' +
-        '<div class="meta">' + SL.esc(SL.fmtDate(p.published_at)) + '<br>' +
-        SL.esc(p.category || "인사이트") + '</div>' +
-        '<div><h3>' + SL.esc(p.title) + '</h3><p>' + SL.esc(p.summary || "") + '</p></div>' +
-        '<div class="go">읽기 →</div></a>';
-    }).join("");
-  }
-
-  function renderFilters() {
-    var cats = ["전체"];
-    all.forEach(function (p) {
-      var c = p.category || "인사이트";
-      if (cats.indexOf(c) < 0) cats.push(c);
-    });
-    if (cats.length <= 2) { filterEl.style.display = "none"; return; }
-    filterEl.innerHTML = cats.map(function (c) {
-      return '<button type="button" data-cat="' + SL.escA(c) + '"' +
-        (c === cur ? ' class="active"' : "") + ">" + SL.esc(c) + "</button>";
-    }).join("");
-    Array.prototype.forEach.call(filterEl.querySelectorAll("button"), function (b) {
-      b.addEventListener("click", function () {
-        cur = b.getAttribute("data-cat");
-        Array.prototype.forEach.call(filterEl.querySelectorAll("button"), function (x) {
-          x.classList.toggle("active", x === b);
-        });
-        render();
-      });
-    });
-  }
-
-  if (!window.SL || !SL.db()) {
-    listEl.innerHTML = '<div class="empty">인사이트를 준비하고 있습니다.</div>';
-    return;
-  }
-  SL.listPublished("sl_insights", {
-    columns: "slug,category,title,summary,published_at",
-    order: [{ col: "sort_order", asc: false }, { col: "published_at", asc: false }], limit: 60
-  }).then(function (r) {
-    all = (r && r.data) || [];
-    if (!all.length) {
-      listEl.innerHTML = '<div class="empty">첫 글을 준비하고 있습니다. 곧 공개됩니다.</div>';
-      return;
-    }
-    renderFilters(); render();
-  }).catch(function () {
-    listEl.innerHTML = '<div class="empty">목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</div>';
-  });
-})();
-</script>
+<script src="/assets/js/insights-list.js"></script>
 </body>
 </html>

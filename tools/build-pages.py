@@ -95,7 +95,8 @@ def page(path, title, desc, body, canonical, extra_css="", extra_js="", ld="", b
     html = apply_content(html)
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full), exist_ok=True)
-    with open(full, "w", encoding="utf-8") as f:
+    # newline="\n" 로 LF 고정 — 안 주면 Windows 에서 CRLF 로 써져 맥(LF)과 매 빌드 충돌한다.
+    with open(full, "w", encoding="utf-8", newline="\n") as f:
         f.write(html)
     print(f"  ✓ {path:<36} {len(html):>7,}B")
     return path
@@ -357,7 +358,7 @@ def build_sitemap(rows_static, rows_posts):
         f"<lastmod>{lm}</lastmod><priority>{pr}</priority></url>" for loc, lm, pr in rows)
     out = ('<?xml version="1.0" encoding="UTF-8"?>\n'
            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "\n</urlset>\n")
-    with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
+    with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8", newline="\n") as f:
         f.write(out)
     print(f"  ✓ sitemap.xml                        {len(rows)} URL")
 

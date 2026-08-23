@@ -6,7 +6,10 @@
 SUPA_HOST = "https://nrdapzgtibbusvoaceuh.supabase.co"
 SUPA_WS = "wss://nrdapzgtibbusvoaceuh.supabase.co"
 
-CSP = ("default-src 'self'; script-src 'self' 'unsafe-inline'; "
+# script-src 는 'self' 만 — 인라인 <script> 를 전부 외부 파일로 뺐다(assets/js/*.js).
+# 새 페이지에 인라인 <script> 나 on* 이벤트 핸들러를 쓰면 CSP 가 차단한다. 외부 파일로 둘 것.
+# (style-src 의 'unsafe-inline' 은 인라인 style 속성이 많아 유지한다 — 스크립트와 별개.)
+CSP = ("default-src 'self'; script-src 'self'; "
        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
        "font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; "
        f"connect-src 'self' {SUPA_HOST} {SUPA_WS}; "
