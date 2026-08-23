@@ -321,11 +321,20 @@ privacyOfficer: "",   // 개인정보 보호책임자
 - **SEO/메타**: 인사이트 상세 canonical 을 정적 정본(`/insights/<slug>/`)으로(중복 콘텐츠 해소),
   인사이트 og:type=article, Article JSON-LD 에 image·dateModified, favicon-32 링크.
 
-⏳ **보류(별도 태스크로 스핀오프, 회귀 위험/디자인 결정)**:
-- **supabase-js(137KB)를 전 페이지 로드** — DB 쓰는 페이지만 로드하도록 SCRIPTS 분리 필요.
-  방문 로깅·하이드레이션이 얽혀 있어 신중한 리팩터.
-- **CSP `script-src 'unsafe-inline'`** — 6개 페이지 인라인 `_JS` 를 외부 파일로 빼야 제거 가능.
-- **admin 전용 CSS 가 공용 site.css 에 포함** — `admin.css` 분리 시 공개 페이지 CSS 축소.
+배경 리팩터 4건 진행(2026-08-09):
+- ✅ **admin 전용 CSS 분리** (`0f34d82`) — assets/css/admin.css 신설, 공개 site.css 835→723줄.
+- ✅ **CSP `script-src 'unsafe-inline'` 제거** (`23fbc81`) — 인라인 <script> 6개를 외부 js 로,
+  script-src 'self' 로 조임. build-pages.py 가 이제 LF 로 써서 CRLF churn 도 해소.
+- ⏳ **supabase-js(137KB) 페이지별 로드** — **보류(기능 충돌)**. site.js 가 하이드레이션·설정·
+  공지배너·방문로깅에 SDK 를 **전 페이지에서** 쓴다. 특히 페이지 문구 즉시 반영은 오너가
+  명시적으로 원한 기능. SDK 를 콘텐츠 페이지에서 빼려면 데이터 레이어(하이드레이션+설정+로깅+
+  esc/md 헬퍼)를 전부 raw fetch 로 재작성해야 하고, 안 그러면 콘텐츠 페이지의 CMS 즉시반영이
+  깨진다. **오너 결정 필요**: (a) 콘텐츠 페이지는 재빌드 시에만 반영으로 감수하고 SDK 제거, 또는
+  (b) 데이터 레이어 raw fetch 재작성(큰 작업). SDK 는 defer+캐시라 실이득도 제한적.
+- ⏳ **Google Fonts 셀프호스팅** — **보류(트레이드오프)**. 개인정보처리방침 위탁표에서 Google 은
+  이미 뺐으나 실제로는 CDN 로드 중(IP 전달 지속). 셀프호스팅하면 일치. 단 IBM Plex Sans KR 은
+  한글 폰트라 풀 woff2 가 수 MB → **오너 결정 필요**: (a) 풀폰트(용량 급증), (b) 서브셋 파이프라인
+  (fonttools, 글리프 누락 시 □ 위험), (c) 웹폰트 포기·시스템 한글폰트(타이포 변경). 셋 다 판단 필요.
 - **입력창 평상시 경계 없음(1.4.11)** — v2 미니멀 디자인 의도(라벨 상시표시)와 얽혀 **오너 판단 영역**.
 
 ### UI/UX 재검증 (2026-08-09) — 확정 22건 전부 처리
