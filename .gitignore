@@ -4,3 +4,9 @@ tools/__pycache__/
 *.local
 .venv/
 node_modules/
+
+# ── 일반 서버 이관(deploy/) — 비밀·개인정보 ──
+deploy/.env
+deploy/export/
+deploy/certs/
+deploy/certbot-www/

@@ -1,0 +1,127 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# 쉴더스랩 — 일반 서버 자체 호스팅 스택
+#
+# 관리형 Supabase 에서 쓰던 것 중 **실제로 쓰는 것만** 올린다.
+#   쓰는 것   : Postgres · PostgREST(.from/.rpc) · GoTrue(로그인) · Edge 1개
+#   안 쓰는 것: Realtime · Storage · 이미지 변환  → 올리지 않는다(공격면 축소)
+#
+# 프런트는 코드를 고칠 필요가 거의 없다. config.js 의 URL/anon 키와
+# CSP 의 connect-src 만 새 도메인으로 바꾸면 supabase-js 가 그대로 동작한다.
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: shielduslab
+
+services:
+  # ───────────────────────────────── 데이터베이스
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in .env}
+      POSTGRES_DB: postgres
+      TZ: Asia/Seoul
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # 01 만 자동 실행한다. 02(스키마)·03(시드)은 GoTrue 가 auth.users 를 만든 뒤에
+      # scripts/init-db.sh 가 순서대로 넣는다 — 순서를 지키지 않으면 0004 가 실패한다.
+      - ./db/01-roles-auth.sql:/docker-entrypoint-initdb.d/01-roles-auth.sql:ro
+      - ./db/01b-role-passwords.sh:/docker-entrypoint-initdb.d/01b-role-passwords.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    # 외부에 포트를 열지 않는다. 접속은 compose 네트워크 안에서만.
+    expose: ["5432"]
+
+  # ───────────────────────────────── 인증 (GoTrue)
+  auth:
+    image: supabase/gotrue:v2.158.1
+    restart: unless-stopped
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      PORT: 9999
+      API_EXTERNAL_URL: ${PUBLIC_URL:?}
+      GOTRUE_SITE_URL: ${PUBLIC_URL}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:5432/postgres?search_path=auth&sslmode=disable
+      GOTRUE_JWT_SECRET: ${JWT_SECRET:?}
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      # 🚨 셀프 가입 차단. 이 사이트에는 **앱 안에서 스스로 관리자가 되는 경로가 없다**(0004 설계).
+      #    가입을 열어두면 그 설계가 통째로 무의미해진다. 계정은 오너가 직접 만든다.
+      GOTRUE_DISABLE_SIGNUP: "true"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "${MAILER_AUTOCONFIRM:-false}"
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-587}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_FROM:-}
+      GOTRUE_LOG_LEVEL: info
+    expose: ["9999"]
+
+  # ───────────────────────────────── REST (PostgREST)
+  rest:
+    image: postgrest/postgrest:v12.2.3
+    restart: unless-stopped
+    depends_on:
+      db: {condition: service_healthy}
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@db:5432/postgres
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      # 스키마 캐시를 자동 갱신한다(마이그레이션 후 재시작 없이 반영).
+      PGRST_DB_CHANNEL_ENABLED: "true"
+      PGRST_OPENAPI_MODE: disabled      # 스키마 구조를 공개하지 않는다
+    expose: ["3000"]
+
+  # ───────────────────────────────── 관리자 계정 함수 (Edge 이식)
+  # 원래 Supabase Edge Function 이던 sl-admin-user 를 작은 HTTP 서비스로 옮겼다.
+  # service_role 키를 쓰므로 **절대 외부에 직접 노출하지 않는다** — nginx 가 경로로만 넘긴다.
+  adminfn:
+    build:
+      context: ..                      # 레포 루트 — 함수 원본을 그대로 복사하기 위해
+      dockerfile: deploy/services/admin-user/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      auth: {condition: service_started}
+      rest: {condition: service_started}
+    environment:
+      # 함수는 {SUPABASE_URL}/rest/v1 · /auth/v1 로 호출한다.
+      # 공개 주소로 돌면 TLS·DNS 에 의존하므로, nginx 의 **내부 전용 포트**를 가리킨다.
+      SUPABASE_URL: http://web:8081
+      SUPABASE_ANON_KEY: ${ANON_KEY:?}
+      SL_SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY:?}
+      SL_ALLOWED_ORIGIN: ${PUBLIC_URL}
+    expose: ["8080"]
+
+  # ───────────────────────────────── 정적 사이트 + API 게이트웨이
+  web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on: [rest, auth, adminfn]
+    ports:
+      - "80:80"
+      - "443:443"
+    expose:
+      - "8081"      # 내부 전용. publish 하지 않는다(adminfn 전용 경로).
+    environment:
+      # 공식 이미지는 templates/*.template 을 envsubst 로 conf.d 에 풀어 준다.
+      # **정의된 환경변수만** 치환하므로 $host · $request_uri 같은 nginx 변수는 그대로 남는다.
+      # ⚠ conf.d 에 직접 마운트하면 ${SERVER_NAME} 이 치환되지 않아 nginx 가 기동에 실패한다.
+      SERVER_NAME: ${SERVER_NAME:?}
+    volumes:
+      - ./nginx/site.conf:/etc/nginx/templates/default.conf.template:ro
+      - ${SITE_ROOT:-../}:/var/www/site:ro     # 빌드된 정적 사이트(레포 루트)
+      - ./certs:/etc/nginx/certs:ro            # certbot 산출물(호스트에서 복사)
+      # 갱신용 webroot. 호스트의 certbot 이 여기에 쓰고 nginx 가 서빙한다 → 운영 중 무중단 갱신.
+      # (named volume 이면 호스트 certbot 이 쓸 수 없다)
+      - ./certbot-www:/var/www/certbot:ro
+
+volumes:
+  db-data:

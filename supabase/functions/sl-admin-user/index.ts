@@ -39,7 +39,11 @@
 //   여기(shilderslab.com)와 어긋나면 브라우저가 응답을 차단한다.
 //   `tools/set-domain.py` 가 이 문자열도 함께 갱신하므로, 전환 후 배포하면 맞아떨어진다.
 const CORS = {
-  "Access-Control-Allow-Origin": "https://shilderslab.com",
+  // 출처는 환경변수로 받는다. 하드코딩해 두면 도메인을 바꾸는 순간 콘솔이 조용히 막힌다.
+  // (자체 호스팅에서는 SL_ALLOWED_ORIGIN 으로 주입한다. 없으면 현재 서비스 도메인.)
+  "Access-Control-Allow-Origin":
+    (typeof Deno !== "undefined" && Deno.env.get("SL_ALLOWED_ORIGIN")) ||
+    "https://shilderslab.com",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Vary": "Origin",
