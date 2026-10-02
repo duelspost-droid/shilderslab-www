@@ -657,6 +657,7 @@ Docker 없이 돌아가므로 **배포 전에 누구나 다시 돌릴 수 있다
 | `scripts/export-public.py` | 공개 데이터 시드 재생성(**이관 당일 다시 돌린다**) |
 | `db/01b-role-passwords.sh` | initdb 단계에서 롤 비밀번호를 `.env` 값으로 맞춤 |
 | `apache/site.conf` | 부록 C — Apache 를 쓸 경우 |
+| (명세서 부록 D) | 테이블 정의서 — 실제 카탈로그 추출 |
 
 스키마의 정본은 여전히 `supabase/migrations/0001~0007` 이다. `deploy/` 는 그것을 **복사하지 않고**
 순서대로 적용만 한다 — 사본을 두면 원본과 갈라진다.
@@ -733,3 +734,308 @@ nginx 와 다른 점:
 - `/rest/v1`·`/auth/v1`·`/functions/v1` 프록시는 **앞단에 Apache 또는 nginx 를 반드시 둔다**
   (Tomcat 단독으로는 리버스 프록시·보안 헤더·레이트리밋을 깔끔하게 처리하기 어렵다).
 결국 Apache/nginx 가 필요하므로 Tomcat 을 빼는 편이 구성이 단순하다.
+
+## 부록 D. 테이블 정의서 (실측)
+
+마이그레이션 0001~0007 을 **실제 PostgreSQL 16.2 에 적용한 결과의 시스템 카탈로그**에서 뽑았다(손으로 쓰지 않음).
+생성 절차는 13항과 같다. 표의 `NN` 은 NOT NULL, `PK` 는 기본키. 🔴 개인정보 · 🟡 준개인정보.
+
+### D.1 `sl_inquiries` — 상담·견적 문의
+
+| 항목 | 내용 |
+|---|---|
+| 개인정보 | 🔴 이름·이메일·전화 |
+| 보존기간 | 접수 1년 후 자동 파기 |
+| 쓰기 경로 | RPC `sl_submit_inquiry` 만 (INSERT 정책 없음) |
+
+| # | 컬럼 | 타입 | NN | 기본값 | PK | 설명 |
+|---|---|---|---|---|---|---|
+| 1 | `id` | uuid | ✓ | `gen_random_uuid()` | ✓ | 문의 ID |
+| 2 | `company` | text | ✓ |  |  | 회사명 |
+| 3 | `name` | text | ✓ |  |  | 🔴 담당자 이름 |
+| 4 | `email` | text | ✓ |  |  | 🔴 담당자 이메일 |
+| 5 | `phone` | text | ✓ | `''` |  | 🔴 담당자 전화 |
+| 6 | `service` | text | ✓ | `''` |  | 문의 유형 |
+| 7 | `message` | text | ✓ |  |  | 문의 내용 |
+| 8 | `status` | text | ✓ | `'new'` |  | 처리 상태 new/doing/done/drop |
+| 9 | `admin_note` | text | ✓ | `''` |  | 관리자 메모 |
+| 10 | `ip` | text |  |  |  | 제출 IP(레이트리밋·감사) |
+| 11 | `user_agent` | text |  |  |  | 제출 브라우저 |
+| 12 | `consent_at` | timestamptz | ✓ | `now()` |  | 개인정보 수집·이용 동의 시각 |
+| 13 | `created_at` | timestamptz | ✓ | `now()` |  | 접수 시각 — 보존기간 기준 |
+| 14 | `updated_at` | timestamptz | ✓ | `now()` |  | 수정 시각 |
+
+**제약**
+
+- `sl_inquiries_status_check` — `CHECK ((status = ANY (ARRAY['new'::text, 'doing'::text, 'done'::text, 'drop'::text])))`
+
+**인덱스**
+
+- `sl_inq_created_idx`
+- `sl_inq_ip_idx`
+- `sl_inq_status_idx`
+
+**RLS 정책** (3개)
+
+- `sl_inq_admin_delete` — DELETE · 대상 `authenticated` · 조건 `is_sl_admin()`
+- `sl_inq_admin_read` — SELECT · 대상 `authenticated` · 조건 `is_sl_admin()`
+- `sl_inq_admin_update` — UPDATE · 대상 `authenticated` · 조건 `is_sl_admin()`
+
+**트리거**
+
+- `trg_sl_inquiries_updated` — BEFORE UPDATE
+
+### D.2 `sl_applications` — 채용 지원
+
+| 항목 | 내용 |
+|---|---|
+| 개인정보 | 🔴 이름·이메일·전화 |
+| 보존기간 | 접수 6개월 후 자동 파기 |
+| 쓰기 경로 | RPC `sl_apply` 만 (INSERT 정책 없음) |
+
+| # | 컬럼 | 타입 | NN | 기본값 | PK | 설명 |
+|---|---|---|---|---|---|---|
+| 1 | `id` | uuid | ✓ | `gen_random_uuid()` | ✓ | 지원 ID |
+| 2 | `name` | text | ✓ |  |  | 🔴 지원자 이름 |
+| 3 | `email` | text | ✓ |  |  | 🔴 지원자 이메일 |
+| 4 | `phone` | text | ✓ | `''` |  | 🔴 지원자 전화 |
+| 5 | `position` | text | ✓ | `''` |  | 지원 포지션 |
+| 6 | `summary` | text | ✓ | `''` |  | 자기소개 요약 |
+| 7 | `link` | text | ✓ | `''` |  | 이력서·포트폴리오 링크 |
+| 8 | `status` | text | ✓ | `'new'` |  | 처리 상태 new/doing/done/drop |
+| 9 | `admin_note` | text | ✓ | `''` |  | 관리자 메모 |
+| 10 | `ip` | text |  |  |  | 제출 IP(레이트리밋·감사) |
+| 11 | `user_agent` | text |  |  |  | 제출 브라우저 |
+| 12 | `consent_at` | timestamptz | ✓ | `now()` |  | 개인정보 수집·이용 동의 시각 |
+| 13 | `created_at` | timestamptz | ✓ | `now()` |  | 접수 시각 — 보존기간 기준 |
+| 14 | `updated_at` | timestamptz | ✓ | `now()` |  | 수정 시각 |
+
+**제약**
+
+- `sl_applications_status_check` — `CHECK ((status = ANY (ARRAY['new'::text, 'doing'::text, 'done'::text, 'drop'::text])))`
+
+**인덱스**
+
+- `sl_app_created_idx`
+- `sl_app_ip_idx`
+- `sl_app_status_idx`
+
+**RLS 정책** (3개)
+
+- `sl_app_admin_delete` — DELETE · 대상 `authenticated` · 조건 `is_sl_admin()`
+- `sl_app_admin_read` — SELECT · 대상 `authenticated` · 조건 `is_sl_admin()`
+- `sl_app_admin_update` — UPDATE · 대상 `authenticated` · 조건 `is_sl_admin()`
+
+**트리거**
+
+- `trg_sl_applications_updated` — BEFORE UPDATE
+
+### D.3 `sl_audit` — 방문·관리자 행위·제출 이벤트 로그
+
+| 항목 | 내용 |
+|---|---|
+| 개인정보 | 🟡 IP·User-Agent |
+| 보존기간 | 방문 90일 · 관리/제출 365일 후 자동 파기 |
+| 쓰기 경로 | RPC `sl_log`·`sl_log_visit`, 트리거 |
+
+| # | 컬럼 | 타입 | NN | 기본값 | PK | 설명 |
+|---|---|---|---|---|---|---|
+| 1 | `id` | bigint | ✓ | `IDENTITY` | ✓ | 일련번호(IDENTITY) |
+| 2 | `kind` | text | ✓ | `'admin'` |  | 구분 visit / admin / submit |
+| 3 | `actor` | uuid |  |  |  | 행위자 계정 ID |
+| 4 | `actor_email` | text |  |  |  | 행위자 이메일 |
+| 5 | `action` | text | ✓ |  |  | 행위 |
+| 6 | `entity` | text |  |  |  | 대상 객체 |
+| 7 | `entity_id` | text |  |  |  | 대상 ID |
+| 8 | `detail` | jsonb | ✓ | `'{}'` |  | 상세(JSON) |
+| 9 | `ip` | text |  |  |  | 요청 IP |
+| 10 | `user_agent` | text |  |  |  | 요청 브라우저 |
+| 11 | `created_at` | timestamptz | ✓ | `now()` |  | 기록 시각 — 보존기간 기준 |
+
+**인덱스**
+
+- `sl_audit_created_idx`
+- `sl_audit_entity_idx`
+- `sl_audit_kind_idx`
+
+**RLS 정책** (1개)
+
+- `sl_audit_admin_read` — SELECT · 대상 `authenticated` · 조건 `is_sl_owner()`
+
+### D.4 `sl_admins` — 관리자 화이트리스트(역할 admin/editor)
+
+| 항목 | 내용 |
+|---|---|
+| 개인정보 | 🟡 이메일 |
+| 보존기간 | 수동 |
+| 쓰기 경로 | RPC `sl_admin_*` 만 |
+
+| # | 컬럼 | 타입 | NN | 기본값 | PK | 설명 |
+|---|---|---|---|---|---|---|
+| 1 | `email` | text | ✓ |  | ✓ | 관리자 이메일(소문자). 화이트리스트 키 |
+| 2 | `role` | text | ✓ | `'editor'` |  | 역할 — admin(계정·설정·로그 포함 전체) / editor(콘텐츠·문의) |
+| 3 | `note` | text |  |  |  | 메모 |
+| 4 | `created_at` | timestamptz | ✓ | `now()` |  | 등록 시각 |
+| 5 | `user_id` | uuid |  |  |  | 결속된 로그인 계정 ID(auth.users.id). **NULL 이면 권한 없음** |
+| 6 | `pw_managed` | boolean | ✓ | `false` |  | 콘솔이 비밀번호를 만든 계정 여부. service_role 만 변경 가능(트리거) |
+
+**제약**
+
+- `sl_admins_role_check` — `CHECK ((role = ANY (ARRAY['admin'::text, 'editor'::text])))`
+
+**인덱스**
+
+- `sl_admins_email_lower_key`
+- `sl_admins_user_id_key`
+
+**RLS 정책** (1개)
+
+- `sl_admins_read` — SELECT · 대상 `authenticated` · 조건 `is_sl_owner()`
+
+**트리거**
+
+- `sl_admins_guard_pw_managed` — BEFORE UPDATE
+
+### D.5 `sl_content` — 페이지 문구 CMS
+
+| 항목 | 내용 |
+|---|---|
+| 개인정보 | 없음 |
+| 보존기간 | — |
+| 쓰기 경로 | 관리자 콘솔 |
+
+| # | 컬럼 | 타입 | NN | 기본값 | PK | 설명 |
+|---|---|---|---|---|---|---|
+| 1 | `key` | text | ✓ |  | ✓ | 블록 키(예: home.hero_title). 페이지의 data-content 앵커와 일치 |
+| 2 | `value` | text | ✓ | `''` |  | 문구(평문·최소 마크다운. HTML 저장 안 함) |
+| 3 | `kind` | text | ✓ | `'text'` |  | text / rich |
+| 4 | `section` | text | ✓ | `'기타'` |  | 콘솔 분류 |
+| 5 | `label` | text | ✓ | `''` |  | 콘솔 표시 이름 |
+| 6 | `hint` | text | ✓ | `''` |  | 콘솔 도움말 |
+| 7 | `sort_order` | integer | ✓ | `0` |  | 콘솔 정렬 순서 |
+| 8 | `updated_at` | timestamptz | ✓ | `now()` |  | 수정 시각 |
+| 9 | `updated_by` | uuid |  |  |  | 수정한 관리자 계정 ID |
+
+**제약**
+
+- `sl_content_kind_chk` — `CHECK ((kind = ANY (ARRAY['text'::text, 'rich'::text])))`
+- `sl_content_len_chk` — `CHECK ((length(value) <= 20000))`
+
+**RLS 정책** (2개)
+
+- `sl_content_read` — SELECT · 대상 `public` · 조건 `true`
+- `sl_content_write` — ALL · 대상 `authenticated` · 조건 `is_sl_admin()`
+
+**트리거**
+
+- `sl_content_audit_trg` — AFTER UPDATE/INSERT
+- `sl_content_touch_trg` — BEFORE UPDATE/INSERT
+
+### D.6 `sl_insights` — 인사이트 글
+
+| 항목 | 내용 |
+|---|---|
+| 개인정보 | 없음 |
+| 보존기간 | — |
+| 쓰기 경로 | 관리자 콘솔 |
+
+| # | 컬럼 | 타입 | NN | 기본값 | PK | 설명 |
+|---|---|---|---|---|---|---|
+| 1 | `id` | uuid | ✓ | `gen_random_uuid()` | ✓ | 글 ID |
+| 2 | `slug` | text | ✓ |  |  | URL 경로(유일) — /insights/<slug>/ |
+| 3 | `category` | text | ✓ | `'인사이트'` |  | 분류 |
+| 4 | `title` | text | ✓ |  |  | 제목 |
+| 5 | `summary` | text | ✓ | `''` |  | 요약 |
+| 6 | `body` | text | ✓ | `''` |  | 본문(최소 마크다운) |
+| 7 | `author` | text | ✓ | `''` |  | 작성자 |
+| 8 | `published` | boolean | ✓ | `false` |  | 공개 여부 |
+| 9 | `published_at` | date | ✓ | `CURRENT_DATE` |  | 게시일 |
+| 10 | `sort_order` | integer | ✓ | `0` |  | 정렬 순서 |
+| 11 | `created_at` | timestamptz | ✓ | `now()` |  | 생성 시각 |
+| 12 | `updated_at` | timestamptz | ✓ | `now()` |  | 수정 시각 |
+
+**제약**
+
+- `sl_insights_slug_fmt` — `CHECK ((slug ~ '^[a-z0-9]([a-z0-9-]{0,78}[a-z0-9])?$'::text))`
+- `sl_insights_slug_key` — `UNIQUE (slug)`
+- `sl_insights_title_len` — `CHECK (((char_length(title) >= 1) AND (char_length(title) <= 200)))`
+
+**인덱스**
+
+- `sl_insights_pub_idx`
+- `sl_insights_slug_key`
+
+**RLS 정책** (3개)
+
+- `sl_insights_read_all` — SELECT · 대상 `authenticated` · 조건 `is_sl_admin()`
+- `sl_insights_read_pub` — SELECT · 대상 `public` · 조건 `(published = true)`
+- `sl_insights_write` — ALL · 대상 `authenticated` · 조건 `is_sl_admin()`
+
+**트리거**
+
+- `trg_sl_insights_updated` — BEFORE UPDATE
+
+### D.7 `sl_jobs` — 채용 공고
+
+| 항목 | 내용 |
+|---|---|
+| 개인정보 | 없음 |
+| 보존기간 | — |
+| 쓰기 경로 | 관리자 콘솔 |
+
+| # | 컬럼 | 타입 | NN | 기본값 | PK | 설명 |
+|---|---|---|---|---|---|---|
+| 1 | `id` | uuid | ✓ | `gen_random_uuid()` | ✓ | 공고 ID |
+| 2 | `title` | text | ✓ |  |  | 포지션명 |
+| 3 | `team` | text | ✓ | `''` |  | 소속 팀 |
+| 4 | `employment_type` | text | ✓ | `'정규직'` |  | 고용 형태 |
+| 5 | `location` | text | ✓ | `''` |  | 근무지 |
+| 6 | `summary` | text | ✓ | `''` |  | 요약 |
+| 7 | `body` | text | ✓ | `''` |  | 상세(최소 마크다운) |
+| 8 | `closes_at` | date |  |  |  | 마감일(NULL = 상시) |
+| 9 | `published` | boolean | ✓ | `false` |  | 공개 여부 |
+| 10 | `sort_order` | integer | ✓ | `0` |  | 정렬 순서 |
+| 11 | `created_at` | timestamptz | ✓ | `now()` |  | 생성 시각 |
+| 12 | `updated_at` | timestamptz | ✓ | `now()` |  | 수정 시각 |
+
+**제약**
+
+- `sl_jobs_title_len` — `CHECK (((char_length(title) >= 1) AND (char_length(title) <= 160)))`
+
+**인덱스**
+
+- `sl_jobs_pub_idx`
+
+**RLS 정책** (3개)
+
+- `sl_jobs_read_all` — SELECT · 대상 `authenticated` · 조건 `is_sl_admin()`
+- `sl_jobs_read_pub` — SELECT · 대상 `public` · 조건 `(published = true)`
+- `sl_jobs_write` — ALL · 대상 `authenticated` · 조건 `is_sl_admin()`
+
+**트리거**
+
+- `trg_sl_jobs_updated` — BEFORE UPDATE
+
+### D.8 `sl_settings` — 사이트 설정(key-value)
+
+| 항목 | 내용 |
+|---|---|
+| 개인정보 | 없음 |
+| 보존기간 | — |
+| 쓰기 경로 | 관리자 콘솔 |
+
+| # | 컬럼 | 타입 | NN | 기본값 | PK | 설명 |
+|---|---|---|---|---|---|---|
+| 1 | `key` | text | ✓ |  | ✓ | 설정 키(대표 이메일·운영 시간·회신 안내·공지 배너 등) |
+| 2 | `value` | jsonb | ✓ | `'{}'` |  | 값(JSON) |
+| 3 | `updated_at` | timestamptz | ✓ | `now()` |  | 수정 시각 |
+
+**RLS 정책** (2개)
+
+- `sl_settings_read` — SELECT · 대상 `public` · 조건 `true`
+- `sl_settings_write` — ALL · 대상 `authenticated` · 조건 `is_sl_owner()`
+
+**트리거**
+
+- `trg_sl_settings_updated` — BEFORE UPDATE
+

@@ -10,3 +10,6 @@ deploy/.env
 deploy/export/
 deploy/certs/
 deploy/certbot-www/
+
+# 이관 패키지 산출물 — 소스 사본·개인정보가 들어갈 수 있다
+dist/
