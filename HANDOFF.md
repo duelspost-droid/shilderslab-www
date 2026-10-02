@@ -36,6 +36,7 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
 | 디자인 토큰·반응형 | `assets/css/site.css` |
 | 백엔드 스키마 | `supabase/migrations/` (적용 상태는 3항) |
 | 관리자 콘솔 | `admin/index.html` · `admin/admin.js` |
+| **일반 서버 이관 (진행 중)** | **13항** — 패키지 재생성·남은 일 순서 · 설계는 `deploy/SPEC.md` |
 
 **작업 종료 시 항상 할 것** (다음 세션·다른 PC를 위한 최소 규칙)
 1. `python3 tools/build-pages.py` 실행 → 생성물까지 커밋
@@ -69,7 +70,7 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
 | HTTPS | ✅ **인증서 발급·강제 완료** — apex/www 모두 Let's Encrypt 유효, http→https 301 |
 | 라이브 감사 (5관점 병렬 + 적대적 검증) | ✅ 실시 — 확정 29건 중 high 2건 해소, 다수 반영(아래 7항) |
 | 접수 알림 메일 (선택) | ⏳ `notify-inquiry` 미배포 |
-| 일반 서버 이관 패키지 | ✅ **준비 완료**(2026-10-02) — `deploy/SPEC.md` 명세서 · Docker/Apache 구성 · 스크립트 · DB 계층 사전 검증 36/36. **미실행**: 서버 확보·관리형 덤프(오너) 후 SPEC 7항 |
+| 일반 서버 이관 패키지 | ✅ 설계·구성·스크립트 완료(`deploy/`) · DB 계층 사전 검증 36/36 · 🟡 **납품 파일 묶음 진행 중 — 13항** (남은 것: 명세서 docx·pdf · 비공개 데이터 덤프 · zip) |
 
 로컬 경로: macOS `/Users/hk/shilderslab-www` · Windows `C:\Users\duels\Projects\shilderslab-www`
 원격: `github.com/duelspost-droid/shilderslab-www` (public, main)
@@ -686,6 +687,7 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-08-09 | **Supabase 리전 판정** — 대시보드 없이 왕복 지연으로 US East 확인(REST 195.8ms = 버지니아 195.8ms, 서울 9.0/도쿄 65.9/싱가포르 100.6). 질의 크기 무관 확인으로 거리 지배 입증 → 개인정보처리방침 국외이전 기재가 실제와 일치, **수정 불필요** | 대시보드 복구 시 최종 확인 |
 | 2026-10-02 | **일반 서버 이관 패키지** — `deploy/` 신설: 명세서(SPEC.md, 선택지·DB·웹서버·절차·검증·운영·롤백), Docker Compose/nginx·Apache 구성, Edge 함수 무수정 컨테이너화, 스크립트 7종. 실제 PG16 에서 DB 계층 36/36 통과 · 결함 4건(🔴Supabase 기본 권한 누락 → 사이트 빈 화면) 수정 · 운영 함정 3건 수정 | 서버 확보 · 관리형 덤프(오너) · 실기동 후 verify.sh |
 | 2026-10-02 | **이관 패키지(파일) 빌드 진행 중** — `dist/쉴더스랩_서버이관_패키지_20261002/` (로컬·gitignore). 완료: 02_소스코드(git archive, 188파일·비밀 0) · 03_DB(적용순서 스키마 9 · 공개데이터 60행 · **최종스키마_참조용.sql** · **테이블정의서 md/csv — 실제 PG 카탈로그 추출**) · SPEC 부록 D(테이블 정의서) 추가 | 01_명세서 docx·pdf(이 맥에 pandoc·LibreOffice 없음 → docx-js·reportlab 로 직접 렌더) · 비공개데이터(오너 권한 필요) · 00_먼저읽기·zip |
+| 2026-10-02 | **다른 PC 이어받기 정리** — 패키지 생성을 `deploy/scripts/build-package.py` 로 커밋(dist/ 는 gitignore 라 PC 간에 안 따라감 → 어디서든 재생성) · 실행 확인(소스 188·스키마 9·공개 60행·정책 18·인덱스 22·트리거 8) · 13항 신설 · HANDOFF 의 관리자 주소 2곳 제거(public 저장소) | 13항 남은 일 ①②③ |
 
 ---
 
@@ -875,7 +877,7 @@ gh api -X PUT repos/duelspost-droid/shilderslab-www/pages -f cname=shilderslab.c
 ```
 sl_admin_mark_pw_managed · sl_admin_pw_logged · sl_admin_pw_uid   → 3행 확인
 anon 실행 권한 3개 모두 false · authenticated 는 true            → 확인
-sl_admins.pw_managed 컬럼 존재 · 백필됨(duels@jbfg.com = true)   → 확인
+sl_admins.pw_managed 컬럼 존재 · 백필됨(오너 계정 = true)   → 확인
 ```
 
 **② Edge 함수 `sl-admin-user`** — ✅ **배포 완료 · Verify JWT OFF**
@@ -902,7 +904,7 @@ Allow-Headers authorization, x-client-info, apikey, content-type
 놓친다. `notDeployed()` 가 두 갈래를 모두 인정한다 — 실측으로 확인한 동작이다.)
 
 ### 지금 상태에서 실제로 보이는 것
-관리자 목록에 **`duels@jbfg.com` 한 행뿐**이고 그건 본인 계정이라, [비밀번호 재설정] 버튼은
+관리자 목록에 **오너 계정 한 행뿐**이고 그건 본인 계정이라, [비밀번호 재설정] 버튼은
 아직 어디에도 뜨지 않는다(자기 비밀번호는 [내 비밀번호 변경] 으로). 두 번째 관리자를
 **콘솔에서 생성**하면 그 행에 버튼이 붙는다 — 콘솔이 만든 계정이라 `pw_managed` 가 켜지기 때문이다.
 반대로 [연결]로 갖다 붙인 계정에는 버튼이 붙지 않는다. 그게 의도한 동작이다.
@@ -933,3 +935,66 @@ Allow-Headers authorization, x-client-info, apikey, content-type
 `admin/page-titles.js` 는 **빌드 생성물**이다(`tools/build-pages.py`). 손으로 고치지 마라 —
 페이지를 추가하면 저절로 따라온다. 빌드 이후 콘솔에서 발행한 인사이트만 콘솔이 DB 에서 제목을 보충한다.
 표에 없는 경로(봇이 긁는 `/wp-admin/` 같은 404 흡수 경로)는 경로만 보인다 — 정상이다.
+
+---
+
+## 13. 일반 서버 이관 — 납품 파일 패키지 (2026-10-02 진행 중, 여기서 이어서)
+
+> 설계·절차의 정본은 `deploy/SPEC.md`. 이 항은 **"파일로 묶어 넘기는 작업"이 어디까지 왔는지**만 다룬다.
+
+### 패키지는 git 에 없다 → 어느 PC 에서든 다시 만든다
+
+`dist/` 는 소스 사본과(나중에) 개인정보 덤프가 들어가므로 **gitignore** 다. 다른 PC 에는 따라가지 않는다.
+대신 생성기를 커밋해 두었다. 한 줄로 같은 결과가 나온다.
+
+```bash
+git pull
+python3 deploy/scripts/build-package.py          # → dist/쉴더스랩_서버이관_패키지_<오늘날짜>/
+python3 deploy/scripts/build-package.py --zip    # + 00_먼저읽기 · SHA256SUMS · .zip
+```
+
+| PC | 필요한 것 |
+|---|---|
+| 공통 | `git` · `python3` (공개데이터는 라이브 REST 에서 공개 키로 뜬다 — 인터넷 필요) |
+| 최종스키마·테이블정의서까지 | `pgserver`(PostgreSQL 16 바이너리 포함, Docker 불필요). 없으면 그 둘만 건너뛰고 나머지는 만든다 |
+| macOS (이 맥) | `~/.venvs/sl/bin/python deploy/scripts/build-package.py` — pgserver·reportlab·fonttools·pypdf 설치돼 있음 |
+| Windows | `py -m venv %USERPROFILE%\.venvs\sl` → `...\Scripts\pip install pgserver` → 그 python 으로 실행. **Windows 에서 pgserver 경로는 아직 실측 안 함** — 실패하면 맥에서 만들거나 그 단계만 건너뛴다 |
+
+### 패키지 구성과 상태
+
+| 폴더 | 내용 | 상태 |
+|---|---|---|
+| `00_먼저읽기.txt` | 구성·읽는 순서·선택지 요약 | ✅ 자동 |
+| `01_명세서/` | SPEC.md 사본 | ✅ 자동 · **docx·pdf ⏳ ①** |
+| `02_소스코드/shilderslab-www/` | `git archive HEAD` — 커밋된 것만이라 `.env` 등 비밀이 섞일 수 없다(스크립트가 `.env` 를 발견하면 중단) | ✅ 자동 |
+| `03_DB/1_스키마/` | 적용 순서 번호를 붙인 사본 9개 + `적용순서.txt` | ✅ 자동 |
+| `03_DB/2_데이터/공개데이터.sql` | 실행 시점 라이브 스냅숏(설정·문구·인사이트·채용) | ✅ 자동 — **이관 당일 다시 뜰 것** |
+| `03_DB/2_데이터/비공개데이터/` | 문의·지원·관리자·감사·로그인 계정 | ⏳ **②** — 안내.txt 만 있음 |
+| `03_DB/최종스키마_참조용.sql` | 0001~0007 을 실제 PG16 에 적용한 결과 `pg_dump --schema-only` (참조용 — 이걸로 DB 를 만들지 말 것) | ✅ 자동 |
+| `03_DB/테이블정의서.md/.csv` | 실제 카탈로그에서 추출(8테이블·81컬럼·정책·인덱스·트리거) | ✅ 자동 |
+
+### 남은 일 (순서대로)
+
+**① 명세서 Word·PDF** — `01_명세서/` 에 `.docx`·`.pdf` 를 추가한다.
+- 원본은 `deploy/SPEC.md` 하나뿐이다. **Word/PDF 를 손으로 고치지 말고** SPEC.md 를 고친 뒤 다시 뽑는다.
+- 이 맥에는 pandoc·LibreOffice·Word 가 없어 생성기를 직접 써야 한다(계획: npm `docx` 로 .docx, reportlab + `tools/NotoSansKR.ttf` 고정 굵기 인스턴스로 .pdf).
+  node 는 PATH 에 없고 `/Applications/Codex.app/Contents/Resources/cua_node/bin/` 의 것을 쓴다.
+- **Windows 에 Word 나 pandoc 이 있으면 그쪽이 훨씬 빠르다**: `pandoc deploy/SPEC.md -o 명세서.docx` → Word 로 열어 표·목차 확인 → [PDF로 저장].
+- 생성기를 만들면 `deploy/scripts/render-spec-*` 로 커밋하고 `build-package.py` 의 `step_docs()` 에 연결한다(자리 표시 주석 있음).
+- 렌더 결과는 반드시 페이지 이미지로 열어 확인(표 잘림·한글 글꼴 대체·코드 블록 줄바꿈).
+
+**② 비공개 데이터 덤프** — 공개 키로는 0행이 정상(RLS)이라 빌드가 뽑을 수 없다. 둘 중 하나:
+- **(권장) 오너가 직접** — `deploy/scripts/export-from-supabase.sh` 에 DB 접속 문자열(비밀번호 포함)을 넣어 실행.
+  원본 DB 는 **PostgreSQL 17** 이라 스크립트가 `postgres:17` 클라이언트를 쓴다(Docker 필요 — 이 맥에는 없다).
+  공유 프로젝트이므로 `auth.users` 는 **`sl_admins` 에 결속된 계정만** 뽑도록 돼 있다(다른 서비스 사용자 유출 방지).
+- 또는 Claude 가 로그인된 대시보드 SQL 편집기로 뽑아 **파일로 바로 저장** — 파일 다운로드라 **오너의 명시적 허락**이 필요하고, 내용(PII)은 화면·로그·커밋에 남기지 않는다.
+- 규모는 작다(대부분 방문 감사 로그, 수백 행 수준). 정확한 건수는 로컬 메모에만 둔다.
+- 🔴 덤프는 개인정보·비밀번호 해시를 담는다. **패키지 zip 에 넣지 말고 별도 암호화 경로로** 넘긴다. 생성기는 이 폴더에 파일이 있으면 덮어쓰지 않고 멈춘다.
+
+**③ 묶어서 넘기기** — `build-package.py --zip` → `dist/…zip` + `SHA256SUMS.txt`. 받는 쪽은 `00_먼저읽기.txt` 부터.
+
+### 이관 당일에 다시 확인할 것 (패키지와 별개)
+- 공개데이터 재추출(문구를 콘솔에서 바꿨을 수 있다) — 생성기를 그날 다시 돌리면 된다.
+- 서버가 **국내**면 개인정보처리방침의 국외이전(미국·Supabase) 행을 고친다(SPEC 12항).
+- 보존기간 파기 cron(`sl_purge_all`) — 관리형의 pg_cron 은 따라오지 않는다(`deploy/README.md` 7단계).
+

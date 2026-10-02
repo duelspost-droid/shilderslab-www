@@ -1,6 +1,6 @@
 -- ═══════════════════════════════════════════════════════════════════
 -- 공개 데이터 시드 — 라이브에서 공개 키(anon)로 내보낸 실데이터
---   생성: 2026-10-02T18:01:55  ·  원본: https://nrdapzgtibbusvoaceuh.supabase.co
+--   생성: 2026-10-02T22:34:48  ·  원본: https://nrdapzgtibbusvoaceuh.supabase.co
 --   생성기: deploy/scripts/export-public.py  ← 이관 당일 다시 돌릴 것(스냅숏이다)
 --   포함: sl_settings · sl_content · sl_insights · sl_jobs
 --   ⚠ 미포함: sl_admins · sl_inquiries · sl_applications · sl_audit · auth.users

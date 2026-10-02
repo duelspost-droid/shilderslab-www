@@ -655,6 +655,7 @@ Docker 없이 돌아가므로 **배포 전에 누구나 다시 돌릴 수 있다
 | `scripts/verify.sh` | 9항 자동 검증 (서버에서) |
 | `scripts/test-db.py` | **13항 — Docker 없이 DB 계층 사전 검증** |
 | `scripts/export-public.py` | 공개 데이터 시드 재생성(**이관 당일 다시 돌린다**) |
+| `scripts/build-package.py` | 납품용 파일 패키지(`dist/`) 생성 — 소스·적용순서 스키마·공개데이터·최종스키마·테이블정의서(`--zip` 으로 압축·SHA256SUMS) |
 | `db/01b-role-passwords.sh` | initdb 단계에서 롤 비밀번호를 `.env` 값으로 맞춤 |
 | `apache/site.conf` | 부록 C — Apache 를 쓸 경우 |
 | (명세서 부록 D) | 테이블 정의서 — 실제 카탈로그 추출 |
