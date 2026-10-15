@@ -417,8 +417,8 @@ bash scripts/init-db.sh            # 01 롤 → GoTrue 기동(auth.users 생성 
 **암호화된 경로로** 넘긴다. 엔지니어는 그것을 서버의 `deploy/export/` 에 두고:
 ```bash
 bash scripts/import-to-server.sh export/
-# 적재 결과의 "🔑 비밀번호 미설정 관리자" 가 0 이 아니면(8.2 B 로 받은 경우) 5단계(TLS) 뒤에 관리자마다:
-bash scripts/set-admin-password.sh <관리자 이메일>      # 비밀번호는 오너가 직접 입력
+# 적재 결과의 "🔑 비밀번호 미설정 관리자" 가 0 이 아니면(8.2 B 로 받은 경우) 바로 관리자마다:
+bash scripts/set-admin-password.sh <관리자 이메일>      # 비밀번호는 오너가 직접 입력 · TLS·DNS 불필요
 ```
 덤프를 못 받는 경우(최초 구축 등)에는 **첫 관리자를 SQL 로 세운다**(8.3항).
 
@@ -483,13 +483,16 @@ docker compose restart web
 | 필요한 것 | Docker · DB 접속 문자열(비밀번호 포함) | 대시보드 로그인 · `python3` |
 | 실행 | `scripts/export-from-supabase.sh` | `scripts/export-private.sql` 을 SQL Editor 에서 Run → 결과를 **Download CSV** → `python3 scripts/convert-dashboard-dump.py <CSV>` |
 | 비밀번호 해시 | 함께 옮긴다 — 관리자가 비밀번호를 다시 정할 필요 없음 | **옮기지 않는다** — 적재 뒤 `set-admin-password.sh` 로 관리자마다 새로 정한다 |
-| 검증 | 오너 첫 실행 때 | 가짜 데이터 왕복 시험 `scripts/test-private-roundtrip.py` 22/22 통과 · 실제 덤프로 시험 적재(열 차이 0) 확인 |
+| 검증 | 적재 단계는 `test-private-roundtrip.py` 로 확인(덤프는 오너 첫 실행 때) | 가짜 데이터 왕복 시험 `scripts/test-private-roundtrip.py` 28/28 통과(GoTrue 계정 조회 조건 포함) · 실제 덤프로 시험 적재(열 차이 0) 확인 |
 
 - 🔴 **개인정보가 들어 있다.** 덤프 파일은 암호화된 경로로만 옮기고, 이관 후 즉시 삭제한다(`shred -u export/*`).
 - 공유 프로젝트이므로 로그인 계정은 **이 사이트 관리자로 결속된 계정만** 꺼낸다(다른 서비스 사용자 제외 — 두 경로 모두).
 - `auth.users` 의 `id` 를 바꾸지 않는다. `sl_admins.user_id` 가 이 값을 참조한다(4.6항).
 - 적재 시 새 서버에 같은 계정이 이미 있으면(부트스트랩 등) **덤프 값이 이긴다.** 단 덤프에 비밀번호 해시가 없으면(B) 기존 비밀번호를 지우지 않는다.
 - `sl_audit.id` 는 원래 번호를 보존하고, 시퀀스를 최댓값 다음으로 맞춘다(다음 기록이 기존 번호와 충돌하지 않게).
+- 옮긴 계정에는 GoTrue 가 직접 만든 계정과 같은 값(`instance_id = 00000000-…`, 토큰 열 `''`)을 채운다 — 빠지면 GoTrue 가 계정을 못 찾아 로그인·비밀번호 설정이 실패한다.
+- 🚨 **덤프는 전환 당일 다시 뜬다.** 미리 뜬 덤프는 리허설용이다 — 그 뒤에 들어온 문의·문구 수정은 다시 뜨지 않으면 사라진다.
+  전환 당일: 관리자 콘솔 편집 중지 → 다시 내보내기 → 적재 → 8단계 전환.
 
 ### 8.3 덤프를 못 받는 경우
 최초 구축이거나 관리형 접속이 안 될 때는 **빈 상태에서 시작**한다.

@@ -1003,12 +1003,14 @@ Download CSV, `convert-dashboard-dump.py` 로 `deploy/export/` 3개 파일 생�
 - **비밀번호 해시는 꺼내지 않았다** — Claude 의 자동 권한 검사가 해시 추출(Credential Materialization)과 대시보드에서의 개인정보 조회를
   차단했고(우회하지 않음), 오너가 직접 Run 했다. 그래서 새 서버 적재 뒤 관리자마다 `set-admin-password.sh <이메일>` 로 비밀번호를 정한다.
 - 경로 A(`export-from-supabase.sh`, Docker·DB 비밀번호 필요, 해시 포함)도 그대로 쓸 수 있다. 두 경로 모두 결과 형식이 같다(SPEC 8.2).
-- 검증: `python3 deploy/scripts/test-private-roundtrip.py` — 가짜 데이터(따옴표·백슬래시·줄바꿈·`SET`·`$`·이모지)로 내보내기→변환→적재 왕복 22/22.
+- 검증: `python3 deploy/scripts/test-private-roundtrip.py` — 가짜 데이터(따옴표·백슬래시·줄바꿈·`SET`·`$`·이모지)로 내보내기→변환→적재 왕복 **28/28**(GoTrue 계정 조회 조건·부트스트랩 충돌·경로 A 포함).
   이 시험이 **`import-to-server.sh` 결함 1건**을 잡았다: 새 서버에 같은 계정이 이미 있으면 덤프가 일부 열만 덮었다 → 전부 덮게 수정(해시는 비었으면 보존).
 - 실측 건수는 로컬 메모에만 둔다(public 저장소).
 - 🔴 `deploy/export/`·`~/Downloads/Supabase Snippet Untitled query.csv` 는 **개인정보** — 이관 후 지운다. 별도 비공개 zip 은 `build-package.py --zip --private deploy/export`.
-- ⏳ **2026-10-15 18:11 기준 새 스크립트 4종(export-private·convert·import 수정·set-admin-password) 독립 검토 진행 중** — 결과의 확정 지적을 반영하면
-  `build-package.py --zip --private deploy/export` 로 두 zip 을 다시 만든다(약 20초). 반영 전 zip 도 왕복 시험·실데이터 시험 적재는 통과한 상태.
+- ✅ **독립 검토(3관점×반박 확인) 반영 완료** — 확정 결함 6종 수정: 🔴옮긴 계정의 `instance_id`·토큰 열 NULL → GoTrue 가 못 찾아 로그인 불가(경로 A·B 공통!) ·
+  🔴`.env` 의 공백 든 `SERVER_NAME` 을 bash 가 못 읽음(init-db.sh 도 해당 → .env.example 따옴표) · 경로 A 줄 필터가 문의 본문 속 "SET…" 줄 삭제 ·
+  같은 이메일·다른 id 부트스트랩 계정이면 적재 실패 · `set-admin-password.sh` 를 auth 컨테이너 네트워크로(TLS·DNS 불필요) · 비밀번호 앞뒤 공백·오류 로그 개인정보.
+- 🚨 지금 덤프는 **리허설용**. 전환 당일 콘솔 편집을 멈추고 다시 내보내 적재한다(SPEC 8.2).
 
 **③ 묶어서 넘기기** — ✅ **완료(2026-10-15)**: `dist/쉴더스랩_서버이관_패키지_20261015.zip`(9.7MB, 파일 209개, SHA256SUMS 일치·zip 무결성 확인,
 JWT·`.env`·관리자 주소 0건). 이 맥 로컬에만 있다(gitignore) — 다른 PC 에서는 `build-package.py --zip` 으로 같은 것을 만든다.
