@@ -997,13 +997,15 @@ python3 deploy/scripts/build-package.py --zip    # + 00_먼저읽기 · SHA256SU
   deploy 훅 파일(`/etc/letsencrypt/renewal-hooks/deploy/shieldus.sh`)로 분리해 고침 · 1.2 도식 라벨 칸, 7항 2단계 주석 칸 정렬.
 - docx 는 Word 에서 열림(호환 모드 아님, 표지·목차·쪽번호 정상)까지 확인. 이 맥 Word 는 보기 전용이라 docx 의 쪽 단위 시각 검수는 하지 못했다.
 
-**② 비공개 데이터 덤프** — 공개 키로는 0행이 정상(RLS)이라 빌드가 뽑을 수 없다. 둘 중 하나:
-- **(권장) 오너가 직접** — `deploy/scripts/export-from-supabase.sh` 에 DB 접속 문자열(비밀번호 포함)을 넣어 실행.
-  원본 DB 는 **PostgreSQL 17** 이라 스크립트가 `postgres:17` 클라이언트를 쓴다(Docker 필요 — 이 맥에는 없다).
-  공유 프로젝트이므로 `auth.users` 는 **`sl_admins` 에 결속된 계정만** 뽑도록 돼 있다(다른 서비스 사용자 유출 방지).
-- 또는 Claude 가 로그인된 대시보드 SQL 편집기로 뽑아 **파일로 바로 저장** — 파일 다운로드라 **오너의 명시적 허락**이 필요하고, 내용(PII)은 화면·로그·커밋에 남기지 않는다.
-- 규모는 작다(대부분 방문 감사 로그, 수백 행 수준). 정확한 건수는 로컬 메모에만 둔다.
-- 🔴 덤프는 개인정보·비밀번호 해시를 담는다. **패키지 zip 에 넣지 말고 별도 암호화 경로로** 넘긴다. 생성기는 이 폴더에 파일이 있으면 덮어쓰지 않고 멈춘다.
+**② 비공개 데이터 덤프** — ✅ **완료(2026-10-15, 경로 B)**. 오너가 대시보드 SQL 편집기에서 `deploy/scripts/export-private.sql` 을 Run →
+Download CSV, `convert-dashboard-dump.py` 로 `deploy/export/` 3개 파일 생성(권한 600, gitignore). 실제 덤프로 로컬 시험 적재까지 확인(열 차이 0).
+- **비밀번호 해시는 꺼내지 않았다** — Claude 의 자동 권한 검사가 해시 추출(Credential Materialization)과 대시보드에서의 개인정보 조회를
+  차단했고(우회하지 않음), 오너가 직접 Run 했다. 그래서 새 서버 적재 뒤 관리자마다 `set-admin-password.sh <이메일>` 로 비밀번호를 정한다.
+- 경로 A(`export-from-supabase.sh`, Docker·DB 비밀번호 필요, 해시 포함)도 그대로 쓸 수 있다. 두 경로 모두 결과 형식이 같다(SPEC 8.2).
+- 검증: `python3 deploy/scripts/test-private-roundtrip.py` — 가짜 데이터(따옴표·백슬래시·줄바꿈·`SET`·`$`·이모지)로 내보내기→변환→적재 왕복 22/22.
+  이 시험이 **`import-to-server.sh` 결함 1건**을 잡았다: 새 서버에 같은 계정이 이미 있으면 덤프가 일부 열만 덮었다 → 전부 덮게 수정(해시는 비었으면 보존).
+- 실측 건수는 로컬 메모에만 둔다(public 저장소).
+- 🔴 `deploy/export/`·`~/Downloads/Supabase Snippet Untitled query.csv` 는 **개인정보** — 이관 후 지운다. 별도 비공개 zip 은 `build-package.py --zip --private deploy/export`.
 
 **③ 묶어서 넘기기** — ✅ **완료(2026-10-15)**: `dist/쉴더스랩_서버이관_패키지_20261015.zip`(9.7MB, 파일 209개, SHA256SUMS 일치·zip 무결성 확인,
 JWT·`.env`·관리자 주소 0건). 이 맥 로컬에만 있다(gitignore) — 다른 PC 에서는 `build-package.py --zip` 으로 같은 것을 만든다.

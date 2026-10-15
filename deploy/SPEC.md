@@ -2,9 +2,10 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | 1.1 |
+| 문서 버전 | 1.2 |
 | 작성일 | 2026-10-02 |
 | 개정 | 1.1 (2026-10-15) — 10.4 인증서 갱신을 deploy 훅 파일로 분리(cron 의 `exec` 에 `-T` 누락 결함 수정) · 1.2/1.3 도식 칸 정렬 · Word/PDF 판 추가 |
+| | 1.2 (2026-10-15) — 8.2 비공개 데이터 내보내기에 **대시보드 경로(B)** 추가(Docker·DB 비밀번호 불필요, 비밀번호 해시 제외) · 관리자 비밀번호 설정 스크립트 · 적재 시 기존 계정 비밀번호 보존 |
 | 대상 독자 | 서버를 구축·운영할 엔지니어, 호스팅·SI 업체 |
 | 관련 파일 | `deploy/` 디렉터리 전체 (부록 B) |
 | 정본 저장소 | `github.com/duelspost-droid/shilderslab-www` (main) |
@@ -412,14 +413,14 @@ bash scripts/init-db.sh            # 01 롤 → GoTrue 기동(auth.users 생성 
 0004 가 `auth.users` 를 조인하므로 순서가 바뀌면 함수 생성에서 실패한다.
 
 ### 4단계 — 데이터 이관 [오너 + 엔지니어]
+오너가 8.2항의 A 또는 B 로 `export/` 파일 3개(`public-data.sql` · `auth-users.csv` · `auth-identities.csv`)를 만들어
+**암호화된 경로로** 넘긴다. 엔지니어는 그것을 서버의 `deploy/export/` 에 두고:
 ```bash
-# [오너] 관리형 Supabase 에서 전체 덤프 (8항)
-SUPABASE_DB_URL='postgresql://postgres:<비밀번호>@db.<ref>.supabase.co:5432/postgres' \
-  bash scripts/export-from-supabase.sh
-# [엔지니어] 새 서버에 적재
 bash scripts/import-to-server.sh export/
+# 적재 결과의 "🔑 비밀번호 미설정 관리자" 가 0 이 아니면(8.2 B 로 받은 경우) 5단계(TLS) 뒤에 관리자마다:
+bash scripts/set-admin-password.sh <관리자 이메일>      # 비밀번호는 오너가 직접 입력
 ```
-덤프를 못 받는 경우(최초 구축 등)에는 **첫 관리자를 SQL 로 세운다**(HANDOFF 3항 ② 절차와 동일).
+덤프를 못 받는 경우(최초 구축 등)에는 **첫 관리자를 SQL 로 세운다**(8.3항).
 
 ### 5단계 — TLS 인증서 [엔지니어]
 ```bash
@@ -474,17 +475,25 @@ docker compose restart web
 공개 키(anon)로 내보낼 수 있는 것은 이미 다 내보냈다. 나머지 다섯은 **RLS 가 정상 동작해서**
 공개 키로 0행이 나온다 — 이것이 보안 설계가 맞게 돌고 있다는 증거이기도 하다.
 
-### 8.2 오너가 하는 전체 덤프
-`scripts/export-from-supabase.sh` 가 `pg_dump` 로 다섯 대상을 뜬다.
-Supabase 대시보드 → Project Settings → Database → **Connection string(Direct)** 이 필요하다.
+### 8.2 오너가 하는 전체 덤프 — 두 경로 중 하나
+두 경로 모두 결과는 같은 형식의 `export/` 파일 3개이고, 적재는 똑같이 `import-to-server.sh` 로 한다.
 
-- 🔴 **개인정보가 들어 있다.** 덤프 파일은 암호화된 경로로만 옮기고, 이관 후 즉시 삭제한다.
-- 로그인 계정은 **비밀번호 해시(bcrypt)째 옮긴다** — 관리자가 비밀번호를 다시 정할 필요가 없다.
+| | A. `pg_dump` 스크립트 | B. 대시보드 SQL 편집기 |
+|---|---|---|
+| 필요한 것 | Docker · DB 접속 문자열(비밀번호 포함) | 대시보드 로그인 · `python3` |
+| 실행 | `scripts/export-from-supabase.sh` | `scripts/export-private.sql` 을 SQL Editor 에서 Run → 결과를 **Download CSV** → `python3 scripts/convert-dashboard-dump.py <CSV>` |
+| 비밀번호 해시 | 함께 옮긴다 — 관리자가 비밀번호를 다시 정할 필요 없음 | **옮기지 않는다** — 적재 뒤 `set-admin-password.sh` 로 관리자마다 새로 정한다 |
+| 검증 | 오너 첫 실행 때 | 가짜 데이터 왕복 시험 `scripts/test-private-roundtrip.py` 22/22 통과 · 실제 덤프로 시험 적재(열 차이 0) 확인 |
+
+- 🔴 **개인정보가 들어 있다.** 덤프 파일은 암호화된 경로로만 옮기고, 이관 후 즉시 삭제한다(`shred -u export/*`).
+- 공유 프로젝트이므로 로그인 계정은 **이 사이트 관리자로 결속된 계정만** 꺼낸다(다른 서비스 사용자 제외 — 두 경로 모두).
 - `auth.users` 의 `id` 를 바꾸지 않는다. `sl_admins.user_id` 가 이 값을 참조한다(4.6항).
+- 적재 시 새 서버에 같은 계정이 이미 있으면(부트스트랩 등) **덤프 값이 이긴다.** 단 덤프에 비밀번호 해시가 없으면(B) 기존 비밀번호를 지우지 않는다.
+- `sl_audit.id` 는 원래 번호를 보존하고, 시퀀스를 최댓값 다음으로 맞춘다(다음 기록이 기존 번호와 충돌하지 않게).
 
 ### 8.3 덤프를 못 받는 경우
 최초 구축이거나 관리형 접속이 안 될 때는 **빈 상태에서 시작**한다.
-1. GoTrue 관리 API 로 관리자 계정 1개 생성(비밀번호는 오너가 직접 입력)
+1. GoTrue 관리 API 로 관리자 계정 1개 생성(비밀번호는 오너가 직접 입력) — 결속 뒤 비밀번호는 `set-admin-password.sh` 로도 정할 수 있다
 2. HANDOFF 3항 ② 의 부트스트랩 SQL 로 그 계정을 `admin` 으로 결속
 3. 문의·지원·감사 로그는 **이전되지 않는다** — 오너가 수용 여부를 결정한다
 
@@ -665,10 +674,15 @@ Docker 없이 돌아가므로 **배포 전에 누구나 다시 돌릴 수 있다
 | `scripts/gen-keys.sh` | JWT 시크릿·키 생성 |
 | `scripts/init-db.sh` | 스키마를 순서대로 적용 |
 | `scripts/export-from-supabase.sh` | 관리형 전체 덤프(오너) |
-| `scripts/import-to-server.sh` | 덤프 적재 |
+| `scripts/export-private.sql` | 비공개 데이터 내보내기 — 대시보드 SQL 편집기용(8.2 B, 해시 제외) |
+| `scripts/convert-dashboard-dump.py` | 대시보드 결과 CSV → `export/` 파일 3개(8.2 B) |
+| `scripts/import-to-server.sh` | 덤프 적재(A·B 공통) |
+| `scripts/set-admin-password.sh` | 관리자 비밀번호 설정 — GoTrue 관리 API(8.2 B 적재 뒤·분실 시) |
+| `scripts/test-private-roundtrip.py` | B 경로 왕복 시험(가짜 데이터, Docker 불필요) |
 | `scripts/verify.sh` | 9항 자동 검증 (서버에서) |
 | `scripts/test-db.py` | **13항 — Docker 없이 DB 계층 사전 검증** |
 | `scripts/export-public.py` | 공개 데이터 시드 재생성(**이관 당일 다시 돌린다**) |
+| `scripts/render-spec.py` | 이 명세서의 Word·PDF 판 생성(원문 대조 검사 포함) |
 | `scripts/build-package.py` | 납품용 파일 패키지(`dist/`) 생성 — 소스·적용순서 스키마·공개데이터·최종스키마·테이블정의서(`--zip` 으로 압축·SHA256SUMS) |
 | `db/01b-role-passwords.sh` | initdb 단계에서 롤 비밀번호를 `.env` 값으로 맞춤 |
 | `apache/site.conf` | 부록 C — Apache 를 쓸 경우 |

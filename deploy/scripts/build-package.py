@@ -71,16 +71,16 @@ APPLY_ORDER_TXT = """스키마 적용 순서 — 반드시 이 순서대로 (자
 """
 PRIVATE_TXT = """비공개 데이터 — 이 폴더는 비어 있는 것이 정상이다
 
-들어갈 것: 문의 · 채용 지원 · 관리자 목록 · 감사 로그 · 로그인 계정(비밀번호 해시 포함)
-공개 키로는 0행이라(RLS 정상 동작) 패키지 빌드가 뽑을 수 없다. 오너가 직접 뜬다.
+들어갈 것: 문의 · 채용 지원 · 관리자 목록 · 감사 로그 · 로그인 계정
+공개 키로는 0행이라(RLS 정상 동작) 패키지 빌드가 뽑을 수 없다. 오너가 뜬다(명세서 8.2 — 둘 중 하나).
+  A. Docker:   SUPABASE_DB_URL='postgresql://postgres:<비밀번호>@db.<ref>.supabase.co:5432/postgres' \\
+                 bash scripts/export-from-supabase.sh                       (비밀번호 해시 포함)
+  B. 대시보드: scripts/export-private.sql 을 SQL Editor 에서 Run → Download CSV
+               → python3 scripts/convert-dashboard-dump.py <CSV>           (해시 제외 → set-admin-password.sh)
+  → deploy/export/ 에 public-data.sql · auth-users.csv · auth-identities.csv
 
-  cd 02_소스코드/shilderslab-www/deploy
-  SUPABASE_DB_URL='postgresql://postgres:<비밀번호>@db.<ref>.supabase.co:5432/postgres' \\
-    bash scripts/export-from-supabase.sh
-  → deploy/export/ 에 public-data.sql · auth-users.csv · auth-identities.csv 가 생긴다
-
-🔴 개인정보와 비밀번호 해시가 들어 있다. 암호화된 경로로만 옮기고, 이관 후 양쪽 모두 지운다.
-   (shred -u export/*)  패키지를 업체에 넘길 때 이 폴더를 채운 채로 보내지 말 것 — 덤프는 별도 경로로.
+🔴 개인정보가 들어 있으므로 **이 패키지(zip)에 넣지 않는다.** build-package.py --private deploy/export 로
+   별도 zip(쉴더스랩_서버이관_비공개데이터_<날짜>.zip)을 만들어 암호화된 경로로 따로 넘기고, 이관 후 양쪽 모두 지운다.
 """
 
 def run(cmd, **kw):
@@ -234,7 +234,8 @@ def step_readme(pkg, head, stamp):
               deploy/  ← 서버 구성(docker-compose · nginx · apache · 스크립트)
   03_DB/      1_스키마(적용 순서 번호) · 2_데이터 · 최종스키마_참조용 · 테이블정의서(md·csv)
 
-비공개 데이터(문의·지원·관리자·로그인 계정)는 이 패키지에 없다 — 03_DB/2_데이터/비공개데이터/안내.txt
+비공개 데이터(문의·지원·관리자·로그인 계정)는 이 패키지에 없다 — 별도 zip(쉴더스랩_서버이관_비공개데이터_*.zip)으로
+오너가 따로 전달한다. 만드는 법: 03_DB/2_데이터/비공개데이터/안내.txt
 배포 전 DB 사전 검증: 02_소스코드/shilderslab-www 에서  python3 deploy/scripts/test-db.py
 """
     open(os.path.join(pkg, "00_먼저읽기.txt"), "w", encoding="utf-8").write(txt)
@@ -253,9 +254,48 @@ def step_zip(pkg):
                 p = os.path.join(r, f); zf.write(p, os.path.relpath(p, os.path.dirname(pkg)))
     print(f"  ✓ {os.path.relpath(z, ROOT)} ({os.path.getsize(z)/1e6:.1f}MB) · SHA256SUMS {len(sums)}개")
 
+PRIVATE_FILES = ("public-data.sql", "auth-users.csv", "auth-identities.csv")
+
+def step_private(src, stamp, make_zip):
+    """비공개 덤프를 **본 패키지와 분리된** 폴더·zip 으로 묶는다(권한 600). 내용은 화면에 찍지 않는다."""
+    missing = [f for f in PRIVATE_FILES if not os.path.isfile(os.path.join(src, f))]
+    if missing: sys.exit(f"✗ --private {src} 에 {missing} 가 없다")
+    out = os.path.join(ROOT, "dist", f"쉴더스랩_서버이관_비공개데이터_{stamp}")
+    shutil.rmtree(out, ignore_errors=True); os.makedirs(out); os.chmod(out, 0o700)
+    for f in PRIVATE_FILES:
+        shutil.copy(os.path.join(src, f), os.path.join(out, f)); os.chmod(os.path.join(out, f), 0o600)
+    users = list(csv.DictReader(open(os.path.join(out, "auth-users.csv"), encoding="utf-8")))
+    hashed = any((u.get("encrypted_password") or "").strip() for u in users)
+    sql = open(os.path.join(out, "public-data.sql"), encoding="utf-8").read()
+    src_line = next((l for l in sql.splitlines() if "원본" in l and l.startswith("--")), "").lstrip("- ").strip()
+    txt = f"""쉴더스랩 — 비공개 데이터 (일반 서버 이관용)          생성 {stamp}
+{src_line}
+
+🔴 개인정보(문의·지원자 이름·이메일·전화, 접속 IP)가 들어 있다.
+   암호화된 경로(암호 건 압축·보안 메신저·scp)로만 옮기고, 이관이 끝나면 받은 쪽·보낸 쪽 모두 지운다.
+   저장소에 커밋하지 않는다.
+
+파일
+  public-data.sql      public 테이블 8개 전체(문의·지원·관리자·감사 로그·문구·인사이트·채용·설정)
+  auth-users.csv       이 사이트 관리자로 결속된 로그인 계정 {len(users)}개 — 비밀번호 해시 {"포함" if hashed else "없음"}
+  auth-identities.csv  그 계정들의 로그인 신원
+
+적재 (서버, 명세서 7항 4단계)
+  1) 이 세 파일을 서버의 /srv/shieldus/deploy/export/ 에 둔다 (chmod 600)
+  2) cd /srv/shieldus/deploy && bash scripts/import-to-server.sh export/
+  3) {"(해시 포함 — 관리자는 기존 비밀번호로 로그인)" if hashed else "TLS(5단계) 뒤 관리자마다:  bash scripts/set-admin-password.sh <이메일>   ← 비밀번호는 오너가 입력"}
+  4) 확인 후  shred -u export/*
+"""
+    open(os.path.join(out, "안내.txt"), "w", encoding="utf-8").write(txt)
+    print(f"  ✓ {os.path.relpath(out, ROOT)} — 계정 {len(users)} · 해시 {'포함' if hashed else '없음'} (권한 600, 본 패키지와 분리)")
+    if make_zip:
+        step_zip(out)
+        os.chmod(out + ".zip", 0o600)
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--zip", action="store_true")
     ap.add_argument("--stamp", default=datetime.date.today().strftime("%Y%m%d"))
+    ap.add_argument("--private", metavar="DIR", help="비공개 덤프 폴더(deploy/export) — 별도 zip 으로 묶는다")
     a = ap.parse_args()
     pkg = os.path.join(ROOT, "dist", f"쉴더스랩_서버이관_패키지_{a.stamp}")
     private = os.path.join(pkg, "03_DB/2_데이터/비공개데이터")
@@ -265,7 +305,11 @@ def main():
     print(f"▶ {os.path.relpath(pkg, ROOT)}")
     head = step_source(pkg); step_db_files(pkg); step_catalog(pkg); step_docs(pkg)
     step_readme(pkg, head, a.stamp)
+    # 본 패키지에는 개인정보가 절대 들어가지 않는다 — 압축 직전에 한 번 더 본다
+    leaked = [f for f in os.listdir(private) if f != "안내.txt"]
+    if leaked: sys.exit(f"✗ 본 패키지 비공개데이터 폴더에 파일이 있다: {leaked}")
     if a.zip: step_zip(pkg)
+    if a.private: step_private(a.private, a.stamp, a.zip)
     print("완료")
 
 if __name__ == "__main__":

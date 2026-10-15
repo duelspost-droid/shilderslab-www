@@ -8,6 +8,9 @@
 #   켜 둔 채 넣으면 sl_content 의 수정 시각이 지금으로 덮이고 감사 로그에 가짜 행이 쌓인다.
 # · 로그인 계정은 id 를 보존한다 — sl_admins.user_id 가 이 값을 가리킨다.
 # · 전체를 한 트랜잭션으로 넣는다. 중간에 실패하면 아무것도 바뀌지 않는다.
+# · 덤프는 둘 중 하나: export-from-supabase.sh(비밀번호 해시 포함) 또는
+#   대시보드 export-private.sql + convert-dashboard-dump.py(해시 없음 → 적재 뒤 set-admin-password.sh).
+#   해시가 비어 있으면 이미 있는 계정의 비밀번호는 지우지 않는다(coalesce).
 # ═══════════════════════════════════════════════════════════════════════════
 set -euo pipefail
 SRC="${1:?덤프 디렉터리를 지정하세요 (예: export/)}"
@@ -15,10 +18,12 @@ cd "$(dirname "$0")/.."
 for f in public-data.sql auth-users.csv auth-identities.csv; do
   [ -f "$SRC/$f" ] || { echo "✗ $SRC/$f 가 없습니다"; exit 1; }
 done
-PSQL="docker compose exec -T db psql -v ON_ERROR_STOP=1 -U postgres -d postgres -q"
+# SL_PSQL 은 검증용(로컬 PostgreSQL 로 왕복 시험할 때)만 쓴다. 서버에서는 지정하지 않는다.
+PSQL="${SL_PSQL:-docker compose exec -T db psql -v ON_ERROR_STOP=1 -U postgres -d postgres -q}"
 
 echo "⚠ public 테이블 8개를 비우고 덤프로 다시 채웁니다. 계속하려면 yes:"
-read -r ans; [ "$ans" = "yes" ] || { echo "중단"; exit 1; }
+if [ "${SL_ASSUME_YES:-}" = "1" ]; then ans=yes; else read -r ans; fi
+[ "$ans" = "yes" ] || { echo "중단"; exit 1; }
 
 {
   echo "begin;"
@@ -32,8 +37,10 @@ read -r ans; [ "$ans" = "yes" ] || { echo "중단"; exit 1; }
   echo "\\."
   echo "insert into auth.users (id,aud,role,email,encrypted_password,email_confirmed_at,last_sign_in_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at)
         select id,aud,role,email,encrypted_password,email_confirmed_at,last_sign_in_at,raw_app_meta_data,raw_user_meta_data,created_at,updated_at from _u
-        on conflict (id) do update set encrypted_password=excluded.encrypted_password,
-          email=excluded.email, email_confirmed_at=excluded.email_confirmed_at, updated_at=excluded.updated_at;"
+        on conflict (id) do update set encrypted_password=coalesce(excluded.encrypted_password, auth.users.encrypted_password),
+          aud=excluded.aud, role=excluded.role, email=excluded.email, email_confirmed_at=excluded.email_confirmed_at,
+          last_sign_in_at=excluded.last_sign_in_at, raw_app_meta_data=excluded.raw_app_meta_data,
+          raw_user_meta_data=excluded.raw_user_meta_data, created_at=excluded.created_at, updated_at=excluded.updated_at;"
   echo "create temp table _i (like auth.identities including defaults) on commit drop;"
   echo "\\copy _i (id,user_id,identity_data,provider,provider_id,last_sign_in_at,created_at,updated_at) from stdin with csv header"
   cat "$SRC/auth-identities.csv"
@@ -54,6 +61,9 @@ union all select '  지원          ' || count(*) from public.sl_applications
 union all select '  관리자(연결)  ' || count(*) from public.sl_admins where user_id is not null
 union all select '  로그인 계정   ' || count(*) from auth.users
 union all select '  ⚠ 연결 끊긴 관리자 ' || count(*) from public.sl_admins a
-            where a.user_id is not null and not exists (select 1 from auth.users u where u.id=a.user_id);
+            where a.user_id is not null and not exists (select 1 from auth.users u where u.id=a.user_id)
+union all select '  🔑 비밀번호 미설정 관리자 ' || count(*) from public.sl_admins a
+            join auth.users u on u.id = a.user_id where u.encrypted_password is null or u.encrypted_password = '';
 EOSQL
-echo "  (마지막 줄이 0 이 아니면 관리자 결속이 깨진 것이다 — 그 관리자는 로그인해도 권한이 없다)"
+echo "  (연결 끊긴 관리자가 0 이 아니면 결속이 깨진 것이다 — 그 관리자는 로그인해도 권한이 없다)"
+echo "  (비밀번호 미설정이 0 이 아니면 관리자마다:  bash scripts/set-admin-password.sh <이메일>)"
