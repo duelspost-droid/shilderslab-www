@@ -688,6 +688,7 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-10-02 | **일반 서버 이관 패키지** — `deploy/` 신설: 명세서(SPEC.md, 선택지·DB·웹서버·절차·검증·운영·롤백), Docker Compose/nginx·Apache 구성, Edge 함수 무수정 컨테이너화, 스크립트 7종. 실제 PG16 에서 DB 계층 36/36 통과 · 결함 4건(🔴Supabase 기본 권한 누락 → 사이트 빈 화면) 수정 · 운영 함정 3건 수정 | 서버 확보 · 관리형 덤프(오너) · 실기동 후 verify.sh |
 | 2026-10-02 | **이관 패키지(파일) 빌드 진행 중** — `dist/쉴더스랩_서버이관_패키지_20261002/` (로컬·gitignore). 완료: 02_소스코드(git archive, 188파일·비밀 0) · 03_DB(적용순서 스키마 9 · 공개데이터 60행 · **최종스키마_참조용.sql** · **테이블정의서 md/csv — 실제 PG 카탈로그 추출**) · SPEC 부록 D(테이블 정의서) 추가 | 01_명세서 docx·pdf(이 맥에 pandoc·LibreOffice 없음 → docx-js·reportlab 로 직접 렌더) · 비공개데이터(오너 권한 필요) · 00_먼저읽기·zip |
 | 2026-10-02 | **다른 PC 이어받기 정리** — 패키지 생성을 `deploy/scripts/build-package.py` 로 커밋(dist/ 는 gitignore 라 PC 간에 안 따라감 → 어디서든 재생성) · 실행 확인(소스 188·스키마 9·공개 60행·정책 18·인덱스 22·트리거 8) · 13항 신설 · HANDOFF 의 관리자 주소 2곳 제거(public 저장소) | 13항 남은 일 ①②③ |
+| 2026-10-15 | **명세서 Word·PDF 완료(13항 ①)** — `render-spec.py` 신설(python-docx + Chrome 헤드리스, 원문 조각 1,591개 대조 자동검사, docx 스키마 검증) · `build-package.py` 에 연결 · 시각 검수 2회(확정 13건 전부 수정) · **SPEC 1.1**: 10.4 cron `exec -T` 누락 결함 수정(deploy 훅 분리)·도식 정렬 | 13항 ② 비공개 덤프(오너 결정 대기) · ③ zip |
 
 ---
 
@@ -938,7 +939,7 @@ Allow-Headers authorization, x-client-info, apikey, content-type
 
 ---
 
-## 13. 일반 서버 이관 — 납품 파일 패키지 (2026-10-02 진행 중, 여기서 이어서)
+## 13. 일반 서버 이관 — 납품 파일 패키지 (2026-10-02 시작 · 10-15 명세서 Word·PDF 완료, 여기서 이어서)
 
 > 설계·절차의 정본은 `deploy/SPEC.md`. 이 항은 **"파일로 묶어 넘기는 작업"이 어디까지 왔는지**만 다룬다.
 
@@ -957,15 +958,16 @@ python3 deploy/scripts/build-package.py --zip    # + 00_먼저읽기 · SHA256SU
 |---|---|
 | 공통 | `git` · `python3` (공개데이터는 라이브 REST 에서 공개 키로 뜬다 — 인터넷 필요) |
 | 최종스키마·테이블정의서까지 | `pgserver`(PostgreSQL 16 바이너리 포함, Docker 불필요). 없으면 그 둘만 건너뛰고 나머지는 만든다 |
-| macOS (이 맥) | `~/.venvs/sl/bin/python deploy/scripts/build-package.py` — pgserver·reportlab·fonttools·pypdf 설치돼 있음 |
-| Windows | `py -m venv %USERPROFILE%\.venvs\sl` → `...\Scripts\pip install pgserver` → 그 python 으로 실행. **Windows 에서 pgserver 경로는 아직 실측 안 함** — 실패하면 맥에서 만들거나 그 단계만 건너뛴다 |
+| 명세서 Word·PDF | `python-docx` · `pypdf` + **Chrome 또는 Edge**(PDF 인쇄 엔진, 경로는 `SL_CHROME` 로 지정 가능). 없으면 그 형식만 건너뛴다 |
+| macOS (이 맥) | `~/.venvs/sl/bin/python deploy/scripts/build-package.py` — pgserver·python-docx·pypdf 설치돼 있음 (Python 3.9) |
+| Windows | `py -m venv %USERPROFILE%\.venvs\sl` → `...\Scripts\pip install pgserver python-docx pypdf` → 그 python 으로 실행. **Windows 에서 pgserver·Chrome 경로는 아직 실측 안 함** — 실패하면 맥에서 만들거나 그 단계만 건너뛴다 |
 
 ### 패키지 구성과 상태
 
 | 폴더 | 내용 | 상태 |
 |---|---|---|
 | `00_먼저읽기.txt` | 구성·읽는 순서·선택지 요약 | ✅ 자동 |
-| `01_명세서/` | SPEC.md 사본 | ✅ 자동 · **docx·pdf ⏳ ①** |
+| `01_명세서/` | 명세서 `.md`(원본 사본) · `.docx` · `.pdf` — `render-spec.py` | ✅ 자동 (2026-10-15) |
 | `02_소스코드/shilderslab-www/` | `git archive HEAD` — 커밋된 것만이라 `.env` 등 비밀이 섞일 수 없다(스크립트가 `.env` 를 발견하면 중단) | ✅ 자동 |
 | `03_DB/1_스키마/` | 적용 순서 번호를 붙인 사본 9개 + `적용순서.txt` | ✅ 자동 |
 | `03_DB/2_데이터/공개데이터.sql` | 실행 시점 라이브 스냅숏(설정·문구·인사이트·채용) | ✅ 자동 — **이관 당일 다시 뜰 것** |
@@ -975,13 +977,24 @@ python3 deploy/scripts/build-package.py --zip    # + 00_먼저읽기 · SHA256SU
 
 ### 남은 일 (순서대로)
 
-**① 명세서 Word·PDF** — `01_명세서/` 에 `.docx`·`.pdf` 를 추가한다.
-- 원본은 `deploy/SPEC.md` 하나뿐이다. **Word/PDF 를 손으로 고치지 말고** SPEC.md 를 고친 뒤 다시 뽑는다.
-- 이 맥에는 pandoc·LibreOffice·Word 가 없어 생성기를 직접 써야 한다(계획: npm `docx` 로 .docx, reportlab + `tools/NotoSansKR.ttf` 고정 굵기 인스턴스로 .pdf).
-  node 는 PATH 에 없고 `/Applications/Codex.app/Contents/Resources/cua_node/bin/` 의 것을 쓴다.
-- **Windows 에 Word 나 pandoc 이 있으면 그쪽이 훨씬 빠르다**: `pandoc deploy/SPEC.md -o 명세서.docx` → Word 로 열어 표·목차 확인 → [PDF로 저장].
-- 생성기를 만들면 `deploy/scripts/render-spec-*` 로 커밋하고 `build-package.py` 의 `step_docs()` 에 연결한다(자리 표시 주석 있음).
-- 렌더 결과는 반드시 페이지 이미지로 열어 확인(표 잘림·한글 글꼴 대체·코드 블록 줄바꿈).
+**① 명세서 Word·PDF** — ✅ **완료(2026-10-15)**. `deploy/scripts/render-spec.py` 가 만들고 `build-package.py` 가 부른다.
+- **원본은 `deploy/SPEC.md` 하나뿐.** Word/PDF 를 손으로 고치지 말고 SPEC.md 를 고친 뒤 다시 뽑는다.
+- 같은 파서에서 두 엔진으로 그린다:
+  `.docx` = python-docx 직접 생성(맑은 고딕 + Consolas, 목차는 TOC 필드에 항목·링크를 미리 채움 — 쪽번호는 Word 에서 F9) ·
+  `.pdf` = HTML → **Chrome 헤드리스 인쇄**(레포의 `tools/NotoSansKR.ttf` 를 박음, 목차 쪽번호는 PDF 에서 찾아 다시 인쇄 — 수렴할 때까지).
+- **Word 로 PDF 를 만들지 않는 이유**: 이 맥의 Word 는 라이선스 미활성(보기 전용)이라 저장 불가(AppleScript `save as` → -1708),
+  Mac Word AppleScript 는 TOC 필드 갱신도 못 한다(`update` → -1708, `update field` → false). 둘 다 실측.
+- 생성기가 스스로 검사한다: 원문 조각(문단·목록·인용 줄·표 칸·코드 줄·제목) **1,579개가 docx·pdf 텍스트에 모두 있는지** 대조 —
+  하나라도 빠지면 실패(exit 1)하고 build-package 도 멈춘다. docx 는 ISO 29500 스키마 검증 통과(남는 것은 `mc:Ignorable` 속성뿐 — 정상).
+- 도식(상자 그림 코드 블록)은 "한글 1자 = 영문 2칸" 으로 맞춰 그린다(PDF: 문자별 고정 폭, docx: 한글 자간 보정).
+  **SPEC.md 도식을 고칠 땐 줄마다 표시 폭을 같게** — 2026-10-15 To-Be 도식이 64·65·66칸으로 어긋나 있던 것을 64로 맞췄다.
+- PDF 합자(ﬀ·ﬁ) 끔 — PDF 에서 복사한 명령이 그대로 동작하도록.
+- **시각 검수 2회**(쪽 이미지를 4묶음으로 나눠 검토 → 각 지적을 다른 에이전트가 반박 시도): 1차 확정 9건·기각 19건, 2차 확정 4건·기각 4건 — 전부 수정.
+  렌더러 쪽 수정: 인라인 코드가 하이픈에서 끊기지 않게(공백과 `/` 뒤에서만), 긴 코드 줄은 걸린 들여쓰기, 굵은 소제목(제약·인덱스·트리거)을
+  다음 내용과 같은 쪽에, 항목/내용 2열 표 첫 열 32mm 고정, `·` 로 끝나는 원문 줄을 공백 없이 잇기, "(내부망)로만" 같은 괄호+조사 어절 묶기.
+  **SPEC.md 를 1.1 로 개정**: 10.4 인증서 갱신의 cron 한 줄에 있던 `docker compose exec`(‑T 없음 → cron 에서 "not a TTY" 로 재적재 실패) 결함을
+  deploy 훅 파일(`/etc/letsencrypt/renewal-hooks/deploy/shieldus.sh`)로 분리해 고침 · 1.2 도식 라벨 칸, 7항 2단계 주석 칸 정렬.
+- docx 는 Word 에서 열림(호환 모드 아님, 표지·목차·쪽번호 정상)까지 확인. 이 맥 Word 는 보기 전용이라 docx 의 쪽 단위 시각 검수는 하지 못했다.
 
 **② 비공개 데이터 덤프** — 공개 키로는 0행이 정상(RLS)이라 빌드가 뽑을 수 없다. 둘 중 하나:
 - **(권장) 오너가 직접** — `deploy/scripts/export-from-supabase.sh` 에 DB 접속 문자열(비밀번호 포함)을 넣어 실행.

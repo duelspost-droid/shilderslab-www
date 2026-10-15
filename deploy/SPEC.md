@@ -2,8 +2,9 @@
 
 | 항목 | 내용 |
 |---|---|
-| 문서 버전 | 1.0 |
+| 문서 버전 | 1.1 |
 | 작성일 | 2026-10-02 |
+| 개정 | 1.1 (2026-10-15) — 10.4 인증서 갱신을 deploy 훅 파일로 분리(cron 의 `exec` 에 `-T` 누락 결함 수정) · 1.2/1.3 도식 칸 정렬 · Word/PDF 판 추가 |
 | 대상 독자 | 서버를 구축·운영할 엔지니어, 호스팅·SI 업체 |
 | 관련 파일 | `deploy/` 디렉터리 전체 (부록 B) |
 | 정본 저장소 | `github.com/duelspost-droid/shilderslab-www` (main) |
@@ -65,7 +66,7 @@
                                ├ PostgREST   /rest/v1      테이블 조회·RPC
                                ├ GoTrue      /auth/v1      관리자 로그인
                                ├ Edge Fn     /functions/v1 관리자 계정 관리
-                               └ PostgreSQL               데이터 저장
+                               └ PostgreSQL                데이터 저장
 ```
 
 ### 1.3 목표 구성 (To-Be)
@@ -76,13 +77,13 @@
    ▼
  ┌─────────────────────── 일반 서버 1대 ───────────────────────┐
  │                                                             │
- │  nginx (웹 서버 · 리버스 프록시 · TLS 종단)                  │
- │   ├ /            → 정적 파일 (/var/www/site)                 │
- │   ├ /rest/v1/    → PostgREST   :3000                         │
- │   ├ /auth/v1/    → GoTrue      :9999                         │
- │   └ /functions/v1/sl-admin-user → Deno 서비스 :8080          │
+ │  nginx (웹 서버 · 리버스 프록시 · TLS 종단)                 │
+ │   ├ /            → 정적 파일 (/var/www/site)                │
+ │   ├ /rest/v1/    → PostgREST   :3000                        │
+ │   ├ /auth/v1/    → GoTrue      :9999                        │
+ │   └ /functions/v1/sl-admin-user → Deno 서비스 :8080         │
  │                                                             │
- │  PostgreSQL 16  :5432  (외부 비공개)                          │
+ │  PostgreSQL 16  :5432  (외부 비공개)                        │
  └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -397,7 +398,7 @@ sudo git clone https://github.com/duelspost-droid/shilderslab-www.git /srv/shiel
 cd /srv/shieldus/deploy
 cp .env.example .env
 bash scripts/gen-keys.sh >> .env          # JWT_SECRET · ANON_KEY · SERVICE_ROLE_KEY
-vi .env                                    # POSTGRES_PASSWORD · PUBLIC_URL · SERVER_NAME · SMTP 채우기
+vi .env                                   # POSTGRES_PASSWORD · PUBLIC_URL · SERVER_NAME · SMTP 채우기
 chmod 600 .env
 ```
 
@@ -543,8 +544,21 @@ Docker 로그 순환을 켠다: `/etc/docker/daemon.json` 에 `"log-opts": {"max
 `https://<도메인>/rest/v1/sl_content?select=key&limit=1`(공개 키 헤더 포함)을 5분 간격 확인.
 
 ### 10.4 인증서 자동 갱신
-```cron
-0 4 * * 1  root certbot renew --quiet --webroot -w /srv/shieldus/deploy/certbot-www --deploy-hook "cp /etc/letsencrypt/live/shielduslab.com/*.pem /srv/shieldus/deploy/certs/ && docker compose -f /srv/shieldus/deploy/docker-compose.yml exec web nginx -s reload"
+갱신 뒤 할 일(인증서 복사 · nginx 재적재)은 certbot 의 **deploy 훅 파일**로 둔다. certbot 은 갱신에 **성공했을 때만**
+`/etc/letsencrypt/renewal-hooks/deploy/` 의 실행 파일을 돌린다. cron 항목은 한 줄이어야 하므로 긴 명령을 여기에 넣지 않는다.
+
+```bash
+# ① 훅 — cron 에는 터미널이 없으므로 exec 에 -T 가 반드시 필요하다(없으면 "not a TTY" 로 재적재 실패)
+sudo tee /etc/letsencrypt/renewal-hooks/deploy/shieldus.sh >/dev/null <<'EOF'
+#!/bin/sh
+cp /etc/letsencrypt/live/shielduslab.com/*.pem /srv/shieldus/deploy/certs/
+docker compose -f /srv/shieldus/deploy/docker-compose.yml exec -T web nginx -s reload
+EOF
+sudo chmod +x /etc/letsencrypt/renewal-hooks/deploy/shieldus.sh
+
+# ② 주 1회 갱신 시도 — 반드시 --webroot (standalone 이면 nginx 가 80 을 잡고 있어 실패한다)
+echo '0 4 * * 1 root certbot renew --quiet --webroot -w /srv/shieldus/deploy/certbot-www' \
+  | sudo tee /etc/cron.d/shieldus-certbot
 ```
 
 ### 10.5 콘텐츠 배포

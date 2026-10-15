@@ -17,7 +17,7 @@
 
 구성
   00_먼저읽기.txt
-  01_명세서/      SPEC.md 사본 (+ docx·pdf — 생성기 미구현, HANDOFF 13항)
+  01_명세서/      명세서 md(원본 사본) · docx · pdf  ← render-spec.py
   02_소스코드/    git archive HEAD — 커밋된 것만이라 .env 같은 비밀이 섞일 수 없다
   03_DB/1_스키마/ 적용 순서 번호를 붙인 사본 + 적용순서.txt
   03_DB/2_데이터/ 공개데이터.sql(실행 시점 라이브 스냅숏) · 비공개데이터/(오너 덤프 자리)
@@ -203,20 +203,25 @@ def write_definition(pkg, cols, cons, pols, idx, trg):
           f"정책 {len(pols)} · 인덱스 {len(idx)} · 트리거 {len(trg)}")
 
 def step_docs(pkg):
+    """명세서: 원본 md 사본 + Word·PDF (render-spec.py — 원문 대조 검사까지 통과해야 성공)."""
     d = os.path.join(pkg, "01_명세서"); os.makedirs(d, exist_ok=True)
     shutil.copy(os.path.join(DEPLOY, "SPEC.md"), os.path.join(d, "쉴더스랩_일반서버_이관명세서.md"))
-    # docx · pdf 생성기는 아직 없다 — HANDOFF 13항. 만들어지면 여기서 부른다.
-    for gen, ext in (("render-spec-docx.js", "docx"), ("render-spec-pdf.py", "pdf")):
-        if os.path.exists(os.path.join(HERE, gen)):
-            print(f"  · {gen} 실행 — (구현 시 연결)")
-    print("  ✓ 01_명세서 — SPEC.md 사본 (docx·pdf 미생성: HANDOFF 13항)")
+    r = subprocess.run([sys.executable, os.path.join(HERE, "render-spec.py"), d], capture_output=True, text=True)
+    out = (r.stdout + r.stderr).strip()
+    for line in out.splitlines(): print("  " + line.strip())
+    if r.returncode == 1:
+        sys.exit("✗ 명세서 원문 대조 실패 — 위 누락 목록을 고친 뒤 다시 실행")
+    made = [e for e in ("docx", "pdf") if os.path.exists(os.path.join(d, f"쉴더스랩_일반서버_이관명세서.{e}"))]
+    print(f"  {'✓' if len(made) == 2 else '⚠'} 01_명세서 — md" + "".join(" · " + e for e in made)
+          + ("" if len(made) == 2 else " (빠진 형식은 위 메시지 참조 — python-docx·pypdf·Chrome 필요)"))
 
 def step_readme(pkg, head, stamp):
     txt = f"""쉴더스랩 웹사이트 — 일반 서버 이관 패키지
 생성 {stamp} · 소스 커밋 {head}
 
 먼저 읽을 것
-  01_명세서/쉴더스랩_일반서버_이관명세서   — 0장(선택지) → 7장(절차) 순서로
+  01_명세서/쉴더스랩_일반서버_이관명세서.pdf (Word 판 .docx · 원본 .md 도 있음)
+                                             — 0장(선택지) → 7장(절차) 순서로
     · 설치 방식: Docker Compose(권장) 또는 직접 설치
     · 웹 서버  : nginx(권장) 또는 Apache httpd
     · DB       : PostgreSQL (선택 불가 — 명세서 2.2)
