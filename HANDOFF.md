@@ -1007,6 +1007,8 @@ Download CSV, `convert-dashboard-dump.py` 로 `deploy/export/` 3개 파일 생�
   이 시험이 **`import-to-server.sh` 결함 1건**을 잡았다: 새 서버에 같은 계정이 이미 있으면 덤프가 일부 열만 덮었다 → 전부 덮게 수정(해시는 비었으면 보존).
 - 실측 건수는 로컬 메모에만 둔다(public 저장소).
 - 🔴 `deploy/export/`·`~/Downloads/Supabase Snippet Untitled query.csv` 는 **개인정보** — 이관 후 지운다. 별도 비공개 zip 은 `build-package.py --zip --private deploy/export`.
+- ⏳ **2026-10-15 18:11 기준 새 스크립트 4종(export-private·convert·import 수정·set-admin-password) 독립 검토 진행 중** — 결과의 확정 지적을 반영하면
+  `build-package.py --zip --private deploy/export` 로 두 zip 을 다시 만든다(약 20초). 반영 전 zip 도 왕복 시험·실데이터 시험 적재는 통과한 상태.
 
 **③ 묶어서 넘기기** — ✅ **완료(2026-10-15)**: `dist/쉴더스랩_서버이관_패키지_20261015.zip`(9.7MB, 파일 209개, SHA256SUMS 일치·zip 무결성 확인,
 JWT·`.env`·관리자 주소 0건). 이 맥 로컬에만 있다(gitignore) — 다른 PC 에서는 `build-package.py --zip` 으로 같은 것을 만든다.
