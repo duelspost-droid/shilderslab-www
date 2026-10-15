@@ -70,7 +70,7 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
 | HTTPS | ✅ **인증서 발급·강제 완료** — apex/www 모두 Let's Encrypt 유효, http→https 301 |
 | 라이브 감사 (5관점 병렬 + 적대적 검증) | ✅ 실시 — 확정 29건 중 high 2건 해소, 다수 반영(아래 7항) |
 | 접수 알림 메일 (선택) | ⏳ `notify-inquiry` 미배포 |
-| 일반 서버 이관 패키지 | ✅ 설계·구성·스크립트 완료(`deploy/`) · DB 계층 사전 검증 36/36 · 🟡 **납품 파일 묶음 진행 중 — 13항** (남은 것: 명세서 docx·pdf · 비공개 데이터 덤프 · zip) |
+| 일반 서버 이관 패키지 | ✅ 설계·구성·스크립트(`deploy/`) · DB 사전 검증 36/36 · **명세서 v1.1 md·docx·pdf** · **납품 zip(10-15)** — 🟡 남은 것: 비공개 데이터 덤프(13항 ②, 오너 결정) |
 
 로컬 경로: macOS `/Users/hk/shilderslab-www` · Windows `C:\Users\duels\Projects\shilderslab-www`
 원격: `github.com/duelspost-droid/shilderslab-www` (public, main)
@@ -688,7 +688,8 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-10-02 | **일반 서버 이관 패키지** — `deploy/` 신설: 명세서(SPEC.md, 선택지·DB·웹서버·절차·검증·운영·롤백), Docker Compose/nginx·Apache 구성, Edge 함수 무수정 컨테이너화, 스크립트 7종. 실제 PG16 에서 DB 계층 36/36 통과 · 결함 4건(🔴Supabase 기본 권한 누락 → 사이트 빈 화면) 수정 · 운영 함정 3건 수정 | 서버 확보 · 관리형 덤프(오너) · 실기동 후 verify.sh |
 | 2026-10-02 | **이관 패키지(파일) 빌드 진행 중** — `dist/쉴더스랩_서버이관_패키지_20261002/` (로컬·gitignore). 완료: 02_소스코드(git archive, 188파일·비밀 0) · 03_DB(적용순서 스키마 9 · 공개데이터 60행 · **최종스키마_참조용.sql** · **테이블정의서 md/csv — 실제 PG 카탈로그 추출**) · SPEC 부록 D(테이블 정의서) 추가 | 01_명세서 docx·pdf(이 맥에 pandoc·LibreOffice 없음 → docx-js·reportlab 로 직접 렌더) · 비공개데이터(오너 권한 필요) · 00_먼저읽기·zip |
 | 2026-10-02 | **다른 PC 이어받기 정리** — 패키지 생성을 `deploy/scripts/build-package.py` 로 커밋(dist/ 는 gitignore 라 PC 간에 안 따라감 → 어디서든 재생성) · 실행 확인(소스 188·스키마 9·공개 60행·정책 18·인덱스 22·트리거 8) · 13항 신설 · HANDOFF 의 관리자 주소 2곳 제거(public 저장소) | 13항 남은 일 ①②③ |
-| 2026-10-15 | **명세서 Word·PDF 완료(13항 ①)** — `render-spec.py` 신설(python-docx + Chrome 헤드리스, 원문 조각 1,591개 대조 자동검사, docx 스키마 검증) · `build-package.py` 에 연결 · 시각 검수 2회(확정 13건 전부 수정) · **SPEC 1.1**: 10.4 cron `exec -T` 누락 결함 수정(deploy 훅 분리)·도식 정렬 | 13항 ② 비공개 덤프(오너 결정 대기) · ③ zip |
+| 2026-10-15 | **명세서 Word·PDF 완료(13항 ①)** — `render-spec.py` 신설(python-docx + Chrome 헤드리스, 원문 조각 1,591개 대조 자동검사, docx 스키마 검증) · `build-package.py` 에 연결 · 시각 검수 2회(확정 13건 전부 수정) · **SPEC 1.1**: 10.4 cron `exec -T` 누락 결함 수정(deploy 훅 분리)·도식 정렬 | 13항 ② 비공개 덤프(오너 결정 대기) |
+| 2026-10-15 | **패키지 재생성·zip 완료(13항 ③)** — `dist/쉴더스랩_서버이관_패키지_20261015.zip` 9.7MB·209파일, 체크섬·무결성·비밀 스캔 통과. 10-02 판은 삭제(재생성 가능) | 13항 ② 만 남음 |
 
 ---
 
@@ -939,7 +940,7 @@ Allow-Headers authorization, x-client-info, apikey, content-type
 
 ---
 
-## 13. 일반 서버 이관 — 납품 파일 패키지 (2026-10-02 시작 · 10-15 명세서 Word·PDF 완료, 여기서 이어서)
+## 13. 일반 서버 이관 — 납품 파일 패키지 (10-15 ①③ 완료 · 남은 것은 ② 비공개 덤프뿐)
 
 > 설계·절차의 정본은 `deploy/SPEC.md`. 이 항은 **"파일로 묶어 넘기는 작업"이 어디까지 왔는지**만 다룬다.
 
@@ -1004,7 +1005,10 @@ python3 deploy/scripts/build-package.py --zip    # + 00_먼저읽기 · SHA256SU
 - 규모는 작다(대부분 방문 감사 로그, 수백 행 수준). 정확한 건수는 로컬 메모에만 둔다.
 - 🔴 덤프는 개인정보·비밀번호 해시를 담는다. **패키지 zip 에 넣지 말고 별도 암호화 경로로** 넘긴다. 생성기는 이 폴더에 파일이 있으면 덮어쓰지 않고 멈춘다.
 
-**③ 묶어서 넘기기** — `build-package.py --zip` → `dist/…zip` + `SHA256SUMS.txt`. 받는 쪽은 `00_먼저읽기.txt` 부터.
+**③ 묶어서 넘기기** — ✅ **완료(2026-10-15)**: `dist/쉴더스랩_서버이관_패키지_20261015.zip`(9.7MB, 파일 209개, SHA256SUMS 일치·zip 무결성 확인,
+JWT·`.env`·관리자 주소 0건). 이 맥 로컬에만 있다(gitignore) — 다른 PC 에서는 `build-package.py --zip` 으로 같은 것을 만든다.
+공개 데이터는 10-02 스냅숏과 내용이 같았다(생성 시각 줄만 다름). 받는 쪽은 `00_먼저읽기.txt` 부터.
+비공개 덤프(②)는 이 zip 에 넣지 않고 따로 넘긴다 — ②가 끝나도 zip 을 다시 만들 필요는 없다.
 
 ### 이관 당일에 다시 확인할 것 (패키지와 별개)
 - 공개데이터 재추출(문구를 콘솔에서 바꿨을 수 있다) — 생성기를 그날 다시 돌리면 된다.
