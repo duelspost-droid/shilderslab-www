@@ -70,7 +70,7 @@ CI 재생성(`tools/build-ci.py`)만 `fonttools` + 폰트 파일이 추가로 �
 | HTTPS | ✅ **인증서 발급·강제 완료** — apex/www 모두 Let's Encrypt 유효, http→https 301 |
 | 라이브 감사 (5관점 병렬 + 적대적 검증) | ✅ 실시 — 확정 29건 중 high 2건 해소, 다수 반영(아래 7항) |
 | 접수 알림 메일 (선택) | ⏳ `notify-inquiry` 미배포 |
-| 일반 서버 이관 패키지 | ✅ 설계·구성·스크립트(`deploy/`) · DB 사전 검증 36/36 · **명세서 v1.1 md·docx·pdf** · **납품 zip(10-15)** — 🟡 남은 것: 비공개 데이터 덤프(13항 ②, 오너 결정) |
+| 일반 서버 이관 패키지 | ✅ 설계·구성·스크립트(`deploy/`) · DB 사전 검증 36/36 · **명세서 v1.2 md·docx·pdf** · **본 zip + 비공개 zip(10-15)** — 남은 것: 서버 확보·실제 이관(SPEC 7항) |
 
 로컬 경로: macOS `/Users/hk/shilderslab-www` · Windows `C:\Users\duels\Projects\shilderslab-www`
 원격: `github.com/duelspost-droid/shilderslab-www` (public, main)
@@ -690,6 +690,7 @@ tools/content_dynamic.py  인사이트 · 채용 · 문의(백엔드 연동)
 | 2026-10-02 | **다른 PC 이어받기 정리** — 패키지 생성을 `deploy/scripts/build-package.py` 로 커밋(dist/ 는 gitignore 라 PC 간에 안 따라감 → 어디서든 재생성) · 실행 확인(소스 188·스키마 9·공개 60행·정책 18·인덱스 22·트리거 8) · 13항 신설 · HANDOFF 의 관리자 주소 2곳 제거(public 저장소) | 13항 남은 일 ①②③ |
 | 2026-10-15 | **명세서 Word·PDF 완료(13항 ①)** — `render-spec.py` 신설(python-docx + Chrome 헤드리스, 원문 조각 1,591개 대조 자동검사, docx 스키마 검증) · `build-package.py` 에 연결 · 시각 검수 2회(확정 13건 전부 수정) · **SPEC 1.1**: 10.4 cron `exec -T` 누락 결함 수정(deploy 훅 분리)·도식 정렬 | 13항 ② 비공개 덤프(오너 결정 대기) |
 | 2026-10-15 | **패키지 재생성·zip 완료(13항 ③)** — `dist/쉴더스랩_서버이관_패키지_20261015.zip` 9.7MB·209파일, 체크섬·무결성·비밀 스캔 통과. 10-02 판은 삭제(재생성 가능) | 13항 ② 만 남음 |
+| 2026-10-15 | **비공개 데이터 이관 준비 완료(13항 ②, 경로 B)** — 오너가 대시보드에서 `export-private.sql` 실행 → `convert-dashboard-dump.py` → 로컬 시험 적재 정상 · 변환기·비밀번호 설정·왕복 시험(22/22, import 결함 1건 수정) · SPEC 1.2 · **본 zip + 별도 비공개 zip**(`dist/…비공개데이터_20261015.zip`, 600) | 새 서버 적재 후 관리자 2명 `set-admin-password.sh` · 이관 후 `deploy/export/`·다운로드 CSV·비공개 zip 삭제 |
 
 ---
 
@@ -940,7 +941,7 @@ Allow-Headers authorization, x-client-info, apikey, content-type
 
 ---
 
-## 13. 일반 서버 이관 — 납품 파일 패키지 (10-15 ①③ 완료 · 남은 것은 ② 비공개 덤프뿐)
+## 13. 일반 서버 이관 — 납품 파일 패키지 (10-15 ①②③ 모두 완료 — 다음은 서버 확보 후 SPEC 7항)
 
 > 설계·절차의 정본은 `deploy/SPEC.md`. 이 항은 **"파일로 묶어 넘기는 작업"이 어디까지 왔는지**만 다룬다.
 
